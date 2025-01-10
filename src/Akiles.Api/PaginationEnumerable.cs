@@ -2,7 +2,7 @@
 
 namespace Akiles.Api;
 
-internal class PageEnumerable<T>(Func<string?, CancellationToken, Task<PagedList<T>>> getPage)
+internal class PaginationEnumerable<T>(Func<string?, CancellationToken, Task<PagedList<T>>> getPage)
     : IAsyncEnumerable<T>
 {
     private async IAsyncEnumerable<T> EnumerateAsync(
