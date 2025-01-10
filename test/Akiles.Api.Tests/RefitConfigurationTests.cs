@@ -10,10 +10,7 @@ public class RefitConfigurationTests
         // Given
         var fakeMessageHandler = new FakeMessageHandler();
         var httpClient = new HttpClient(fakeMessageHandler);
-        var client = new AkilesApiClient(
-            httpClient,
-            new() { ClientId = "id", ClientSecret = "secret" }
-        );
+        var client = new AkilesApiClient(httpClient, new() { ApiKey = "key" });
 
         // When
         await Assert.ThrowsAsync<AkilesApiException>(

@@ -48,6 +48,11 @@ public class AkilesApiClient : IAkilesApiClient
     {
         httpClient.BaseAddress = new("https://api.akiles.app/v2");
 
+        httpClient.DefaultRequestHeaders.TryAddWithoutValidation(
+            "Authorization",
+            "Bearer " + options.ApiKey
+        );
+
         Members = RestService.For<IMembers>(httpClient, _refitSettings);
     }
 

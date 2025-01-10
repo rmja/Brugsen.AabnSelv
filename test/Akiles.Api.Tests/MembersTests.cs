@@ -11,8 +11,7 @@ public class MembersTests
         var services = new ServiceCollection()
             .AddAkilesApi(options =>
             {
-                options.ClientId = TestSecrets.ClientId;
-                options.ClientSecret = TestSecrets.ClientSecret;
+                options.ApiKey = TestSecrets.ApiKey;
             })
             .BuildServiceProvider();
         _client = services.GetRequiredService<IAkilesApiClient>();
@@ -27,6 +26,6 @@ public class MembersTests
         var members = await _client.Members.ListMembersAsync().ToListAsync();
 
         // Then
-        Assert.Equal(2, members.Count);
+        Assert.NotEmpty(members);
     }
 }

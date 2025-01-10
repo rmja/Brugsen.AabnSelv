@@ -1,6 +1,7 @@
 ﻿using Akiles.Api;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Options;
 
 public static class AkilesApiExtensions
 {
@@ -12,8 +13,8 @@ public static class AkilesApiExtensions
         services.AddHttpClient<AkilesApiClient>();
         services.TryAddTransient<IAkilesApiClient>(provider =>
         {
-            var options = provider.GetRequiredService<AkilesApiOptions>();
-            return ActivatorUtilities.CreateInstance<AkilesApiClient>(provider, options);
+            var options = provider.GetRequiredService<IOptions<AkilesApiOptions>>();
+            return ActivatorUtilities.CreateInstance<AkilesApiClient>(provider, options.Value);
         });
         services.Configure(configureOptions);
         return services;
