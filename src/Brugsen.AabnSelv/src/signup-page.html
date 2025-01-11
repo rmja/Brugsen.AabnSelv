@@ -1,0 +1,50 @@
+<main class="container-sm">
+  <img src="assets/brugsen-logo.png" width="100%" />
+
+  <form submit.trigger="submit()">
+    <h3 class="text-center">Tilmelding til <strong>ÅBN SELV</strong></h3>
+    <h4 class="text-center">Brugsen Vesterø Havn</h4>
+
+    <div class="form-floating mb-3">
+      <input type="text" class="form-control" value.bind="name" />
+      <label>Fulde navn</label>
+    </div>
+
+    <div class="form-floating mb-3">
+      <input type="text" class="form-control" value.bind="address" />
+      <label>Adresse</label>
+    </div>
+
+    <div class="form-floating mb-3">
+      <input type="email" class="form-control ${emailIsUsed ? 'is-invalid' : ''}" value.bind="email" />
+      <label>Email</label>
+      <div class="invalid-feedback">
+        En bruger med denne email eksisterer allerede.
+      </div>
+    </div>
+
+    <div class="form-floating mb-3">
+      <input type="tel" class="form-control" intl-tel-input.bind="phone" />
+      <label>Telefon</label>
+    </div>
+
+    <div class="form-check mb-3">
+      <label class="form-check-label">
+        <input
+          class="form-check-input"
+          type="checkbox"
+          checked.bind="termsAccepted"
+        />
+        Jeg accepterer at mine data bliver gemt til brug for
+        <strong>ÅBN SELV</strong>.
+      </label>
+    </div>
+    <button
+      class="btn btn-primary w-100"
+      type="submit"
+      disabled.bind="!canSubmit"
+    >
+      Tilmeld ÅBN SELV
+    </button>
+  </form>
+</main>

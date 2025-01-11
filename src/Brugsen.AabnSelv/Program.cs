@@ -1,4 +1,5 @@
 using Akiles.Api;
+using Akiles.Api.Members;
 using Brugsen.AabnSelv;
 using Microsoft.Extensions.Options;
 
@@ -8,18 +9,23 @@ builder.Services.Configure<AabnSelvOptions>(builder.Configuration);
 builder.Services.AddControllers();
 builder.Services.AddAkilesApi(options =>
 {
-    options.ClientId = "";
-    options.ClientSecret = "";
+    options.ApiKey = "...";
 });
 
 var app = builder.Build();
-
-app.UseHttpsRedirection();
 
 app.MapPost(
     "/signup",
     async (SignupModel model, IAkilesApiClient apiClient, IOptions<AabnSelvOptions> options) =>
     {
+        var existingMember = await apiClient
+            .Members.ListMembersAsync(null, new ListMembersFilter() { Email = model.Email })
+            .FirstOrDefaultAsync();
+        if (existingMember is not null)
+        {
+            return Results.Conflict();
+        }
+
         var member = await apiClient.Members.CreateMemberAsync(
             new()
             {
@@ -37,10 +43,11 @@ app.MapPost(
         }
 
         await apiClient.Members.CreateEmailAsync(member.Id, new() { Email = model.Email });
+
+        return Results.NoContent();
     }
 );
-
-app.MapControllers();
+app.UseDefaultFiles().UseStaticFiles();
 app.Run();
 
 record SignupModel

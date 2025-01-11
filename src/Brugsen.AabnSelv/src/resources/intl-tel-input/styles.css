@@ -1,0 +1,8 @@
+.iti-with-form-control {
+  width: 100%;
+}
+
+.form-floating > .iti__country-container {
+  left: 5px !important;
+  top: 20px;
+}
