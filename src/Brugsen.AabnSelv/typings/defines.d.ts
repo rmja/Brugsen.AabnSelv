@@ -1,1 +1,1 @@
-declare const __MODE__: string;
+declare const __MODE__: "production" | "development";

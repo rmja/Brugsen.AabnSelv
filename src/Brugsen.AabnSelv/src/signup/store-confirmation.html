@@ -7,9 +7,13 @@
 </p>
 
 <div class="d-flex justify-content-center">
-  <a href.bind="approveRelativeUrl" class="text-center"
+  <a
+    href.bind="approveRelativeUrl"
+    class="text-center"
+    if.bind="mode === 'development'"
     ><qr-code value.bind="approveAbsoluteUrl"></qr-code
   ></a>
+  <qr-code value.bind="approveAbsoluteUrl" else></qr-code>
 </div>
 
 <button

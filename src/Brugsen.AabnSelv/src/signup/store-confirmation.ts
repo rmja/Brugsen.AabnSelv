@@ -8,6 +8,7 @@ import template from "./store-confirmation.html";
 @customElement({ name: "store-confirmation-page", template })
 export class StoreConfirmationPage implements IRouteableComponent {
   private memberId!: string;
+  mode = __MODE__;
   approveRelativeUrl!: string;
   approveAbsoluteUrl!: string;
 
