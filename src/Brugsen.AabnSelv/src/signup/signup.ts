@@ -16,13 +16,13 @@ type CardColor = "red" | "blue" | "green";
 @customElement({ name: "signup-page", template })
 export class SignupPage implements IRouteableComponent {
   busy = false;
-  name = "Rasmus Jacobsen";
-  address = "Plantagevej 30";
-  @observable() email = "rmja@laesoe.org";
+  name = "";
+  address = "";
+  @observable() email = "";
   emailIsUsed = false;
-  phone = "+4520285909";
-  membershipNumber = "12312312";
-  @observable() cardNumber = "1231231231";
+  phone = "";
+  membershipNumber = "";
+  @observable() cardNumber = "";
   cardNumberIsUsed = false;
   cardColor: CardColor = "red";
   colors: Record<CardColor, CardColorViewModel> = colors;

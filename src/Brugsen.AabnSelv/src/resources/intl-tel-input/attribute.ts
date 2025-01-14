@@ -39,6 +39,9 @@ export class IntlTelInputCustomAttribute implements ICustomAttributeViewModel {
     const floatingLabel = this.element.nextElementSibling;
 
     const options = Object.assign({}, this.defaultOptions, this.options);
+    if (formFloatingEnabled) {
+      options.autoPlaceholder = "off";
+    }
     this.instance = intlTelInput(this.element, options);
     if (this.element.classList.contains("form-control")) {
       this.element.parentElement!.classList.add("iti-with-form-control");
