@@ -5,8 +5,8 @@ import { Http, Message } from "@utiliread/http";
 import { UserManager } from "oidc-client-ts";
 import { resolve } from "aurelia";
 
-const anonymousHttp = new Http({ baseUrl: "/api" });
-const http = new Http({ baseUrl: "/api" });
+const anonymousHttp = new Http({ baseUrl: "api" });
+const http = new Http({ baseUrl: "api" });
 
 export interface Member {
   id: string;

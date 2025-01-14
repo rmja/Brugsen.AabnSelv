@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: brugsen-aabnselv
+  namespace: brugsen-laesoe
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: brugsen-aabnselv
+  template:
+    metadata:
+      labels:
+        app: brugsen-aabnselv
+    spec:
+      containers:
+      - name: brugsen-aabnselv
+        image: rmjac/brugsen-aabnselv:latest
+        ports:
+        - containerPort: 8080
+        envFrom:
+          - configMapRef:
+              name:  brugsen-aabnselv
+          - secretRef:
+              name:  brugsen-aabnselv

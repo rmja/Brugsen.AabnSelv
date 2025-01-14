@@ -6,6 +6,7 @@ import { QrCodeCustomElement } from "./resources/qr-code";
 import { RouterConfiguration } from "@aurelia/router";
 import { UserManager } from "oidc-client-ts";
 import { ValuesValueConverter } from "./resources/values-value-converter";
+import config from "./config";
 
 const aurelia = new Aurelia()
   .register(RouterConfiguration.customize({ useUrlFragmentHash: false }))
@@ -22,14 +23,14 @@ const aurelia = new Aurelia()
     Registration.instance(
       UserManager,
       new UserManager({
-        authority: "/oauth2",
-        client_id: "app_41e92a4tuz9qpkykna91",
-        redirect_uri: "http://localhost:60900/signin-oidc",
+        authority: "_",
+        client_id: config.client_id,
+        redirect_uri: config.redirect_uri,
         response_type: "code",
         scope: "full_read_write offline",
         metadata: {
-          authorization_endpoint: "http://localhost:60900/oauth2/auth",
-          token_endpoint: "http://localhost:60900/oauth2/token",
+          authorization_endpoint: config.authorization_endpoint,
+          token_endpoint: config.token_endpoint,
         },
       }),
     ),

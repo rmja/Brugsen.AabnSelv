@@ -50,6 +50,7 @@ export class ApprovePage implements IRouteableComponent {
   async approve() {
     try {
       await this.api.approve(this.memberId).send();
+      alert("Brugeren har nu adgang");
       await this.router.load("../list", { context: this });
     } catch {
       alert("Kunne ikke godkende anmodningen");

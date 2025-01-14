@@ -1,0 +1,25 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: brugsen-laesoe
+  namespace: brugsen-laesoe
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    kubernetes.io/tls-acme: "true"
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+      - brugsen.laesoe.org
+      secretName: brugsen-laesoe-ingress-tls
+  rules:
+    - host: brugsen.laesoe.org
+      http:
+        paths:
+          - path: /aabn-selv
+            pathType: Prefix
+            backend:
+              service:
+                name: brugsen-aabnselv
+                port:
+                  number: 80

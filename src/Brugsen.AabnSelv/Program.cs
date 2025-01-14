@@ -4,7 +4,6 @@ using Akiles.Api;
 using Akiles.Api.Members;
 using Brugsen.AabnSelv;
 using Brugsen.AabnSelv.Models;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Http.Json;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
@@ -46,6 +45,8 @@ builder
     .AddHttpContextAccessor();
 
 var app = builder.Build();
+app.UsePathBase(app.Configuration["PathBase"]);
+app.UseRouting(); // Must be called explicitly for PathBase to have effect, see https://andrewlock.net/using-pathbase-with-dotnet-6-webapplicationbuilder/#option-1-controlling-the-location-of-userouting-
 
 app.MapGet(
     "/oauth2/auth",
