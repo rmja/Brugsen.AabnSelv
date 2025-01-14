@@ -1,16 +1,25 @@
 ﻿using System.Net;
+using Akiles.Api.Members;
 
 namespace Akiles.Api.Tests;
 
 public class RefitConfigurationTests
 {
-    [Fact]
-    public async Task CorrectlySerializesQueryStringParameters()
+    [Theory]
+    [InlineData(MembersExpand.None, "")]
+    [InlineData(
+        MembersExpand.Cards | MembersExpand.GroupAssociations,
+        "&expand=cards%2Cgroup_associations"
+    )]
+    public async Task CorrectlySerializesQueryStringParameters(
+        MembersExpand expand,
+        string expectedExpand
+    )
     {
         // Given
         var fakeMessageHandler = new FakeMessageHandler();
         var httpClient = new HttpClient(fakeMessageHandler);
-        var client = new AkilesApiClient(httpClient, new() { ApiKey = "key" });
+        var client = new AkilesApiClient(httpClient, "access-token");
 
         // When
         await Assert.ThrowsAsync<AkilesApiException>(
@@ -23,7 +32,8 @@ public class RefitConfigurationTests
                             Email = "email",
                             IsDeleted = IsDeleted.Any,
                             Metadata = new() { ["source"] = "hello" }
-                        }
+                        },
+                        expand
                     )
                     .ToListAsync()
         );
@@ -31,7 +41,8 @@ public class RefitConfigurationTests
         // Then
         var request = Assert.Single(fakeMessageHandler.RequestMessages);
         Assert.Equal(
-            "?limit=100&sort=created_at%3Adesc&is_deleted=any&email=email&metadata.source=hello",
+            "?limit=100&sort=created_at%3Adesc&is_deleted=any&email=email&metadata.source=hello"
+                + expectedExpand,
             request.RequestUri?.Query
         );
     }

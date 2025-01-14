@@ -3,7 +3,8 @@
 public record MemberGroupAssociation
 {
     public required string Id { get; set; }
-    public required string OrganizationId { get; set; }
+
+    //public required string OrganizationId { get; set; }
     public required string MemberId { get; set; }
     public required string MemberGroupId { get; set; }
     public DateTime? StartsAt { get; set; }

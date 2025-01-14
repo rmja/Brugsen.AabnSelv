@@ -24,11 +24,8 @@ public class AkilesApiClient : IAkilesApiClient
         new()
         {
             ContentSerializer = new SystemTextJsonContentSerializer(_jsonSerializerOptions),
-            UrlParameterKeyFormatter = new ParameterKeyFormatter(JsonNamingPolicy.SnakeCaseLower),
-            UrlParameterFormatter = new StringEnumUrlParameterFormatter(
-                new DefaultUrlParameterFormatter(),
-                JsonNamingPolicy.SnakeCaseLower
-            ),
+            UrlParameterKeyFormatter = new ParameterKeyFormatter(),
+            UrlParameterFormatter = new ParameterFormatter(),
             ExceptionFactory = (response) =>
             {
                 if (response.IsSuccessStatusCode)
@@ -37,20 +34,24 @@ public class AkilesApiClient : IAkilesApiClient
                 }
 
                 return Task.FromResult<Exception?>(
-                    new AkilesApiException() { StatusCode = response.StatusCode }
+                    new AkilesApiException()
+                    {
+                        RequestUri = response.RequestMessage!.RequestUri!,
+                        StatusCode = response.StatusCode
+                    }
                 );
             }
         };
 
     public IMembers Members { get; }
 
-    public AkilesApiClient(HttpClient httpClient, AkilesApiOptions options)
+    public AkilesApiClient(HttpClient httpClient, string accessToken)
     {
         httpClient.BaseAddress = new("https://api.akiles.app/v2");
 
         httpClient.DefaultRequestHeaders.TryAddWithoutValidation(
             "Authorization",
-            "Bearer " + options.ApiKey
+            "Bearer " + accessToken
         );
 
         Members = RestService.For<IMembers>(httpClient, _refitSettings);
@@ -58,20 +59,47 @@ public class AkilesApiClient : IAkilesApiClient
 
     class ParameterKeyFormatter(JsonNamingPolicy namingPolicy) : IUrlParameterKeyFormatter
     {
+        public ParameterKeyFormatter()
+            : this(JsonNamingPolicy.SnakeCaseLower) { }
+
         public string Format(string key) => namingPolicy.ConvertName(key);
     }
 
-    class StringEnumUrlParameterFormatter(
-        IUrlParameterFormatter next,
-        JsonNamingPolicy namingPolicy
-    ) : IUrlParameterFormatter
+    class ParameterFormatter(JsonNamingPolicy namingPolicy) : IUrlParameterFormatter
     {
+        public IUrlParameterFormatter Next { get; set; } = new DefaultUrlParameterFormatter();
+
+        public ParameterFormatter()
+            : this(JsonNamingPolicy.SnakeCaseLower) { }
+
         public string? Format(object? value, ICustomAttributeProvider attributeProvider, Type type)
         {
             if (value is not null)
             {
                 var valueType = value.GetType();
-                if (valueType.IsEnum)
+
+                if (valueType.IsEnum && valueType.IsDefined(typeof(FlagsAttribute)))
+                {
+                    var enumValue = (Enum)value;
+                    var flags = Enum.GetValues(valueType)
+                        .Cast<Enum>()
+                        .Where(x => !IsDefaultValue(x))
+                        .Where(enumValue.HasFlag);
+
+                    if (!flags.Any())
+                    {
+                        return null;
+                    }
+
+                    var names = flags.Select(x =>
+                        namingPolicy.ConvertName(Enum.GetName(valueType, x)!)
+                    );
+                    return string.Join(",", names);
+
+                    static bool IsDefaultValue(Enum value) =>
+                        value.Equals(Activator.CreateInstance(value.GetType()));
+                }
+                else if (valueType.IsEnum)
                 {
                     var name = Enum.GetName(valueType, value);
                     if (name is not null)
@@ -81,7 +109,7 @@ public class AkilesApiClient : IAkilesApiClient
                 }
             }
 
-            return next.Format(value, attributeProvider, type);
+            return Next.Format(value, attributeProvider, type);
         }
     }
 }

@@ -1,6 +1,8 @@
-﻿namespace Akiles.Api;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Akiles.Api;
 
 public class AkilesApiOptions
 {
-    public required string ApiKey { get; set; }
+    public string? ApiKey { get; set; }
 }

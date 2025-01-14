@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Akiles.Api.Members;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Akiles.Api.Tests;
 
@@ -27,5 +28,20 @@ public class MembersTests
 
         // Then
         Assert.NotEmpty(members);
+    }
+
+    [Fact]
+    public async Task CanListMembersWithExpand()
+    {
+        // Given
+
+        // When
+        var members = await _client
+            .Members.ListMembersAsync(expand: MembersExpand.Emails)
+            .ToListAsync();
+
+        // Then
+        Assert.NotEmpty(members);
+        Assert.Contains(members, x => x.Emails is not null);
     }
 }

@@ -10,4 +10,7 @@ public record Member
     public bool IsDeleted { get; set; }
     public DateTime CreatedAt { get; set; }
     public Dictionary<string, string> Metadata { get; set; } = [];
+    public List<MemberCard>? Cards { get; init; }
+    public List<MemberEmail>? Emails { get; init; }
+    public List<MemberGroupAssociation>? GroupAssociations { get; init; }
 }

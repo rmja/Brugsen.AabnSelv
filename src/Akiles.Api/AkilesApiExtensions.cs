@@ -7,16 +7,29 @@ public static class AkilesApiExtensions
 {
     public static IServiceCollection AddAkilesApi(
         this IServiceCollection services,
-        Action<AkilesApiOptions> configureOptions
+        Action<AkilesApiOptions>? configureOptions = null
     )
     {
         services.AddHttpClient<AkilesApiClient>();
-        services.TryAddTransient<IAkilesApiClient>(provider =>
+
+        services.TryAddSingleton<IAkilesApiClientFactory, AkilesApiClientFactory>();
+
+        if (configureOptions is not null)
         {
-            var options = provider.GetRequiredService<IOptions<AkilesApiOptions>>();
-            return ActivatorUtilities.CreateInstance<AkilesApiClient>(provider, options.Value);
-        });
-        services.Configure(configureOptions);
+            services.TryAddTransient<IAkilesApiClient>(provider =>
+            {
+                var options = provider.GetRequiredService<IOptions<AkilesApiOptions>>();
+                var apiKey =
+                    options.Value.ApiKey
+                    ?? throw new InvalidOperationException(
+                        "No API key configured. Use IAkilesApiClientFactory instead to create a client from an access token"
+                    );
+                return ActivatorUtilities.CreateInstance<AkilesApiClient>(provider, apiKey);
+            });
+
+            services.Configure(configureOptions);
+        }
+
         return services;
     }
 }
