@@ -2,8 +2,8 @@ import "@utiliread/http/json";
 
 import { Http, Message } from "@utiliread/http";
 
-import { LoginRedirectKey } from "./auth-handler";
-import { UserManager } from "oidc-client-ts";
+import { IUserManager } from "./oauth";
+import { LoginRedirectKey } from "./oauth";
 import { resolve } from "aurelia";
 
 const anonymousHttp = new Http({ baseUrl: "api" });
@@ -24,7 +24,7 @@ export interface Member {
 export type MemberInit = Omit<Member, "id" | "isApproved">;
 
 export class ApiClient {
-  constructor(private readonly userManager = resolve(UserManager)) {
+  constructor(private readonly userManager = resolve(IUserManager)) {
     http.onSend(this.setAccessToken.bind(this));
   }
 

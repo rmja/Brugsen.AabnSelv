@@ -3,7 +3,7 @@ import "bootstrap/dist/js/bootstrap";
 
 import { ICustomElementViewModel, customElement } from "aurelia";
 
-import { AuthHandler } from "./auth-handler";
+import { AuthHandler } from "./oauth";
 import { routes } from "@aurelia/router";
 import template from "./app-root.html";
 
