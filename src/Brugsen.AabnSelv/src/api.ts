@@ -2,6 +2,7 @@ import "@utiliread/http/json";
 
 import { Http, Message } from "@utiliread/http";
 
+import { LoginRedirectKey } from "./auth-handler";
 import { UserManager } from "oidc-client-ts";
 import { resolve } from "aurelia";
 
@@ -30,7 +31,12 @@ export class ApiClient {
   private async setAccessToken(message: Message) {
     let user = await this.userManager.getUser();
     if (!user || user.expired) {
-      user = await this.userManager.signinPopup();
+      await this.userManager.signinRedirect({
+        state: {
+          [LoginRedirectKey]: location.pathname + location.search,
+        },
+      });
+      return;
     }
 
     message.headers.set("Authorization", `Bearer ${user.access_token}`);

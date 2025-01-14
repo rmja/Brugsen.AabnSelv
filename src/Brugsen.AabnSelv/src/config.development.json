@@ -2,5 +2,6 @@
     "client_id": "app_41e92a4tuz9qpkykna91",
     "redirect_uri": "http://localhost:60900/signin-oidc",
     "authorization_endpoint": "http://localhost:60900/oauth2/auth",
-    "token_endpoint": "http://localhost:60900/oauth2/token"
+    "token_endpoint": "http://localhost:60900/oauth2/token",
+    "login_redirect": "/members"
 }

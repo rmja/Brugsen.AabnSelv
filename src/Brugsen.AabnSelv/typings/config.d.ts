@@ -3,4 +3,5 @@ interface Config {
     redirect_uri: string;
     authorization_endpoint: string;
     token_endpoint: string;
+    login_redirect: string;
 }
