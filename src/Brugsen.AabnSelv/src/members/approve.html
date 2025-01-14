@@ -1,0 +1,35 @@
+<dl>
+  <dt>Email</dt>
+  <dd>${email}</dd>
+  <dt>Navn</dt>
+  <dd>${name}</dd>
+  <dt>Adresse</dt>
+  <dd>${address}</dd>
+  <dt>Telefon</dt>
+  <dd>${phone}</dd>
+  <dt>COOP medlemsnummer</dt>
+  <dd>${coopMembershipNumber}</dd>
+  <dt>Ø-kort</dt>
+  <dd>
+    <span class="badge text-bg-${laesoeCardColorClass}">${laesoeCardName}</span>
+    ${laesoeCardNumber}
+  </dd>
+</dl>
+
+<div class="row">
+  <button
+    class="btn btn-danger offset-1 col-4"
+    type="button"
+    click.trigger="delete()"
+  >
+    Slet anmodning
+  </button>
+
+  <button
+    class="btn btn-success offset-2 col-4"
+    type="button"
+    click.trigger="approve()"
+  >
+    Giv adgang
+  </button>
+</div>

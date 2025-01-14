@@ -1,0 +1,21 @@
+<h3 class="text-center">Afvent en medarbejder</h3>
+
+<p>
+  Du er nu snart klar til at handle i Brugsen Vesterø Havn. Vi mangler blot at
+  give dig endelig adgang. Det sker ved at du henvender dig til en af de ansatte
+  i butikken.
+</p>
+
+<div class="d-flex justify-content-center">
+  <a href.bind="approveRelativeUrl" class="text-center"
+    ><qr-code value.bind="approveAbsoluteUrl"></qr-code
+  ></a>
+</div>
+
+<button
+  class="btn btn-secondary offset-4 col-4 mt-3"
+  type="button"
+  click.trigger="verifyApproved()"
+>
+  Fortsæt
+</button>

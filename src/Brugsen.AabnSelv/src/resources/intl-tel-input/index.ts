@@ -12,13 +12,13 @@ export class IntlTelInputConfiguration {
     if (!defaultOptions.loadUtils) {
       defaultOptions.loadUtils = () => import("intl-tel-input/utils");
     }
-    
+
     return {
       register: (container: IContainer) => {
         this.register(container);
 
         container.register(
-          Registration.instance(DefaultOptions, defaultOptions)
+          Registration.instance(DefaultOptions, defaultOptions),
         );
       },
     };

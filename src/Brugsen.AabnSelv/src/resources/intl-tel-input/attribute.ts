@@ -1,7 +1,16 @@
 import "intl-tel-input/styles";
 import "./styles.css";
 
-import { BindingMode, ICustomAttributeViewModel, INode, bindable, customAttribute, inject, optional, resolve } from "aurelia";
+import {
+  BindingMode,
+  ICustomAttributeViewModel,
+  INode,
+  bindable,
+  customAttribute,
+  inject,
+  optional,
+  resolve,
+} from "aurelia";
 import { Iti, SomeOptions } from "intl-tel-input";
 
 import intlTelInput from "intl-tel-input";
@@ -23,9 +32,10 @@ export class IntlTelInputCustomAttribute implements ICustomAttributeViewModel {
   constructor(private defaultOptions: SomeOptions) {
     this.handleChange = this.handleChange.bind(this);
   }
-  
+
   binding() {
-    const formFloatingEnabled = this.element.parentElement?.classList.contains("form-floating");
+    const formFloatingEnabled =
+      this.element.parentElement?.classList.contains("form-floating");
     const floatingLabel = this.element.nextElementSibling;
 
     const options = Object.assign({}, this.defaultOptions, this.options);

@@ -1,7 +1,9 @@
 import "bootstrap/dist/css/bootstrap.css";
+import "bootstrap/dist/js/bootstrap";
 
 import { ICustomElementViewModel, customElement } from "aurelia";
 
+import { AuthHandler } from "./auth-handler";
 import { routes } from "@aurelia/router";
 import template from "./app-root.html";
 
@@ -10,15 +12,19 @@ import template from "./app-root.html";
   {
     id: "signup",
     path: "signup",
-    component: import("./signup-page"),
+    component: import("./signup/router"),
     title: "Brugeroprettelse",
   },
   {
-    id: "receipt",
-    path: "receipt",
-    component: import("./receipt-page"),
-    title: "Kvittering",
-  }
+    id: "members",
+    path: "members",
+    component: import("./members/router"),
+    title: "Medlemmer",
+  },
+  {
+    path: "signin-oidc",
+    component: AuthHandler,
+  },
 ])
 @customElement({
   name: "app-root",
