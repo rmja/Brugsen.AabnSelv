@@ -42,9 +42,10 @@
   <div class="input-group mb-3">
     <div class="form-floating">
       <input
-        type="text"
+        type="number"
         class="form-control ${cardNumberIsUsed ? 'is-invalid' : ''}"
         value.bind="cardNumber"
+        step="1"
       />
       <label>Ø-kort</label>
       <div class="invalid-feedback">
@@ -77,12 +78,13 @@
         type="checkbox"
         checked.bind="termsAccepted"
       />
-      Jeg accepterer at mine data bliver gemt til brug for
+      Jeg accepterer at mine data bliver gemt af Brugsen Vesterø Havn til brug
+      for
       <strong>ÅBN SELV</strong>.
     </label>
   </div>
   <button
-    class="btn btn-secondary offset-4 col-4"
+    class="btn btn-secondary offset-sm-4 col-sm-4 col-12 mt-3"
     type="submit"
     disabled.bind="!canSubmit || busy"
   >
