@@ -10,4 +10,9 @@ public static class MetadataKeys
         public const string LaesoeCardNumber = "laesoe_card_number";
         public const string LaesoeCardColor = "laesoe_card_color";
     }
+
+    public static class MemberPin
+    {
+        public const string Kind = "kind";
+    }
 }

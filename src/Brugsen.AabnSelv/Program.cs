@@ -87,10 +87,27 @@ app.MapPost(
         CancellationToken cancellationToken
     ) =>
     {
-        var existingMemberByEmail = await apiClient
-            .Members.ListMembersAsync(null, new ListMembersFilter() { Email = init.Email })
-            .FirstOrDefaultAsync(cancellationToken);
-        if (existingMemberByEmail is not null)
+        var existing = await Task.WhenAll(
+            [
+                apiClient
+                    .Members.ListMembersAsync(null, new ListMembersFilter() { Email = init.Email })
+                    .FirstOrDefaultAsync(cancellationToken),
+                apiClient
+                    .Members.ListMembersAsync(
+                        null,
+                        new ListMembersFilter()
+                        {
+                            Metadata = new()
+                            {
+                                [MetadataKeys.Member.LaesoeCardNumber] = init.LaesoeCardNumber
+                            }
+                        }
+                    )
+                    .FirstOrDefaultAsync(cancellationToken)
+            ]
+        );
+
+        if (existing[0] is not null)
         {
             return Results.Problem(
                 type: "api://members/signup/email-conflict",
@@ -98,19 +115,7 @@ app.MapPost(
             );
         }
 
-        var existingMemberByCard = await apiClient
-            .Members.ListMembersAsync(
-                null,
-                new ListMembersFilter()
-                {
-                    Metadata = new()
-                    {
-                        [MetadataKeys.Member.LaesoeCardNumber] = init.LaesoeCardNumber.ToString()
-                    }
-                }
-            )
-            .FirstOrDefaultAsync(cancellationToken);
-        if (existingMemberByCard is not null)
+        if (existing[1] is not null)
         {
             return Results.Problem(
                 type: "api://members/signup/laesoe-card-number-conflict",
@@ -126,9 +131,8 @@ app.MapPost(
                 {
                     [MetadataKeys.Member.Phone] = init.Phone,
                     [MetadataKeys.Member.Address] = init.Address,
-                    [MetadataKeys.Member.CoopMembershipNumber] =
-                        init.CoopMembershipNumber.ToString(),
-                    [MetadataKeys.Member.LaesoeCardNumber] = init.LaesoeCardNumber.ToString(),
+                    [MetadataKeys.Member.CoopMembershipNumber] = init.CoopMembershipNumber,
+                    [MetadataKeys.Member.LaesoeCardNumber] = init.LaesoeCardNumber,
                     [MetadataKeys.Member.LaesoeCardColor] = init
                         .LaesoeCardColor.ToString()
                         .ToLowerInvariant()
@@ -141,6 +145,29 @@ app.MapPost(
             member.Id,
             new() { Email = init.Email },
             CancellationToken.None
+        );
+
+        await Task.WhenAll(
+            [
+                apiClient.Members.CreatePinAsync(
+                    member.Id,
+                    new()
+                    {
+                        Pin = init.CoopMembershipNumber,
+                        Metadata = { [MetadataKeys.MemberPin.Kind] = "coop_membership_number" }
+                    },
+                    CancellationToken.None
+                ),
+                apiClient.Members.CreatePinAsync(
+                    member.Id,
+                    new()
+                    {
+                        Pin = init.LaesoeCardNumber,
+                        Metadata = { [MetadataKeys.MemberPin.Kind] = "laesoe_card_number" }
+                    },
+                    CancellationToken.None
+                )
+            ]
         );
 
         return Results.Ok(member.ToDto(email, isApproved: false));

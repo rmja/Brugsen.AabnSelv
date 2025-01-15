@@ -68,8 +68,8 @@ export class SignupPage implements IRouteableComponent {
           address: this.address.trim(),
           email: this.email,
           phone: this.phone,
-          coopMembershipNumber: Number(this.membershipNumber),
-          laesoeCardNumber: Number(this.cardNumber),
+          coopMembershipNumber: this.membershipNumber,
+          laesoeCardNumber: this.cardNumber,
           laesoeCardColor: this.cardColor,
         })
         .transfer();

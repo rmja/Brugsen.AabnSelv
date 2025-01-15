@@ -15,8 +15,8 @@ export interface Member {
   name: string;
   address: string;
   phone: string;
-  coopMembershipNumber: number;
-  laesoeCardNumber: number;
+  coopMembershipNumber: string;
+  laesoeCardNumber: string;
   laesoeCardColor: "red" | "blue" | "green";
   isApproved: boolean;
 }

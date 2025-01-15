@@ -36,6 +36,7 @@
       class="form-control"
       value.bind="membershipNumber"
       step="1"
+      name="coopMembershopNumber"
     />
     <label>COOP medlemsnummer</label>
   </div>
@@ -47,6 +48,7 @@
         class="form-control ${cardNumberIsUsed ? 'is-invalid' : ''}"
         value.bind="cardNumber"
         step="1"
+        name="laesoeCardNumber"
       />
       <label>Ø-kort</label>
       <div class="invalid-feedback">

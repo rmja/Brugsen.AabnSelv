@@ -81,6 +81,13 @@ public interface IMembers
                 )
         );
 
+    [Post("/members/{memberId}/pins")]
+    Task<MemberPinRevealed> CreatePinAsync(
+        string memberId,
+        MemberPinInit pin,
+        CancellationToken cancellationToken = default
+    );
+
     [Post("/members/{memberId}/cards")]
     Task<MemberCard> CreateCardAsync(
         string memberId,

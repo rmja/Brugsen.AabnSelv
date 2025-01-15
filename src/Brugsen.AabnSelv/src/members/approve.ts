@@ -13,8 +13,8 @@ export class ApprovePage implements IRouteableComponent {
   name!: string;
   address!: string;
   phone!: string;
-  coopMembershipNumber!: number;
-  laesoeCardNumber!: number;
+  coopMembershipNumber!: string;
+  laesoeCardNumber!: string;
   laesoeCardName!: string;
   laesoeCardColorClass!: string;
 

@@ -1,4 +1,6 @@
-﻿namespace Brugsen.AabnSelv.Models;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Brugsen.AabnSelv.Models;
 
 public record MemberDto
 {
@@ -7,8 +9,12 @@ public record MemberDto
     public required string Name { get; init; }
     public required string Address { get; init; }
     public required string Phone { get; init; }
-    public required int CoopMembershipNumber { get; init; }
-    public required long LaesoeCardNumber { get; init; }
+
+    [RegularExpression("^[0-9]{8}$")]
+    public required string CoopMembershipNumber { get; init; }
+
+    [RegularExpression("^[0-9]{10}$")]
+    public required string LaesoeCardNumber { get; init; }
     public LaesoeCardColor LaesoeCardColor { get; init; }
     public bool IsApproved { get; init; }
 }
