@@ -7,7 +7,12 @@ import { RouterConfiguration } from "@aurelia/router";
 import { ValuesValueConverter } from "./resources/values-value-converter";
 
 const aurelia = new Aurelia()
-  .register(RouterConfiguration.customize({ useUrlFragmentHash: false }))
+  .register(
+    RouterConfiguration.customize({
+      title: "Brugsen Vesterø Havn",
+      useUrlFragmentHash: false,
+    })
+  )
   .register(LoggerConfiguration.create())
   .register(
     IntlTelInputConfiguration.customize({
@@ -15,7 +20,7 @@ const aurelia = new Aurelia()
       onlyCountries: ["dk", "se", "no", "de"],
     }),
     ValuesValueConverter,
-    QrCodeCustomElement,
+    QrCodeCustomElement
   )
   .app({
     component: AppRootCustomElement,
