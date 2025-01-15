@@ -1,6 +1,8 @@
 ﻿using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Akiles.Api.Events;
+using Akiles.Api.Gadgets;
 using Akiles.Api.Members;
 using Refit;
 
@@ -43,6 +45,8 @@ public class AkilesApiClient : IAkilesApiClient
             }
         };
 
+    public IEvents Events { get; }
+    public IGadgets Gadgets { get; }
     public IMembers Members { get; }
 
     public AkilesApiClient(HttpClient httpClient, string accessToken)
@@ -54,6 +58,8 @@ public class AkilesApiClient : IAkilesApiClient
             "Bearer " + accessToken
         );
 
+        Events = RestService.For<IEvents>(httpClient, _refitSettings);
+        Gadgets = RestService.For<IGadgets>(httpClient, _refitSettings);
         Members = RestService.For<IMembers>(httpClient, _refitSettings);
     }
 

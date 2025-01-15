@@ -1,24 +1,10 @@
 ﻿using Akiles.Api.Members;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Akiles.Api.Tests;
 
-public class MembersTests
+public class MembersTests(ApiFixture fixture) : IClassFixture<ApiFixture>
 {
-    private readonly IAkilesApiClient _client;
-
-    public MembersTests()
-    {
-        var config = new ConfigurationBuilder().AddUserSecrets<MembersTests>().Build();
-        var services = new ServiceCollection()
-            .AddAkilesApi(options =>
-            {
-                options.ApiKey = config["AkilesApiKey"];
-            })
-            .BuildServiceProvider();
-        _client = services.GetRequiredService<IAkilesApiClient>();
-    }
+    private readonly IAkilesApiClient _client = fixture.Client;
 
     [Fact]
     public async Task CanListMembers()
