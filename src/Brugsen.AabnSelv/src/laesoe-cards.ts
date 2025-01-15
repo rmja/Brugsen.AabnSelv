@@ -7,7 +7,7 @@ export const red: LaesoeCard = {
 export const blue: LaesoeCard = {
   id: "blue",
   name: "Blåt",
-  colorClass: "primar",
+  colorClass: "primary",
 };
 
 export const green: LaesoeCard = {
