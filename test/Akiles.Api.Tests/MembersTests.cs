@@ -1,4 +1,5 @@
 ﻿using Akiles.Api.Members;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Akiles.Api.Tests;
@@ -9,10 +10,11 @@ public class MembersTests
 
     public MembersTests()
     {
+        var config = new ConfigurationBuilder().AddUserSecrets<MembersTests>().Build();
         var services = new ServiceCollection()
             .AddAkilesApi(options =>
             {
-                options.ApiKey = TestSecrets.ApiKey;
+                options.ApiKey = config["AkilesApiKey"];
             })
             .BuildServiceProvider();
         _client = services.GetRequiredService<IAkilesApiClient>();
