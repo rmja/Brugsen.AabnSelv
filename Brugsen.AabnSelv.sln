@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Akiles.Api", "src\Akiles.Ap
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Akiles.Api.Tests", "test\Akiles.Api.Tests\Akiles.Api.Tests.csproj", "{34925A9C-9FA1-48E3-99C8-FB893F0895FE}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Brugsen.AabnSelv.Tests", "test\Brugsen.AabnSelv.Tests\Brugsen.AabnSelv.Tests.csproj", "{77501969-2C51-438A-8665-4DEB28B32ABE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{34925A9C-9FA1-48E3-99C8-FB893F0895FE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{34925A9C-9FA1-48E3-99C8-FB893F0895FE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{34925A9C-9FA1-48E3-99C8-FB893F0895FE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{77501969-2C51-438A-8665-4DEB28B32ABE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{77501969-2C51-438A-8665-4DEB28B32ABE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{77501969-2C51-438A-8665-4DEB28B32ABE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{77501969-2C51-438A-8665-4DEB28B32ABE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

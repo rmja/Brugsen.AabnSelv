@@ -3,28 +3,31 @@ using System.Text.Json.Serialization;
 using Akiles.Api;
 using Akiles.Api.Members;
 using Brugsen.AabnSelv;
+using Brugsen.AabnSelv.Controllers;
 using Brugsen.AabnSelv.Models;
 using Microsoft.AspNetCore.Http.Json;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
 using Microsoft.Net.Http.Headers;
 
-const string ApiKeyClient = "ApiKeyClient";
-
 var builder = WebApplication.CreateSlimBuilder(args);
 
 builder.Services.Configure<BrugsenAabnSelvOptions>(builder.Configuration);
-
 builder.Services.Configure<JsonOptions>(options =>
     options.SerializerOptions.Converters.Add(
         new JsonStringEnumConverter(JsonNamingPolicy.CamelCase)
     )
 );
+
+builder.Services.AddSingleton<TimeProvider, DanishTimeProvider>();
+builder.Services.AddHostedService<AlarmController>();
+builder.Services.AddHostedService<LightController>();
+
 builder.Services.AddAkilesApi();
 
 builder
     .Services.AddKeyedSingleton(
-        ApiKeyClient,
+        ServiceKeys.ApiKeyClient,
         (services, _) =>
         {
             var factory = services.GetRequiredService<IAkilesApiClientFactory>();
@@ -83,7 +86,7 @@ app.MapPost(
     "/api/members/signup",
     async (
         MemberDto init,
-        [FromKeyedServices(ApiKeyClient)] IAkilesApiClient apiClient,
+        [FromKeyedServices(ServiceKeys.ApiKeyClient)] IAkilesApiClient apiClient,
         CancellationToken cancellationToken
     ) =>
     {
@@ -177,7 +180,7 @@ app.MapPost(
 app.MapGet(
     "/api/members/approved",
     async (
-        [FromKeyedServices(ApiKeyClient)] IAkilesApiClient apiClient,
+        [FromKeyedServices(ServiceKeys.ApiKeyClient)] IAkilesApiClient apiClient,
         IOptions<BrugsenAabnSelvOptions> options,
         CancellationToken cancellationToken
     ) =>
@@ -199,7 +202,7 @@ app.MapGet(
 app.MapGet(
     "/api/members/pending-approval",
     async (
-        [FromKeyedServices(ApiKeyClient)] IAkilesApiClient apiClient,
+        [FromKeyedServices(ServiceKeys.ApiKeyClient)] IAkilesApiClient apiClient,
         IOptions<BrugsenAabnSelvOptions> options,
         CancellationToken cancellationToken
     ) =>
@@ -253,7 +256,7 @@ app.MapGet(
         "/api/members/{memberId}/is-approved",
         async (
             string memberId,
-            [FromKeyedServices(ApiKeyClient)] IAkilesApiClient apiClient,
+            [FromKeyedServices(ServiceKeys.ApiKeyClient)] IAkilesApiClient apiClient,
             IOptions<BrugsenAabnSelvOptions> options,
             CancellationToken cancellationToken
         ) =>
