@@ -9,7 +9,7 @@ import { ValuesValueConverter } from "./resources/values-value-converter";
 const aurelia = new Aurelia()
   .register(
     RouterConfiguration.customize({
-      title: "Brugsen Vesterø Havn",
+      title: "${componentTitles}${appTitleSeparator}Brugsen Vesterø Havn",
       useUrlFragmentHash: false,
     })
   )
