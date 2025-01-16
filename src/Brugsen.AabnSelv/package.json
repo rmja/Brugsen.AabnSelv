@@ -8,6 +8,7 @@
     },
     "devDependencies": {
         "@types/intl-tel-input": "^18.1.4",
+        "@types/luxon": "^3.4.2",
         "css-loader": "^7.1.2",
         "html-loader": "^5.1.0",
         "html-webpack-plugin": "^5.6.3",
@@ -28,6 +29,7 @@
         "aurelia": "^2.0.0-beta.22",
         "bootstrap": "^5.3.3",
         "intl-tel-input": "^25.2.1",
+        "luxon": "^3.5.0",
         "oidc-client-ts": "^3.1.0",
         "qrcodejs2": "^0.0.2"
     }

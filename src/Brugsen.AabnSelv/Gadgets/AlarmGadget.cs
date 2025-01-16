@@ -3,6 +3,7 @@
 namespace Brugsen.AabnSelv.Gadgets;
 
 public class AlarmGadget(string gadgetId, IAkilesApiClient client, ILogger<AlarmGadget> logger)
+    : GadgetBase(gadgetId, client)
 {
     public static class Actions
     {
@@ -15,14 +16,14 @@ public class AlarmGadget(string gadgetId, IAkilesApiClient client, ILogger<Alarm
     public async Task ArmAsync(CancellationToken cancellationToken)
     {
         logger.LogInformation("Arming alarm");
-        await client.Gadgets.DoGadgetActionAsync(gadgetId, Actions.AlarmArm, cancellationToken);
+        await Client.Gadgets.DoGadgetActionAsync(GadgetId, Actions.AlarmArm, cancellationToken);
         State = AlarmGadgetState.Armed;
     }
 
     public async Task DisarmAsync(CancellationToken cancellationToken)
     {
         logger.LogInformation("Disarming alarm");
-        await client.Gadgets.DoGadgetActionAsync(gadgetId, Actions.AlarmDisarm, cancellationToken);
+        await Client.Gadgets.DoGadgetActionAsync(GadgetId, Actions.AlarmDisarm, cancellationToken);
         State = AlarmGadgetState.Disarmed;
     }
 }

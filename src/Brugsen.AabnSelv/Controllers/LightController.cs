@@ -16,6 +16,8 @@ public class LightController(
         options.Value.LightGadgetId is not null
             ? new LightGadget(options.Value.LightGadgetId, client, gadgetLogger)
             : null!;
+    public DoorGadget FrontDoorGadget { get; set; } =
+        new DoorGadget(options.Value.FrontDoorGadgetId, client);
 
     public override Task StartAsync(CancellationToken cancellationToken)
     {
@@ -39,23 +41,25 @@ public class LightController(
     public async Task TickAsync(CancellationToken cancellationToken)
     {
         var now = timeProvider.GetLocalNow();
-        var recentOpenEvents = await GetRecentFrontDoorOpenEventsAsync(
-            notBefore: now.AddHours(-1),
-            cancellationToken
-        );
+        var recentEvents = await FrontDoorGadget
+            .GetRecentEventsAsync(notBefore: now.AddHours(-1), EventsExpand.None, cancellationToken)
+            .ToListAsync(cancellationToken);
+
+        // Change event order to ascending
+        recentEvents.Reverse();
 
         var anyEntries = false;
         var membersInStore = new HashSet<string>();
-        foreach (var evnt in recentOpenEvents.OrderBy(x => x.CreatedAt))
+        foreach (var evnt in recentEvents)
         {
             switch (evnt.Object.GadgetActionId)
             {
                 case DoorGadget.Actions.OpenEntry:
                     anyEntries = true;
-                    membersInStore.Add(evnt.Subject.MemberId!);
+                    membersInStore.Add(evnt.Object.MemberId!);
                     break;
                 case DoorGadget.Actions.OpenExit:
-                    membersInStore.Remove(evnt.Subject.MemberId!);
+                    membersInStore.Remove(evnt.Object.MemberId!);
                     break;
             }
         }
@@ -64,35 +68,5 @@ public class LightController(
         {
             await LightGadget!.TurnLightOffAsync(cancellationToken);
         }
-    }
-
-    private async Task<List<Event>> GetRecentFrontDoorOpenEventsAsync(
-        DateTimeOffset notBefore,
-        CancellationToken cancellationToken
-    )
-    {
-        var events = new List<Event>();
-        await foreach (
-            var evnt in client
-                .Events.ListEventsAsync(sort: "created_at:desc")
-                .WithCancellation(cancellationToken)
-        )
-        {
-            if (evnt.CreatedAt < notBefore)
-            {
-                break;
-            }
-            if (
-                evnt.Object.GadgetId == options.Value.FrontDoorGadgetId
-                && (
-                    evnt.Object.GadgetActionId == DoorGadget.Actions.OpenEntry
-                    || evnt.Object.GadgetActionId == DoorGadget.Actions.OpenExit
-                )
-            )
-            {
-                events.Add(evnt);
-            }
-        }
-        return events;
     }
 }

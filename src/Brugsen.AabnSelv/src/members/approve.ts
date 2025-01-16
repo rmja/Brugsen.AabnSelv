@@ -41,7 +41,7 @@ export class ApprovePage implements IRouteableComponent {
     try {
       await this.api.delete(this.memberId).send();
       alert("Anmodningen er slettet");
-      await this.router.load("../list", { context: this });
+      await this.router.load("../dashboard", { context: this });
     } catch {
       alert("Kunne ikke slette anmodningen");
     }
@@ -51,7 +51,7 @@ export class ApprovePage implements IRouteableComponent {
     try {
       await this.api.approve(this.memberId).send();
       alert("Brugeren har nu adgang");
-      await this.router.load("../list", { context: this });
+      await this.router.load("../dashboard", { context: this });
     } catch {
       alert("Kunne ikke godkende anmodningen");
     }

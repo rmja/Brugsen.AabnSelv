@@ -5,9 +5,13 @@ import template from "./router.html";
 
 @routes([
   {
-    id: "list",
     path: "",
-    component: import("./list"),
+    redirectTo: "dashboard",
+  },
+  {
+    id: "dashboard",
+    path: "dashboard",
+    component: import("./dashboard"),
     title: "Medlemmer",
   },
   {

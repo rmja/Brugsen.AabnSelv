@@ -1,6 +1,8 @@
-﻿namespace Brugsen.AabnSelv.Gadgets;
+﻿using Akiles.Api;
 
-public class DoorGadget
+namespace Brugsen.AabnSelv.Gadgets;
+
+public class DoorGadget(string gadgetId, IAkilesApiClient client) : GadgetBase(gadgetId, client)
 {
     public static class Actions
     {

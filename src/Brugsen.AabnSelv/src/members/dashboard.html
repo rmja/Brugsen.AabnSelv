@@ -1,0 +1,57 @@
+<h3>Afventer godkendelse</h3>
+
+<table class="table" if.bind="pending.length > 0">
+  <thead>
+    <tr>
+      <th>Navn</th>
+      <th>Email</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr
+      repeat.for="member of pending"
+      role="button"
+      click.trigger="approve(member.id)"
+    >
+      <td>${member.name}</td>
+      <td>${member.email}</td>
+    </tr>
+  </tbody>
+</table>
+<p else>Der er ingen afventende anmodninger</p>
+
+<h3>Seneste alarmaktivitet</h3>
+<table class="table" if.bind="alarmEvents.length > 0">
+<thead>
+  <tr>
+    <th>Handling</th>
+    <th>Tidspunkt</th>
+  </tr>
+</thead>
+<tbody>
+  <tr repeat.for="event of alarmEvents">
+    <td>${event.activity}</td>
+    <td>${event.createdAt}</td>
+  </tr>
+</tbody>
+</table>
+<p else>Ingen aktivitet</p>
+
+<h3>Seneste døraktivitet</h3>
+<table class="table" if.bind="doorActivity.length > 0">
+<thead>
+  <tr>
+    <th>Navn</th>
+    <th>Ind</th>
+    <th>Ud</th>
+  </tr>
+</thead>
+<tbody>
+  <tr repeat.for="activity of doorActivity">
+    <td>${activity.memberName}</td>
+    <td>${activity.enteredAt}</td>
+    <td>${activity.exitedAt}</td>
+  </tr>
+</tbody>
+</table>
+<p else>Ingen aktivitet</p>

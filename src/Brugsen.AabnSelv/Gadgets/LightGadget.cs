@@ -3,6 +3,7 @@
 namespace Brugsen.AabnSelv.Gadgets;
 
 public class LightGadget(string gadgetId, IAkilesApiClient client, ILogger<LightGadget> logger)
+    : GadgetBase(gadgetId, client)
 {
     public static class Actions
     {
@@ -13,6 +14,6 @@ public class LightGadget(string gadgetId, IAkilesApiClient client, ILogger<Light
     public Task TurnLightOffAsync(CancellationToken cancellationToken)
     {
         logger.LogInformation("Turning off the light");
-        return client.Gadgets.DoGadgetActionAsync(gadgetId, Actions.LightOff, cancellationToken);
+        return Client.Gadgets.DoGadgetActionAsync(GadgetId, Actions.LightOff, cancellationToken);
     }
 }

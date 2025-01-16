@@ -1,7 +1,9 @@
 import "@utiliread/http/json";
 
 import { Http, Message } from "@utiliread/http";
+import { dateTimeConverter, jsonProperty } from "@utiliread/json";
 
+import { DateTime } from "luxon";
 import { IUserManager } from "./oauth";
 import { LoginRedirectKey } from "./oauth";
 import { resolve } from "aurelia";
@@ -20,6 +22,26 @@ export interface Member {
   laesoeCardColor: "red" | "blue" | "green";
   isApproved: boolean;
 }
+
+export class FrontDoorActivity {
+  @jsonProperty()
+  memberId!: string;
+  @jsonProperty()
+  memberName!: string;
+  @jsonProperty({ converter: dateTimeConverter })
+  enteredAt?: DateTime;
+  @jsonProperty({ converter: dateTimeConverter })
+  exitedAt?: DateTime;
+}
+
+export class Event<T = string> {
+  @jsonProperty()
+  action!: T;
+  @jsonProperty({ converter: dateTimeConverter })
+  createdAt!: DateTime;
+}
+
+export type AlarmAction = "arm" | "disarm";
 
 export type MemberInit = Omit<Member, "id" | "isApproved">;
 
@@ -73,5 +95,15 @@ export class ApiClient {
 
   delete(memberId: string) {
     return http.delete(`/members/${memberId}`);
+  }
+
+  getFrontDoorActivity() {
+    return http
+      .get(`/history/front-door-activity`)
+      .expectJsonArray(FrontDoorActivity);
+  }
+
+  getEvents(gadget: "alarm") {
+    return http.get(`/history/${gadget}-events`).expectJsonArray(Event<AlarmAction>);
   }
 }

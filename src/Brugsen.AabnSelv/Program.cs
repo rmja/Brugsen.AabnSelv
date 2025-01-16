@@ -47,6 +47,7 @@ builder
 var app = builder.Build();
 app.UsePathBase(app.Configuration["PathBase"]);
 app.UseRouting(); // Must be called explicitly for PathBase to have effect, see https://andrewlock.net/using-pathbase-with-dotnet-6-webapplicationbuilder/#option-1-controlling-the-location-of-userouting-
+HistoryEndpoints.AddRoutes(app);
 MembersEndpoints.AddRoutes(app);
 OAuthEndpoints.AddRoutes(app);
 app.MapFallbackToFile("index.html");

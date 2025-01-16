@@ -39,29 +39,31 @@ public class LightControllerTests
         {
             new()
             {
-                Subject = new() { MemberId = "member1" },
+                Subject = new() { },
                 Verb = EventVerb.Use,
                 Object = new()
                 {
-                    GadgetId = "front_door",
-                    GadgetActionId = DoorGadget.Actions.OpenEntry
-                },
-                CreatedAt = _fakeTime.GetUtcNow().AddMinutes(-10).UtcDateTime
-            },
-            new()
-            {
-                Subject = new() { MemberId = "member1" },
-                Verb = EventVerb.Use,
-                Object = new()
-                {
+                    MemberId = "member1",
                     GadgetId = "front_door",
                     GadgetActionId = DoorGadget.Actions.OpenExit
                 },
                 CreatedAt = _fakeTime.GetUtcNow().AddMinutes(-5).UtcDateTime
+            },
+            new()
+            {
+                Subject = new() { },
+                Verb = EventVerb.Use,
+                Object = new()
+                {
+                    MemberId = "member1",
+                    GadgetId = "front_door",
+                    GadgetActionId = DoorGadget.Actions.OpenEntry
+                },
+                CreatedAt = _fakeTime.GetUtcNow().AddMinutes(-10).UtcDateTime
             }
         };
         _clientMock
-            .Setup(m => m.Events.ListEventsAsync("created_at:desc"))
+            .Setup(m => m.Events.ListEventsAsync("created_at:desc", EventsExpand.None))
             .Returns(events.ToAsyncEnumerable());
         _clientMock
             .Setup(m =>
