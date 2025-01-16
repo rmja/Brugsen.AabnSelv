@@ -2,11 +2,6 @@
 
 public static class MetadataKeys
 {
-    public static class Gadget
-    {
-        public const string AlarmState = "alarm_state";
-    }
-
     public static class Member
     {
         public const string Phone = "phone";

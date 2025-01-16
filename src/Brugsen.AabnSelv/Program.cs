@@ -4,6 +4,7 @@ using Akiles.Api;
 using Akiles.Api.Members;
 using Brugsen.AabnSelv;
 using Brugsen.AabnSelv.Controllers;
+using Brugsen.AabnSelv.Gadgets;
 using Brugsen.AabnSelv.Models;
 using Microsoft.AspNetCore.Http.Json;
 using Microsoft.Extensions.Options;

@@ -1,5 +1,6 @@
 ﻿using Akiles.Api;
 using Akiles.Api.Events;
+using Brugsen.AabnSelv.Gadgets;
 using Microsoft.Extensions.Options;
 
 namespace Brugsen.AabnSelv.Controllers;
@@ -7,26 +8,32 @@ namespace Brugsen.AabnSelv.Controllers;
 public class LightController(
     [FromKeyedServices(ServiceKeys.ApiKeyClient)] IAkilesApiClient client,
     TimeProvider timeProvider,
-    ILogger<LightController> logger,
+    ILogger<LightGadget> gadgetLogger,
     IOptions<BrugsenAabnSelvOptions> options
 ) : BackgroundService
 {
-    private string _lightGadgetId = null!;
+    public LightGadget? LightGadget { get; set; } =
+        options.Value.LightGadgetId is not null
+            ? new LightGadget(options.Value.LightGadgetId, client, gadgetLogger)
+            : null!;
+
+    public override Task StartAsync(CancellationToken cancellationToken)
+    {
+        if (LightGadget is null)
+        {
+            return Task.CompletedTask;
+        }
+
+        return base.StartAsync(cancellationToken);
+    }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        if (options.Value.LightGadgetId is null)
-        {
-            logger.LogWarning("Light controller is disabled: No light gadget configured");
-            return;
-        }
-        _lightGadgetId = options.Value.LightGadgetId;
-
         using var timer = new PeriodicTimer(TimeSpan.FromMinutes(5), timeProvider);
-        while (await timer.WaitForNextTickAsync(stoppingToken))
+        do
         {
             await TickAsync(stoppingToken);
-        }
+        } while (await timer.WaitForNextTickAsync(stoppingToken));
     }
 
     public async Task TickAsync(CancellationToken cancellationToken)
@@ -43,11 +50,11 @@ public class LightController(
         {
             switch (evnt.Object.GadgetActionId)
             {
-                case GadgetActions.OpenEntry:
+                case DoorGadget.Actions.OpenEntry:
                     anyEntries = true;
                     membersInStore.Add(evnt.Subject.MemberId!);
                     break;
-                case GadgetActions.OpenExit:
+                case DoorGadget.Actions.OpenExit:
                     membersInStore.Remove(evnt.Subject.MemberId!);
                     break;
             }
@@ -55,7 +62,7 @@ public class LightController(
 
         if (anyEntries && membersInStore.Count == 0)
         {
-            await TurnLightOffAsync(cancellationToken);
+            await LightGadget!.TurnLightOffAsync(cancellationToken);
         }
     }
 
@@ -78,8 +85,8 @@ public class LightController(
             if (
                 evnt.Object.GadgetId == options.Value.FrontDoorGadgetId
                 && (
-                    evnt.Object.GadgetActionId == GadgetActions.OpenEntry
-                    || evnt.Object.GadgetActionId == GadgetActions.OpenExit
+                    evnt.Object.GadgetActionId == DoorGadget.Actions.OpenEntry
+                    || evnt.Object.GadgetActionId == DoorGadget.Actions.OpenExit
                 )
             )
             {
@@ -87,16 +94,5 @@ public class LightController(
             }
         }
         return events;
-    }
-
-    private Task TurnLightOffAsync(CancellationToken cancellationToken)
-    {
-        logger.LogInformation("Turning off the light");
-
-        return client.Gadgets.DoGadgetActionAsync(
-            _lightGadgetId,
-            GadgetActions.LightOff,
-            cancellationToken
-        );
     }
 }

@@ -1,6 +1,7 @@
 ﻿using Akiles.Api;
 using Akiles.Api.Events;
 using Brugsen.AabnSelv.Controllers;
+using Brugsen.AabnSelv.Gadgets;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Time.Testing;
 using Moq;
@@ -42,7 +43,7 @@ public class LightControllerTests
                 Object = new()
                 {
                     GadgetId = "front_door",
-                    GadgetActionId = GadgetActions.OpenEntry
+                    GadgetActionId = DoorGadget.Actions.OpenEntry
                 },
                 CreatedAt = _fakeTime.GetUtcNow().AddMinutes(-10).UtcDateTime
             },
@@ -50,7 +51,11 @@ public class LightControllerTests
             {
                 Subject = new() { MemberId = "member1" },
                 Verb = EventVerb.Use,
-                Object = new() { GadgetId = "front_door", GadgetActionId = GadgetActions.OpenExit },
+                Object = new()
+                {
+                    GadgetId = "front_door",
+                    GadgetActionId = DoorGadget.Actions.OpenExit
+                },
                 CreatedAt = _fakeTime.GetUtcNow().AddMinutes(-5).UtcDateTime
             }
         };
@@ -61,7 +66,7 @@ public class LightControllerTests
             .Setup(m =>
                 m.Gadgets.DoGadgetActionAsync(
                     "light",
-                    GadgetActions.LightOff,
+                    LightGadget.Actions.LightOff,
                     CancellationToken.None
                 )
             )
