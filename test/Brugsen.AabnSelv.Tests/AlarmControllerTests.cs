@@ -5,7 +5,6 @@ using Brugsen.AabnSelv.Gadgets;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Time.Testing;
 using Moq;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Brugsen.AabnSelv.Tests;
 
