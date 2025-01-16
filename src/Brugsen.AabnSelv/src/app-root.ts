@@ -16,10 +16,10 @@ import template from "./app-root.html";
     title: "Brugeroprettelse",
   },
   {
-    id: "members",
-    path: "members",
-    component: import("./members/router"),
-    title: "Medlemmer",
+    id: "admin",
+    path: "admin",
+    component: import("./admin/router"),
+    title: "Administration",
   },
   {
     path: "signin-oidc",

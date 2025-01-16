@@ -25,8 +25,7 @@ export class DashboardPage implements IRouteableComponent {
   }
 
   approve(memberId: string) {
-    return this.router.load("../approve", {
-      parameters: { memberId },
+    return this.router.load(`../members/${memberId}/approve`, {
       context: this,
     });
   }

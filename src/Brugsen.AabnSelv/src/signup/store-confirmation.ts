@@ -25,7 +25,7 @@ export class StoreConfirmationPage implements IRouteableComponent {
       baseUrl = baseUrl.substring(0, baseUrl.length - 1);
     }
 
-    this.approveRelativeUrl = `/members/approve?memberId=${params.memberId}`;
+    this.approveRelativeUrl = `/admin/members/${params.memberId}/approve`;
     this.approveAbsoluteUrl = `${baseUrl}${this.approveRelativeUrl}`;
   }
 

@@ -1,9 +1,9 @@
-import * as colors from "../laesoe-cards";
+import * as colors from "../../laesoe-cards";
 
 import { IRouteableComponent, IRouter } from "@aurelia/router";
 import { customElement, resolve } from "aurelia";
 
-import { ApiClient } from "../api";
+import { ApiClient } from "../../api";
 import template from "./approve.html";
 
 @customElement({ name: "approve-page", template })
@@ -41,7 +41,7 @@ export class ApprovePage implements IRouteableComponent {
     try {
       await this.api.delete(this.memberId).send();
       alert("Anmodningen er slettet");
-      await this.router.load("../dashboard", { context: this });
+      await this.router.load("../../dashboard", { context: this });
     } catch {
       alert("Kunne ikke slette anmodningen");
     }
@@ -51,7 +51,7 @@ export class ApprovePage implements IRouteableComponent {
     try {
       await this.api.approve(this.memberId).send();
       alert("Brugeren har nu adgang");
-      await this.router.load("../dashboard", { context: this });
+      await this.router.load("../../dashboard", { context: this });
     } catch {
       alert("Kunne ikke godkende anmodningen");
     }

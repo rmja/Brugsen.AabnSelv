@@ -12,14 +12,14 @@ import template from "./router.html";
     id: "dashboard",
     path: "dashboard",
     component: import("./dashboard"),
-    title: "Medlemmer",
+    title: "Admin Dashboard",
   },
   {
-    id: "approve",
-    path: "approve",
-    component: import("./approve"),
-    title: "Godkendelse",
+    id: "members",
+    path: "members",
+    component: import("./members/router"),
+    title: "Medlemmer",
   },
 ])
-@customElement({ name: "members-router", template })
-export class MembersRouter implements IRouteableComponent {}
+@customElement({ name: "admin-router", template })
+export class AdminRouter implements IRouteableComponent {}
