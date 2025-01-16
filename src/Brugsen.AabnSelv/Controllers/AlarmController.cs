@@ -42,14 +42,22 @@ public class AlarmController(
             }
 
             var nextTick = await TickAsync(schedule, stoppingToken);
+            if (nextTick is null)
+            {
+                await Task.Delay(TimeSpan.FromMinutes(10), stoppingToken);
 
-            var earliest = DateTimeEx.Min(nextTick, now.AddMinutes(10));
+                schedule = await GetScheduleAsync(stoppingToken);
+                scheduleObtained = timeProvider.GetLocalNow();
+                continue;
+            }
+
+            var earliest = DateTimeEx.Min(nextTick.Value, now.AddMinutes(10));
             var duration = earliest - timeProvider.GetLocalNow();
             await Task.Delay(duration, stoppingToken);
         }
     }
 
-    public async Task<DateTime> TickAsync(Schedule schedule, CancellationToken cancellationToken)
+    public async Task<DateTime?> TickAsync(Schedule schedule, CancellationToken cancellationToken)
     {
         var now = timeProvider.GetLocalNow().DateTime;
         var currentRange = schedule.GetCurrentRange(now);
@@ -59,6 +67,15 @@ public class AlarmController(
             {
                 await AlarmGadget.ArmAsync(cancellationToken);
             }
+
+            var futureRange = schedule.GetRangePeriods(startNotBefore: now).FirstOrDefault();
+            if (futureRange == default)
+            {
+                // The schedule is empty, i.e. it does not have any ranges
+                return null;
+            }
+
+            return futureRange.Start;
         }
         else
         {
@@ -66,16 +83,9 @@ public class AlarmController(
             {
                 await AlarmGadget.DisarmAsync(cancellationToken);
             }
-        }
 
-        var futureRange = schedule.GetRangePeriods(startNotBefore: now).FirstOrDefault();
-        if (futureRange == default)
-        {
-            // The schedule is empty, i.e. it does not have any ranges
-            return timeProvider.GetLocalNow().AddMinutes(10).DateTime;
+            return DateOnly.FromDateTime(now.Date).ToDateTime(currentRange.End);
         }
-
-        return futureRange.Start;
     }
 
     private Task<Schedule> GetScheduleAsync(CancellationToken cancellationToken)

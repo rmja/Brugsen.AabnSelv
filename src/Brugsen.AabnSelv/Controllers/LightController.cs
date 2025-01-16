@@ -38,7 +38,7 @@ public class LightController(
 
     public async Task TickAsync(CancellationToken cancellationToken)
     {
-        var now = timeProvider.GetLocalNow().DateTime;
+        var now = timeProvider.GetLocalNow();
         var recentOpenEvents = await GetRecentFrontDoorOpenEventsAsync(
             notBefore: now.AddHours(-1),
             cancellationToken
@@ -67,7 +67,7 @@ public class LightController(
     }
 
     private async Task<List<Event>> GetRecentFrontDoorOpenEventsAsync(
-        DateTime notBefore,
+        DateTimeOffset notBefore,
         CancellationToken cancellationToken
     )
     {

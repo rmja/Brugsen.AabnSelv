@@ -27,6 +27,7 @@ public class LightControllerTests
             .AddSingleton<TimeProvider>(_fakeTime)
             .BuildServiceProvider();
 
+        _fakeTime.SetLocalTimeZone(DanishTimeProvider.EuropeCopenhagen);
         _controller = ActivatorUtilities.CreateInstance<LightController>(services);
     }
 
