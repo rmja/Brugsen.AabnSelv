@@ -1,4 +1,6 @@
-﻿namespace Akiles.Api.Events;
+﻿using Akiles.Api.Members;
+
+namespace Akiles.Api.Events;
 
 public record Event
 {
@@ -8,5 +10,7 @@ public record Event
     public required EventSubject Subject { get; set; }
     public required EventVerb Verb { get; set; }
     public required EventObject Object { get; set; }
+    public Member? ObjectMember { get; set; }
+    public MemberPin? ObjectMemberPin { get; set; }
     public DateTime CreatedAt { get; set; }
 }

@@ -9,12 +9,22 @@ public interface IEvents
         string? cursor,
         int? limit,
         string? sort,
+        EventsExpand expand = EventsExpand.None,
         CancellationToken cancellationToken = default
     );
 
-    IAsyncEnumerable<Event> ListEventsAsync(string? sort = null) =>
+    IAsyncEnumerable<Event> ListEventsAsync(
+        string? sort = null,
+        EventsExpand expand = EventsExpand.None
+    ) =>
         new PaginationEnumerable<Event>(
             (cursor, cancellationToken) =>
-                ListEventsAsync(cursor, Constants.DefaultPaginationLimit, sort, cancellationToken)
+                ListEventsAsync(
+                    cursor,
+                    Constants.DefaultPaginationLimit,
+                    sort,
+                    expand,
+                    cancellationToken
+                )
         );
 }
