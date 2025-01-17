@@ -1,5 +1,6 @@
 ﻿using Akiles.Api;
 using Akiles.Api.Events;
+using Akiles.Api.Schedules;
 using Brugsen.AabnSelv.Gadgets;
 
 namespace Brugsen.AabnSelv.Controllers;
@@ -13,14 +14,24 @@ public class LightController(
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
+        var storeSchedule = await GetStoreRegularOpeningHoursScheduleAsync(stoppingToken);
+        var storeScheduleObtained = timeProvider.GetLocalNow();
+
         using var timer = new PeriodicTimer(TimeSpan.FromMinutes(5), timeProvider);
         do
         {
-            await TickAsync(stoppingToken);
+            var now = timeProvider.GetLocalNow().DateTime;
+            if (storeScheduleObtained.Date != now.Date)
+            {
+                storeSchedule = await GetStoreRegularOpeningHoursScheduleAsync(stoppingToken);
+                storeScheduleObtained = timeProvider.GetLocalNow();
+            }
+
+            await TickAsync(storeSchedule, stoppingToken);
         } while (await timer.WaitForNextTickAsync(stoppingToken));
     }
 
-    public async Task TickAsync(CancellationToken cancellationToken)
+    public async Task TickAsync(Schedule storeSchedule, CancellationToken cancellationToken)
     {
         var now = timeProvider.GetLocalNow();
         var recentEvents = await frontDoorGadget
@@ -53,7 +64,44 @@ public class LightController(
 
         if (anyEntries && membersInStore.Count == 0)
         {
-            await lightGadget.TurnLightOffAsync(client, cancellationToken);
+            var currentRange = storeSchedule.GetCurrentRange(now.DateTime);
+            if (currentRange is null)
+            {
+                // Only turn the light off if outside regular opening hours
+                // If there is no schedule range for "now", then we are outside opening hours
+
+                await lightGadget.TurnOffAsync(client, cancellationToken);
+            }
         }
+    }
+
+    private Task<Schedule> GetStoreRegularOpeningHoursScheduleAsync(
+        CancellationToken cancellationToken
+    )
+    {
+        var schedule = new Schedule { OrganizationId = "", Name = "Butikkens åbningstider" };
+
+        schedule
+            .Weekdays[DayOfWeek.Monday]
+            .Ranges.Add(new(new TimeOnly(08, 00), new TimeOnly(17, 30)));
+        schedule
+            .Weekdays[DayOfWeek.Tuesday]
+            .Ranges.Add(new(new TimeOnly(08, 00), new TimeOnly(17, 30)));
+        schedule
+            .Weekdays[DayOfWeek.Wednesday]
+            .Ranges.Add(new(new TimeOnly(08, 00), new TimeOnly(17, 30)));
+        schedule
+            .Weekdays[DayOfWeek.Thursday]
+            .Ranges.Add(new(new TimeOnly(08, 00), new TimeOnly(19, 00)));
+        schedule
+            .Weekdays[DayOfWeek.Friday]
+            .Ranges.Add(new(new TimeOnly(08, 00), new TimeOnly(19, 00)));
+        schedule
+            .Weekdays[DayOfWeek.Saturday]
+            .Ranges.Add(new(new TimeOnly(08, 00), new TimeOnly(13, 30)));
+        schedule
+            .Weekdays[DayOfWeek.Sunday]
+            .Ranges.Add(new(new TimeOnly(08, 00), new TimeOnly(13, 30)));
+        return Task.FromResult(schedule);
     }
 }

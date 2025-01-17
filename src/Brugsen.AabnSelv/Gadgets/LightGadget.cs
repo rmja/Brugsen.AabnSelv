@@ -10,7 +10,7 @@ public class LightGadget(string gadgetId, ILogger<LightGadget> logger) : ILightG
         public const string LightOff = "off";
     }
 
-    public Task TurnLightOffAsync(IAkilesApiClient client, CancellationToken cancellationToken)
+    public Task TurnOffAsync(IAkilesApiClient client, CancellationToken cancellationToken)
     {
         logger.LogInformation("Turning off the light");
         return client.Gadgets.DoGadgetActionAsync(gadgetId, Actions.LightOff, cancellationToken);

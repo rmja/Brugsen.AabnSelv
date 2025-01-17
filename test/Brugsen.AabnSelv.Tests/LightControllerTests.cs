@@ -72,7 +72,7 @@ public class LightControllerTests
             )
             .Returns(events.ToAsyncEnumerable());
         _lightGadgetMock
-            .Setup(m => m.TurnLightOffAsync(_clientMock.Object, CancellationToken.None))
+            .Setup(m => m.TurnOffAsync(_clientMock.Object, CancellationToken.None))
             .Verifiable();
 
         // When
