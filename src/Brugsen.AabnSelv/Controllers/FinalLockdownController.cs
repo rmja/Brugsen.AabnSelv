@@ -7,6 +7,7 @@ namespace Brugsen.AabnSelv.Controllers;
 
 public class FinalShutdownController(
     ILightGadget lightGadget,
+    IFrontDoorLockGadget lockGadget,
     IAlarmGadget alarmGadget,
     [FromKeyedServices(ServiceKeys.ApiKeyClient)] IAkilesApiClient client,
     TimeProvider timeProvider,
@@ -15,7 +16,7 @@ public class FinalShutdownController(
 ) : BackgroundService
 {
     private DateTime? _lightTimeout;
-    private DateTime? _alarmTimeout;
+    private DateTime? _lockAndAlarmTimeout;
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
@@ -66,10 +67,11 @@ public class FinalShutdownController(
             await lightGadget.TurnOffAsync(client, cancellationToken);
             _lightTimeout = null;
         }
-        if (now >= _alarmTimeout)
+        if (now >= _lockAndAlarmTimeout)
         {
+            await lockGadget.LockAsync(client, cancellationToken);
             await alarmGadget.ArmAsync(client, cancellationToken);
-            _alarmTimeout = null;
+            _lockAndAlarmTimeout = null;
         }
 
         var currentPeriod = extendedSchedule.GetCurrentPeriod(now);
@@ -81,16 +83,16 @@ public class FinalShutdownController(
         {
             // Schedule final shutdown to after the next end
             _lightTimeout ??= nextEnd.Value.AddMinutes(10);
-            _alarmTimeout ??= nextEnd.Value.AddMinutes(15);
+            _lockAndAlarmTimeout ??= nextEnd.Value.AddMinutes(15);
         }
 
-        if (_lightTimeout is not null && _alarmTimeout is not null)
+        if (_lightTimeout is not null && _lockAndAlarmTimeout is not null)
         {
-            return DateTimeEx.Min(_lightTimeout.Value, _alarmTimeout.Value);
+            return DateTimeEx.Min(_lightTimeout.Value, _lockAndAlarmTimeout.Value);
         }
         else
         {
-            return _lightTimeout ?? _alarmTimeout;
+            return _lightTimeout ?? _lockAndAlarmTimeout;
         }
     }
 }

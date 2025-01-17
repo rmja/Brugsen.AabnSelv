@@ -10,6 +10,7 @@ namespace Brugsen.AabnSelv.Tests;
 public class FinalShutdownControllerTests
 {
     private readonly NoopLightGadget _lightGadget = new();
+    private readonly NoopFrontDoorLockGadget _lockGadget = new();
     private readonly NoopAlarmGadget _alarmGadget = new();
     private readonly Mock<IAkilesApiClient> _clientMock = new();
     private readonly FakeTimeProvider _fakeTime = new();
@@ -20,6 +21,7 @@ public class FinalShutdownControllerTests
         var services = new ServiceCollection()
             .AddLogging()
             .AddSingleton<ILightGadget>(_lightGadget)
+            .AddSingleton<IFrontDoorLockGadget>(_lockGadget)
             .AddSingleton<IAlarmGadget>(_alarmGadget)
             .AddKeyedSingleton(ServiceKeys.ApiKeyClient, _clientMock.Object)
             .AddSingleton<TimeProvider>(_fakeTime)
@@ -35,12 +37,14 @@ public class FinalShutdownControllerTests
         // Given
         var extendedSchedule = TestSchedules.GetExtendedOpeningHoursSchedule();
         Assert.Equal(LightState.Unknown, _lightGadget.State);
+        Assert.Equal(LockState.Unknown, _lockGadget.State);
         Assert.Equal(AlarmState.Unknown, _alarmGadget.State);
 
         // When
         _fakeTime.SetLocalNow(new DateTime(2025, 01, 16, 06, 00, 00)); // Morning - open
         var nextTick = await _controller.TickAsync(extendedSchedule, CancellationToken.None);
         Assert.Equal(LightState.Unknown, _lightGadget.State);
+        Assert.Equal(LockState.Unknown, _lockGadget.State);
         Assert.Equal(AlarmState.Unknown, _alarmGadget.State);
         Assert.Equal(new DateTime(2025, 01, 16, 23, 10, 00), nextTick);
 
@@ -48,6 +52,7 @@ public class FinalShutdownControllerTests
         _fakeTime.SetLocalNow(nextTick.Value); // Time to turn off the light
         nextTick = await _controller.TickAsync(extendedSchedule, CancellationToken.None);
         Assert.Equal(LightState.Off, _lightGadget.State);
+        Assert.Equal(LockState.Unknown, _lockGadget.State);
         Assert.Equal(AlarmState.Unknown, _alarmGadget.State);
         Assert.Equal(new DateTime(2025, 01, 16, 23, 15, 00), nextTick);
 
@@ -55,6 +60,7 @@ public class FinalShutdownControllerTests
         _fakeTime.SetLocalNow(nextTick.Value); // Time to arm the alarm
         nextTick = await _controller.TickAsync(extendedSchedule, CancellationToken.None);
         Assert.Equal(LightState.Off, _lightGadget.State);
+        Assert.Equal(LockState.Locked, _lockGadget.State);
         Assert.Equal(AlarmState.Armed, _alarmGadget.State);
         Assert.Equal(new DateTime(2025, 01, 17, 23, 10, 00), nextTick);
     }

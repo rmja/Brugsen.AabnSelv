@@ -12,11 +12,11 @@ public static class HistoryEndpoints
     {
         var history = builder.MapGroup("/api/history");
 
-        history.MapGet("/front-door-activity", GetFrontDoorActivityAsync);
+        history.MapGet("/store-activity", GetStoreActivityAsync);
         history.MapGet("/alarm-events", GetAlarmEventsAsync);
     }
 
-    private static async Task<IResult> GetFrontDoorActivityAsync(
+    private static async Task<IResult> GetStoreActivityAsync(
         IFrontDoorGadget frontDoorGadget,
         IAkilesApiClient client,
         IOptions<BrugsenAabnSelvOptions> options,
@@ -33,8 +33,8 @@ public static class HistoryEndpoints
         // Change event order to ascending
         recentEvents.Reverse();
 
-        var activities = new List<FrontDoorActivityDto>(recentEvents.Count / 2);
-        var inStore = new Dictionary<string, FrontDoorActivityDto>();
+        var activities = new List<StoreActivityDto>(recentEvents.Count / 2);
+        var inStore = new Dictionary<string, StoreActivityDto>();
         foreach (var evnt in recentEvents)
         {
             var member = evnt.ObjectMember;
@@ -48,11 +48,11 @@ public static class HistoryEndpoints
                 case FrontDoorGadget.Actions.OpenEntry:
 
                     {
-                        var activity = new FrontDoorActivityDto()
+                        var activity = new StoreActivityDto()
                         {
                             MemberId = member.Id,
                             MemberName = member.Name,
-                            EnteredAt = evnt.CreatedAt
+                            CheckedInAt = evnt.CreatedAt
                         };
                         activities.Add(activity);
 
@@ -65,16 +65,16 @@ public static class HistoryEndpoints
                     {
                         if (inStore.Remove(member.Id, out var activity))
                         {
-                            activity.ExitedAt = evnt.CreatedAt;
+                            activity.CheckedOutAt = evnt.CreatedAt;
                         }
                         else
                         {
                             activities.Add(
-                                new FrontDoorActivityDto
+                                new StoreActivityDto
                                 {
                                     MemberId = member.Id,
                                     MemberName = member.Name,
-                                    ExitedAt = evnt.CreatedAt
+                                    CheckedOutAt = evnt.CreatedAt
                                 }
                             );
                         }

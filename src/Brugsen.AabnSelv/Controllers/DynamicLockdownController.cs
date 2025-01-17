@@ -9,6 +9,7 @@ namespace Brugsen.AabnSelv.Controllers;
 public class DynamicShutdownController(
     IFrontDoorGadget frontDoorGadget,
     ILightGadget lightGadget,
+    IFrontDoorLockGadget lockGadget,
     IAlarmGadget alarmGadget,
     [FromKeyedServices(ServiceKeys.ApiKeyClient)] IAkilesApiClient client,
     TimeProvider timeProvider,
@@ -139,6 +140,7 @@ public class DynamicShutdownController(
         if (anyEntries && membersInStore.Count == 0)
         {
             await lightGadget.TurnOffAsync(client, cancellationToken);
+            await lockGadget.LockAsync(client, cancellationToken);
             await alarmGadget.ArmAsync(client, cancellationToken);
         }
     }

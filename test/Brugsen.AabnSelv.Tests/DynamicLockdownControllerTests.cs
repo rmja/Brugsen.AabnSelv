@@ -10,8 +10,9 @@ namespace Brugsen.AabnSelv.Tests;
 
 public class DynamicShutdownControllerTests
 {
-    private readonly Mock<IFrontDoorGadget> _frontDoorGadgetMock = new();
+    private readonly Mock<IFrontDoorGadget> _doorGadgetMock = new();
     private readonly Mock<ILightGadget> _lightGadgetMock = new();
+    private readonly Mock<IFrontDoorLockGadget> _lockGadgetMock = new();
     private readonly Mock<IAlarmGadget> _alarmGadgetMock = new();
     private readonly Mock<IAkilesApiClient> _clientMock = new();
     private readonly FakeTimeProvider _fakeTime = new();
@@ -21,8 +22,9 @@ public class DynamicShutdownControllerTests
     {
         var services = new ServiceCollection()
             .AddLogging()
-            .AddSingleton(_frontDoorGadgetMock.Object)
+            .AddSingleton(_doorGadgetMock.Object)
             .AddSingleton(_lightGadgetMock.Object)
+            .AddSingleton(_lockGadgetMock.Object)
             .AddSingleton(_alarmGadgetMock.Object)
             .AddKeyedSingleton(ServiceKeys.ApiKeyClient, _clientMock.Object)
             .AddSingleton<TimeProvider>(_fakeTime)
@@ -67,7 +69,7 @@ public class DynamicShutdownControllerTests
                 CreatedAt = _fakeTime.GetUtcNow().UtcDateTime
             }
         };
-        _frontDoorGadgetMock
+        _doorGadgetMock
             .Setup(m =>
                 m.GetRecentEventsAsync(
                     _clientMock.Object,
@@ -79,6 +81,9 @@ public class DynamicShutdownControllerTests
             .Returns(events.AsEnumerable().Reverse().ToAsyncEnumerable());
         _lightGadgetMock
             .Setup(m => m.TurnOffAsync(_clientMock.Object, CancellationToken.None))
+            .Verifiable();
+        _lockGadgetMock
+            .Setup(m => m.LockAsync(_clientMock.Object, CancellationToken.None))
             .Verifiable();
         _alarmGadgetMock
             .Setup(m => m.ArmAsync(_clientMock.Object, CancellationToken.None))

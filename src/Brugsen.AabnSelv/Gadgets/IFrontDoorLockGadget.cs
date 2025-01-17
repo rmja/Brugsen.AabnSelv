@@ -1,3 +1,8 @@
-﻿namespace Brugsen.AabnSelv.Gadgets;
+﻿using Akiles.Api;
 
-public interface IFrontDoorLockGadget { }
+namespace Brugsen.AabnSelv.Gadgets;
+
+public interface IFrontDoorLockGadget
+{
+    Task LockAsync(IAkilesApiClient client, CancellationToken cancellationToken);
+}
