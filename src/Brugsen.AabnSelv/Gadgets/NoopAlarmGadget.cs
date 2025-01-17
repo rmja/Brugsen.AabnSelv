@@ -9,6 +9,7 @@ public class NoopAlarmGadget : IAlarmGadget
     private readonly ILogger<NoopAlarmGadget>? _logger;
 
     public AlarmState State { get; set; } = AlarmState.Unknown;
+    public DateTime? LastArmed { get; set; }
 
     public NoopAlarmGadget(ILogger<NoopAlarmGadget>? logger = null)
     {
@@ -16,10 +17,16 @@ public class NoopAlarmGadget : IAlarmGadget
         _logger = logger;
     }
 
+    public Task<DateTime?> GetLastArmedAsync(
+        IAkilesApiClient client,
+        CancellationToken cancellationToken
+    ) => Task.FromResult(LastArmed);
+
     public Task ArmAsync(IAkilesApiClient client, CancellationToken cancellationToken)
     {
         _logger?.LogInformation("FAKE: Arming alarm");
         State = AlarmState.Armed;
+        LastArmed = DateTime.UtcNow;
         return Task.CompletedTask;
     }
 
