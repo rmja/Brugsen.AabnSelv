@@ -1,32 +1,15 @@
 ﻿using Akiles.Api;
 using Akiles.Api.Schedules;
 using Brugsen.AabnSelv.Gadgets;
-using Microsoft.Extensions.Options;
 
 namespace Brugsen.AabnSelv.Controllers;
 
 public class AlarmController(
+    IAlarmGadget alarmGadget,
     [FromKeyedServices(ServiceKeys.ApiKeyClient)] IAkilesApiClient client,
-    TimeProvider timeProvider,
-    ILogger<AlarmGadget> gadgetLogger,
-    IOptions<BrugsenAabnSelvOptions> options
+    TimeProvider timeProvider
 ) : BackgroundService
 {
-    public AlarmGadget? AlarmGadget { get; set; } =
-        options.Value.AlarmGadgetId is not null
-            ? new AlarmGadget(options.Value.AlarmGadgetId, client, gadgetLogger)
-            : null;
-
-    public override Task StartAsync(CancellationToken cancellationToken)
-    {
-        if (AlarmGadget is null)
-        {
-            return Task.CompletedTask;
-        }
-
-        return base.StartAsync(cancellationToken);
-    }
-
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         var schedule = await GetScheduleAsync(stoppingToken);
@@ -63,9 +46,9 @@ public class AlarmController(
         var currentRange = schedule.GetCurrentRange(now);
         if (currentRange is null)
         {
-            if (AlarmGadget!.State != AlarmGadgetState.Armed)
+            if (alarmGadget.ArmState != AlarmGadgetArmState.Armed)
             {
-                await AlarmGadget.ArmAsync(cancellationToken);
+                await alarmGadget.ArmAsync(client, cancellationToken);
             }
 
             var futureRange = schedule.GetRangePeriods(startNotBefore: now).FirstOrDefault();
@@ -79,9 +62,9 @@ public class AlarmController(
         }
         else
         {
-            if (AlarmGadget!.State != AlarmGadgetState.Disarmed)
+            if (alarmGadget.ArmState != AlarmGadgetArmState.Disarmed)
             {
-                await AlarmGadget.DisarmAsync(cancellationToken);
+                await alarmGadget.DisarmAsync(client, cancellationToken);
             }
 
             return DateOnly.FromDateTime(now.Date).ToDateTime(currentRange.End);

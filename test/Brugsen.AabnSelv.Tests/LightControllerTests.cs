@@ -11,18 +11,17 @@ namespace Brugsen.AabnSelv.Tests;
 public class LightControllerTests
 {
     private readonly Mock<IAkilesApiClient> _clientMock = new();
+    private readonly Mock<ILightGadget> _lightGadgetMock = new();
+    private readonly Mock<IFrontDoorGadget> _frontDoorGadgetMock = new();
     private readonly FakeTimeProvider _fakeTime = new();
     private readonly LightController _controller;
 
     public LightControllerTests()
     {
         var services = new ServiceCollection()
-            .Configure<BrugsenAabnSelvOptions>(options =>
-            {
-                options.FrontDoorGadgetId = "front_door";
-                options.LightGadgetId = "light";
-            })
             .AddLogging()
+            .AddSingleton(_lightGadgetMock.Object)
+            .AddSingleton(_frontDoorGadgetMock.Object)
             .AddKeyedSingleton(ServiceKeys.ApiKeyClient, _clientMock.Object)
             .AddSingleton<TimeProvider>(_fakeTime)
             .BuildServiceProvider();
@@ -45,7 +44,7 @@ public class LightControllerTests
                 {
                     MemberId = "member1",
                     GadgetId = "front_door",
-                    GadgetActionId = DoorGadget.Actions.OpenExit
+                    GadgetActionId = FrontDoorGadget.Actions.OpenExit
                 },
                 CreatedAt = _fakeTime.GetUtcNow().AddMinutes(-5).UtcDateTime
             },
@@ -57,22 +56,23 @@ public class LightControllerTests
                 {
                     MemberId = "member1",
                     GadgetId = "front_door",
-                    GadgetActionId = DoorGadget.Actions.OpenEntry
+                    GadgetActionId = FrontDoorGadget.Actions.OpenEntry
                 },
                 CreatedAt = _fakeTime.GetUtcNow().AddMinutes(-10).UtcDateTime
             }
         };
-        _clientMock
-            .Setup(m => m.Events.ListEventsAsync("created_at:desc", EventsExpand.None))
-            .Returns(events.ToAsyncEnumerable());
-        _clientMock
+        _frontDoorGadgetMock
             .Setup(m =>
-                m.Gadgets.DoGadgetActionAsync(
-                    "light",
-                    LightGadget.Actions.LightOff,
+                m.GetRecentEventsAsync(
+                    _clientMock.Object,
+                    It.IsAny<DateTimeOffset>(),
+                    EventsExpand.None,
                     CancellationToken.None
                 )
             )
+            .Returns(events.ToAsyncEnumerable());
+        _lightGadgetMock
+            .Setup(m => m.TurnLightOffAsync(_clientMock.Object, CancellationToken.None))
             .Verifiable();
 
         // When

@@ -13,21 +13,20 @@ public class AlarmControllerTests
     private readonly Mock<IAkilesApiClient> _clientMock = new();
     private readonly FakeTimeProvider _fakeTime = new();
     private readonly AlarmController _controller;
+    private readonly IAlarmGadget _alarmGadget;
 
     public AlarmControllerTests()
     {
         var services = new ServiceCollection()
-            .Configure<BrugsenAabnSelvOptions>(options =>
-            {
-                options.AlarmGadgetId = "alarm";
-            })
             .AddLogging()
+            .AddSingleton<IAlarmGadget, NoopAlarmGadget>()
             .AddKeyedSingleton(ServiceKeys.ApiKeyClient, _clientMock.Object)
             .AddSingleton<TimeProvider>(_fakeTime)
             .BuildServiceProvider();
 
         _fakeTime.SetLocalTimeZone(DanishTimeProvider.EuropeCopenhagen);
         _controller = ActivatorUtilities.CreateInstance<AlarmController>(services);
+        _alarmGadget = services.GetRequiredService<IAlarmGadget>();
     }
 
     [Fact]
@@ -40,27 +39,7 @@ public class AlarmControllerTests
             schedule.Weekdays[weekday].Ranges.Add(new(new TimeOnly(04, 50), new TimeOnly(23, 10)));
         }
 
-        _clientMock
-            .Setup(m =>
-                m.Gadgets.DoGadgetActionAsync(
-                    "alarm",
-                    AlarmGadget.Actions.AlarmArm,
-                    CancellationToken.None
-                )
-            )
-            .Verifiable(Times.Exactly(2));
-
-        _clientMock
-            .Setup(m =>
-                m.Gadgets.DoGadgetActionAsync(
-                    "alarm",
-                    AlarmGadget.Actions.AlarmDisarm,
-                    CancellationToken.None
-                )
-            )
-            .Verifiable(Times.Exactly(2));
-
-        Assert.Equal(AlarmGadgetState.Unknown, _controller.AlarmGadget!.State);
+        Assert.Equal(AlarmGadgetArmState.Unknown, _alarmGadget.ArmState);
 
         // When
         _fakeTime.SetLocalNow(new DateTime(2025, 01, 16, 04, 00, 00)); // Early morning
@@ -68,7 +47,7 @@ public class AlarmControllerTests
 
         // Then
         Assert.Equal(new DateTime(2025, 01, 16, 04, 50, 00), nextTick);
-        Assert.Equal(AlarmGadgetState.Armed, _controller.AlarmGadget!.State);
+        Assert.Equal(AlarmGadgetArmState.Armed, _alarmGadget.ArmState);
 
         // When
         _fakeTime.SetLocalNow(nextTick.Value); // Early morning
@@ -76,7 +55,7 @@ public class AlarmControllerTests
 
         // Then
         Assert.Equal(new DateTime(2025, 01, 16, 23, 10, 00), nextTick);
-        Assert.Equal(AlarmGadgetState.Disarmed, _controller.AlarmGadget!.State);
+        Assert.Equal(AlarmGadgetArmState.Disarmed, _alarmGadget.ArmState);
 
         // When
         _fakeTime.SetLocalNow(nextTick.Value); // Late night
@@ -84,13 +63,11 @@ public class AlarmControllerTests
 
         // Then
         Assert.Equal(new DateTime(2025, 01, 17, 04, 50, 00), nextTick);
-        Assert.Equal(AlarmGadgetState.Armed, _controller.AlarmGadget!.State);
+        Assert.Equal(AlarmGadgetArmState.Armed, _alarmGadget.ArmState);
 
         // When
         _fakeTime.SetLocalNow(nextTick.Value); // Early morning
         nextTick = await _controller.TickAsync(schedule, CancellationToken.None);
-        Assert.Equal(AlarmGadgetState.Disarmed, _controller.AlarmGadget!.State);
-
-        _clientMock.VerifyAll();
+        Assert.Equal(AlarmGadgetArmState.Disarmed, _alarmGadget.ArmState);
     }
 }

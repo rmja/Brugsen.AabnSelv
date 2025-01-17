@@ -4,7 +4,9 @@ using Akiles.Api;
 using Brugsen.AabnSelv;
 using Brugsen.AabnSelv.Controllers;
 using Brugsen.AabnSelv.Endpoints;
+using Brugsen.AabnSelv.Gadgets;
 using Microsoft.AspNetCore.Http.Json;
+using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
 
 var builder = WebApplication.CreateSlimBuilder(args);
@@ -19,6 +21,29 @@ builder.Services.Configure<JsonOptions>(options =>
 builder.Services.AddSingleton<TimeProvider, DanishTimeProvider>();
 builder.Services.AddHostedService<AlarmController>();
 builder.Services.AddHostedService<LightController>();
+
+builder.Services.AddSingleton<IFrontDoorGadget>(provider =>
+{
+    var options = provider.GetRequiredService<IOptions<BrugsenAabnSelvOptions>>();
+    return ActivatorUtilities.CreateInstance<FrontDoorGadget>(
+        provider,
+        options.Value.FrontDoorGadgetId
+    );
+});
+builder.Services.AddSingleton<IAlarmGadget>(provider =>
+{
+    var options = provider.GetRequiredService<IOptions<BrugsenAabnSelvOptions>>();
+    return options.Value.AlarmGadgetId is not null
+        ? ActivatorUtilities.CreateInstance<AlarmGadget>(provider, options.Value.AlarmGadgetId)
+        : ActivatorUtilities.CreateInstance<NoopAlarmGadget>(provider);
+});
+builder.Services.AddSingleton<ILightGadget>(provider =>
+{
+    var options = provider.GetRequiredService<IOptions<BrugsenAabnSelvOptions>>();
+    return options.Value.LightGadgetId is not null
+        ? ActivatorUtilities.CreateInstance<LightGadget>(provider, options.Value.LightGadgetId)
+        : ActivatorUtilities.CreateInstance<NoopLightGadget>(provider);
+});
 
 builder.Services.AddAkilesApi();
 

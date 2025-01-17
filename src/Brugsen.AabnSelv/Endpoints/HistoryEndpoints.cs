@@ -17,17 +17,17 @@ public static class HistoryEndpoints
     }
 
     private static async Task<IResult> GetFrontDoorActivityAsync(
+        IFrontDoorGadget frontDoorGadget,
         IAkilesApiClient client,
         IOptions<BrugsenAabnSelvOptions> options,
         TimeProvider timeProvider,
         CancellationToken cancellationToken
     )
     {
-        var frontDoorGadget = new DoorGadget(options.Value.FrontDoorGadgetId, client);
         var notBefore = timeProvider.GetLocalNow().AddDays(-7);
 
         var recentEvents = await frontDoorGadget
-            .GetRecentEventsAsync(notBefore, EventsExpand.ObjectMember, cancellationToken)
+            .GetRecentEventsAsync(client, notBefore, EventsExpand.ObjectMember, cancellationToken)
             .ToListAsync(cancellationToken);
 
         // Change event order to ascending
@@ -45,7 +45,7 @@ public static class HistoryEndpoints
 
             switch (evnt.Object.GadgetActionId)
             {
-                case DoorGadget.Actions.OpenEntry:
+                case FrontDoorGadget.Actions.OpenEntry:
 
                     {
                         var activity = new FrontDoorActivityDto()
@@ -60,7 +60,7 @@ public static class HistoryEndpoints
                         inStore[activity.MemberId] = activity;
                     }
                     break;
-                case DoorGadget.Actions.OpenExit:
+                case FrontDoorGadget.Actions.OpenExit:
 
                     {
                         if (inStore.Remove(member.Id, out var activity))
@@ -90,6 +90,7 @@ public static class HistoryEndpoints
     }
 
     private static async Task<IResult> GetAlarmEventsAsync(
+        IAlarmGadget alarmGadget,
         IAkilesApiClient client,
         IOptions<BrugsenAabnSelvOptions> options,
         TimeProvider timeProvider,
@@ -97,17 +98,10 @@ public static class HistoryEndpoints
         CancellationToken cancellationToken
     )
     {
-        var gadgetId = options.Value.AlarmGadgetId;
-        if (gadgetId is null)
-        {
-            return Results.Ok(Array.Empty<EventDto>());
-        }
-
-        var gadget = new AlarmGadget(gadgetId, client, gadgetLogger);
         var notBefore = timeProvider.GetLocalNow().AddDays(-7);
 
-        var events = await gadget
-            .GetRecentEventsAsync(notBefore, EventsExpand.None, cancellationToken)
+        var events = await alarmGadget
+            .GetRecentEventsAsync(client, notBefore, EventsExpand.None, cancellationToken)
             .ToListAsync(cancellationToken);
 
         return Results.Ok(
