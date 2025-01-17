@@ -6,6 +6,6 @@ public class FrontDoorLockGadget(string gadgetId) : IFrontDoorLockGadget
 {
     public Task LockAsync(IAkilesApiClient client, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        return Task.CompletedTask;
     }
 }

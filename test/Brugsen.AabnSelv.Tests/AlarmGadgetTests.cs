@@ -1,7 +1,6 @@
 ﻿using Akiles.Api;
-using Akiles.Api.Gadgets;
+using Akiles.Api.Events;
 using Brugsen.AabnSelv.Gadgets;
-using Microsoft.Extensions.Time.Testing;
 using Moq;
 
 namespace Brugsen.AabnSelv.Tests;
@@ -9,26 +8,16 @@ namespace Brugsen.AabnSelv.Tests;
 public class AlarmGadgetTests
 {
     private readonly Mock<IAkilesApiClient> clientMock = new();
-    private readonly FakeTimeProvider _fakeTime = new();
 
     [Fact]
     public async Task CanGetLastArmed_WhenNotPreviouslyArmed()
     {
         // Given
-        var alarm = new AlarmGadget("alarm", _fakeTime);
+        var alarm = new AlarmGadget("alarm");
 
         clientMock
-            .Setup(m => m.Gadgets.GetGadgetAsync("alarm", CancellationToken.None))
-            .ReturnsAsync(
-                new Gadget
-                {
-                    OrganizationId = "",
-                    SiteId = "",
-                    DeviceId = "",
-                    Name = "",
-                    Metadata = { }
-                }
-            );
+            .Setup(m => m.Events.ListEventsAsync("created_at:desc", EventsExpand.None))
+            .Returns(Array.Empty<Event>().ToAsyncEnumerable());
 
         // When
         var lastArmed = await alarm.GetLastArmedAsync(clientMock.Object, CancellationToken.None);
@@ -38,43 +27,33 @@ public class AlarmGadgetTests
     }
 
     [Fact]
-    public async Task CanGetLastArmed_AfterArm()
+    public async Task CanGetLastArmed()
     {
         // Given
-        var alarm = new AlarmGadget("alarm", _fakeTime);
-        var gadget = new Gadget
+        var alarm = new AlarmGadget("alarm");
+        var armEventCreated = DateTime.UtcNow;
+        var events = new List<Event>()
         {
-            OrganizationId = "",
-            SiteId = "",
-            DeviceId = "",
-            Name = "",
-            Metadata = { }
-        };
-
-        clientMock
-            .Setup(m =>
-                m.Gadgets.EditGadgetAsync("alarm", It.IsAny<GadgetPatch>(), CancellationToken.None)
-            )
-            .Callback(
-                (string gadgetId, GadgetPatch patch, CancellationToken cancellationToken) =>
+            new()
+            {
+                Subject = new() { },
+                Verb = EventVerb.Use,
+                Object = new()
                 {
-                    foreach (var (key, value) in patch.Metadata ?? [])
-                    {
-                        gadget.Metadata[key] = value;
-                    }
-                }
-            )
-            .ReturnsAsync(gadget);
-
+                    GadgetId = "alarm",
+                    GadgetActionId = AlarmGadget.Actions.AlarmArm
+                },
+                CreatedAt = armEventCreated
+            },
+        };
         clientMock
-            .Setup(m => m.Gadgets.GetGadgetAsync("alarm", CancellationToken.None))
-            .ReturnsAsync(gadget);
+            .Setup(m => m.Events.ListEventsAsync("created_at:desc", EventsExpand.None))
+            .Returns(events.ToAsyncEnumerable());
 
         // When
-        await alarm.ArmAsync(clientMock.Object, CancellationToken.None);
         var lastArmed = await alarm.GetLastArmedAsync(clientMock.Object, CancellationToken.None);
 
         // Then
-        Assert.Equal(_fakeTime.GetUtcNow().UtcDateTime, lastArmed);
+        Assert.Equal(armEventCreated, lastArmed);
     }
 }
