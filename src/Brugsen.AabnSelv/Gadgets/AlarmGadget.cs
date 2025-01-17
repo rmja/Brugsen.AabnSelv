@@ -5,42 +5,16 @@ namespace Brugsen.AabnSelv.Gadgets;
 
 public class AlarmGadget(string gadgetId, ILogger<AlarmGadget> logger) : IAlarmGadget
 {
-    private readonly SemaphoreSlim _lock = new(1);
-
-    public AlarmGadgetArmState ArmState { get; private set; } = AlarmGadgetArmState.Unknown;
-
     public async Task ArmAsync(IAkilesApiClient client, CancellationToken cancellationToken)
     {
-        await _lock.WaitAsync(cancellationToken);
-        try
-        {
-            logger.LogInformation("Arming alarm");
-            await client.Gadgets.DoGadgetActionAsync(gadgetId, Actions.AlarmArm, cancellationToken);
-            ArmState = AlarmGadgetArmState.Armed;
-        }
-        finally
-        {
-            _lock.Release();
-        }
+        logger.LogInformation("Arming alarm");
+        await client.Gadgets.DoGadgetActionAsync(gadgetId, Actions.AlarmArm, cancellationToken);
     }
 
     public async Task DisarmAsync(IAkilesApiClient client, CancellationToken cancellationToken)
     {
-        await _lock.WaitAsync(cancellationToken);
-        try
-        {
-            logger.LogInformation("Disarming alarm");
-            await client.Gadgets.DoGadgetActionAsync(
-                gadgetId,
-                Actions.AlarmDisarm,
-                cancellationToken
-            );
-            ArmState = AlarmGadgetArmState.Disarmed;
-        }
-        finally
-        {
-            _lock.Release();
-        }
+        logger.LogInformation("Disarming alarm");
+        await client.Gadgets.DoGadgetActionAsync(gadgetId, Actions.AlarmDisarm, cancellationToken);
     }
 
     public IAsyncEnumerable<Event> GetRecentEventsAsync(

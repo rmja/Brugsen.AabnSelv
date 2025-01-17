@@ -1,6 +1,6 @@
 ﻿namespace Brugsen.AabnSelv.Gadgets;
 
-public enum AlarmGadgetArmState
+public enum AlarmState
 {
     Unknown,
     Armed,

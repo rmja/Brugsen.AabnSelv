@@ -32,7 +32,7 @@ public class ScheduleExtensionsTests
         var empty = new Schedule() { Name = "", OrganizationId = "" };
 
         // When
-        Assert.Empty(empty.GetRangePeriods(DateTime.Now));
+        Assert.Empty(empty.GetPeriods(DateTime.Now));
 
         // Then
     }
@@ -48,12 +48,9 @@ public class ScheduleExtensionsTests
             .Ranges.Add(new(new TimeOnly(19, 00), new TimeOnly(20, 00)));
 
         // When
-        var startsThisWednesday = schedule
-            .GetRangePeriods(startNotBefore: wednesday)
-            .Take(10)
-            .ToList();
+        var startsThisWednesday = schedule.GetPeriods(startNotBefore: wednesday).Take(10).ToList();
         var startsNextWednesday = schedule
-            .GetRangePeriods(startNotBefore: wednesday.AddSeconds(1))
+            .GetPeriods(startNotBefore: wednesday.AddSeconds(1))
             .Take(10)
             .ToList();
 

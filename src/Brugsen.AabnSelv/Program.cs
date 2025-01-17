@@ -19,8 +19,8 @@ builder.Services.Configure<JsonOptions>(options =>
 );
 
 builder.Services.AddSingleton<TimeProvider, DanishTimeProvider>();
-builder.Services.AddHostedService<AlarmController>();
-builder.Services.AddHostedService<LightController>();
+builder.Services.AddHostedService<FinalShutdownController>();
+builder.Services.AddHostedService<DynamicShutdownController>();
 
 builder.Services.AddSingleton<IFrontDoorGadget>(provider =>
 {
@@ -29,6 +29,16 @@ builder.Services.AddSingleton<IFrontDoorGadget>(provider =>
         provider,
         options.Value.FrontDoorGadgetId
     );
+});
+builder.Services.AddSingleton<IFrontDoorLockGadget>(provider =>
+{
+    var options = provider.GetRequiredService<IOptions<BrugsenAabnSelvOptions>>();
+    return options.Value.FrontDoorLockGadgetId is not null
+        ? ActivatorUtilities.CreateInstance<FrontDoorLockGadget>(
+            provider,
+            options.Value.FrontDoorLockGadgetId
+        )
+        : ActivatorUtilities.CreateInstance<NoopFrontDoorLockGadget>(provider);
 });
 builder.Services.AddSingleton<IAlarmGadget>(provider =>
 {

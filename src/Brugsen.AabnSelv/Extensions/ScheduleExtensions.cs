@@ -16,6 +16,12 @@ public static class ScheduleExtensions
             .FirstOrDefault(x => timeOfDay >= x.Start && timeOfDay < x.End);
     }
 
+    public static ScheduleRangePeriod? GetCurrentPeriod(this Schedule schedule, DateTime time)
+    {
+        var range = schedule.GetCurrentRange(time);
+        return range?.ToPeriod(DateOnly.FromDateTime(time.Date));
+    }
+
     /// <summary>
     /// Get all periods that correspond to the schedule ranges, where the first returned
     /// period starts no earlier than <paramref name="startNotBefore"/>.
@@ -23,7 +29,7 @@ public static class ScheduleExtensions
     /// <param name="schedule"></param>
     /// <param name="startNotBefore"></param>
     /// <returns></returns>
-    public static IEnumerable<(DateTime Start, DateTime End)> GetRangePeriods(
+    public static IEnumerable<ScheduleRangePeriod> GetPeriods(
         this Schedule schedule,
         DateTime startNotBefore
     )
@@ -44,7 +50,7 @@ public static class ScheduleExtensions
                 .Where(x => x.Start >= timeOfDay)
         )
         {
-            yield return ToDateTimeRange(date, range);
+            yield return range.ToPeriod(date);
         }
 
         // Later days
@@ -53,15 +59,17 @@ public static class ScheduleExtensions
             date = date.AddDays(1);
             foreach (var range in schedule.Weekdays[date.DayOfWeek].Ranges.OrderBy(x => x.Start))
             {
-                yield return ToDateTimeRange(date, range);
+                yield return range.ToPeriod(date);
             }
         }
+    }
 
-        static (DateTime Start, DateTime End) ToDateTimeRange(DateOnly date, ScheduleRange range)
-        {
-            var start = date.ToDateTime(range.Start);
-            var end = date.ToDateTime(range.End);
-            return (start, end);
-        }
+    private static ScheduleRangePeriod ToPeriod(this ScheduleRange range, DateOnly date)
+    {
+        var start = date.ToDateTime(range.Start);
+        var end = date.ToDateTime(range.End);
+        return new(start, end);
     }
 }
+
+public record ScheduleRangePeriod(DateTime Start, DateTime End);
