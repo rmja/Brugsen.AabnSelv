@@ -20,7 +20,7 @@
 </table>
 <p else>Der er ingen afventende anmodninger</p>
 
-<h3>Seneste alarmaktivitet</h3>
+<h3>Seneste alarmhandlinger</h3>
 <table class="table" if.bind="alarmEvents.length > 0">
 <thead>
   <tr>
@@ -35,10 +35,10 @@
   </tr>
 </tbody>
 </table>
-<p else>Ingen aktivitet</p>
+<p else>Ingen handlinger</p>
 
-<h3>Seneste døraktivitet</h3>
-<table class="table" if.bind="doorActivity.length > 0">
+<h3>Seneste butiksaktivitet</h3>
+<table class="table" if.bind="storeActivity.length > 0">
 <thead>
   <tr>
     <th>Navn</th>
@@ -47,10 +47,10 @@
   </tr>
 </thead>
 <tbody>
-  <tr repeat.for="activity of doorActivity">
+  <tr repeat.for="activity of storeActivity">
     <td>${activity.memberName}</td>
-    <td>${activity.enteredAt}</td>
-    <td>${activity.exitedAt}</td>
+    <td>${activity.checkedInAt}</td>
+    <td>${activity.checkedOutAt}</td>
   </tr>
 </tbody>
 </table>

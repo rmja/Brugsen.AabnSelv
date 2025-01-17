@@ -23,15 +23,15 @@ export interface Member {
   isApproved: boolean;
 }
 
-export class FrontDoorActivity {
+export class StoreActivity {
   @jsonProperty()
   memberId!: string;
   @jsonProperty()
   memberName!: string;
   @jsonProperty({ converter: dateTimeConverter })
-  enteredAt?: DateTime;
+  checkedInAt?: DateTime;
   @jsonProperty({ converter: dateTimeConverter })
-  exitedAt?: DateTime;
+  checkedOutAt?: DateTime;
 }
 
 export class Event<T = string> {
@@ -97,10 +97,10 @@ export class ApiClient {
     return http.delete(`/members/${memberId}`);
   }
 
-  getFrontDoorActivity() {
+  getStoreActivity() {
     return http
-      .get(`/history/front-door-activity`)
-      .expectJsonArray(FrontDoorActivity);
+      .get(`/history/store-activity`)
+      .expectJsonArray(StoreActivity);
   }
 
   getEvents(gadget: "alarm") {

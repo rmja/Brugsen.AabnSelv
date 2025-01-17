@@ -9,7 +9,7 @@ import template from "./dashboard.html";
 export class DashboardPage implements IRouteableComponent {
   pending!: MemberViewModel[];
   alarmEvents!: EventViewModel[];
-  doorActivity!: DoorActivityViewModel[];
+  storeActivity!: StoreActivityViewModel[];
 
   constructor(
     private readonly api = resolve(ApiClient),
@@ -17,10 +17,10 @@ export class DashboardPage implements IRouteableComponent {
   ) {}
 
   async loading() {
-    [this.pending, this.alarmEvents, this.doorActivity] = await Promise.all([
+    [this.pending, this.alarmEvents, this.storeActivity] = await Promise.all([
       this.api.getPendingApproval().transfer(),
       this.api.getEvents("alarm").transfer(),
-      this.api.getFrontDoorActivity().transfer(),
+      this.api.getStoreActivity().transfer(),
     ]);
   }
 
@@ -42,8 +42,8 @@ interface EventViewModel {
   createdAt: DateTime;
 }
 
-interface DoorActivityViewModel {
+interface StoreActivityViewModel {
   memberName: string;
-  enteredAt?: DateTime,
-  exitedAt?: DateTime,
+  checkedInAt?: DateTime,
+  checkedOutAt?: DateTime,
 }
