@@ -2,7 +2,6 @@
 using Akiles.Api.Events;
 using Akiles.Api.Schedules;
 using Brugsen.AabnSelv.Gadgets;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace Brugsen.AabnSelv.Controllers;
@@ -84,10 +83,10 @@ public class DynamicLockdownController(
             // Extended access not granted - nothing to do at the moment
 
             var futureRegularPeriod = regularSchedule
-                .GetPeriods(startNotBefore: now)
+                .GetLaterPeriods(startNotBefore: now)
                 .FirstOrDefault();
             var futureExtendedPeriod = extendedSchedule
-                .GetPeriods(startNotBefore: now)
+                .GetLaterPeriods(startNotBefore: now)
                 .FirstOrDefault();
 
             // Sleep until the earliest next open start time

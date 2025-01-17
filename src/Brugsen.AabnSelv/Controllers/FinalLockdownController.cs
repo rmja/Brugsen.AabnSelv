@@ -15,8 +15,11 @@ public class FinalLockdownController(
     IOptions<BrugsenAabnSelvOptions> options
 ) : BackgroundService
 {
+    private bool _firstTick = true;
     private DateTime? _lightTimeout;
     private DateTime? _lockAndAlarmTimeout;
+    private static readonly TimeSpan LightDelay = TimeSpan.FromMinutes(10);
+    private static readonly TimeSpan LockAndAlarmDelay = TimeSpan.FromMinutes(15);
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
@@ -60,13 +63,37 @@ public class FinalLockdownController(
     )
     {
         var now = timeProvider.GetLocalNow().DateTime;
+        var currentPeriod = extendedSchedule.GetCurrentPeriod(now);
+
+        if (_firstTick)
+        {
+            if (currentPeriod is null)
+            {
+                var previousEnd = extendedSchedule.GetEarlierPeriods(now).FirstOrDefault()?.End;
+                if (previousEnd is not null)
+                {
+                    // Schedule final lockdown to after the previous end
+                    _lightTimeout ??= previousEnd.Value.Add(LightDelay);
+                    _lockAndAlarmTimeout ??= previousEnd.Value.Add(LockAndAlarmDelay);
+
+                    logger.LogInformation(
+                        EventIds.LockdownSchedule,
+                        "Next final lockdown scheduled to {LightTimeout} and {LockAndAlarmTimeout}",
+                        _lightTimeout,
+                        _lockAndAlarmTimeout
+                    );
+                }
+            }
+            _firstTick = false;
+        }
 
         // Process lockdown if scheduled
         if (now >= _lightTimeout)
         {
             logger.LogInformation(
                 EventIds.LockdownSequence,
-                "Turning off the light as part of final lockdown"
+                "Turning off the light as part of final lockdown - was scheduled to {LightTimeout}",
+                _lightTimeout
             );
 
             await lightGadget.TurnOffAsync(client, cancellationToken);
@@ -76,7 +103,8 @@ public class FinalLockdownController(
         {
             logger.LogInformation(
                 EventIds.LockdownSequence,
-                "Locking the door and arming the alarm as part of final lockdown"
+                "Locking the door and arming the alarm as part of final lockdown - was scheduled to {LockAndAlarmTimeout}",
+                _lockAndAlarmTimeout
             );
 
             await lockGadget.LockAsync(client, cancellationToken);
@@ -84,15 +112,14 @@ public class FinalLockdownController(
             _lockAndAlarmTimeout = null;
         }
 
-        var currentPeriod = extendedSchedule.GetCurrentPeriod(now);
         var nextEnd = currentPeriod is not null
             ? currentPeriod.End
-            : extendedSchedule.GetPeriods(startNotBefore: now).FirstOrDefault()?.End;
+            : extendedSchedule.GetLaterPeriods(startNotBefore: now).FirstOrDefault()?.End;
         if (nextEnd is not null)
         {
             // Schedule final lockdown to after the next end
-            _lightTimeout ??= nextEnd.Value.AddMinutes(10);
-            _lockAndAlarmTimeout ??= nextEnd.Value.AddMinutes(15);
+            _lightTimeout ??= nextEnd.Value.Add(LightDelay);
+            _lockAndAlarmTimeout ??= nextEnd.Value.Add(LockAndAlarmDelay);
 
             logger.LogInformation(
                 EventIds.LockdownSchedule,
