@@ -2,6 +2,7 @@
 using Akiles.Api.Events;
 using Akiles.Api.Schedules;
 using Brugsen.AabnSelv.Gadgets;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace Brugsen.AabnSelv.Controllers;
@@ -139,6 +140,8 @@ public class DynamicLockdownController(
 
         if (anyEntries && membersInStore.Count == 0)
         {
+            logger.LogInformation(EventIds.LockdownSequence, "Performing dynamic lockdown");
+
             await lightGadget.TurnOffAsync(client, cancellationToken);
             await lockGadget.LockAsync(client, cancellationToken);
             await alarmGadget.ArmAsync(client, cancellationToken);

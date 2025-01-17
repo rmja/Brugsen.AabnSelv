@@ -64,11 +64,21 @@ public class FinalLockdownController(
         // Process lockdown if scheduled
         if (now >= _lightTimeout)
         {
+            logger.LogInformation(
+                EventIds.LockdownSequence,
+                "Turning off the light as part of final lockdown"
+            );
+
             await lightGadget.TurnOffAsync(client, cancellationToken);
             _lightTimeout = null;
         }
         if (now >= _lockAndAlarmTimeout)
         {
+            logger.LogInformation(
+                EventIds.LockdownSequence,
+                "Locking the door and arming the alarm as part of final lockdown"
+            );
+
             await lockGadget.LockAsync(client, cancellationToken);
             await alarmGadget.ArmAsync(client, cancellationToken);
             _lockAndAlarmTimeout = null;
@@ -83,6 +93,13 @@ public class FinalLockdownController(
             // Schedule final lockdown to after the next end
             _lightTimeout ??= nextEnd.Value.AddMinutes(10);
             _lockAndAlarmTimeout ??= nextEnd.Value.AddMinutes(15);
+
+            logger.LogInformation(
+                EventIds.LockdownSchedule,
+                "Next final lockdown scheduled to {LightTimeout} and {LockAndAlarmTimeout}",
+                _lightTimeout,
+                _lockAndAlarmTimeout
+            );
         }
 
         if (_lightTimeout is not null && _lockAndAlarmTimeout is not null)
