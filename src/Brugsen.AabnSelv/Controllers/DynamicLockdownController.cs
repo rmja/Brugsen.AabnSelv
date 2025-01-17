@@ -6,14 +6,14 @@ using Microsoft.Extensions.Options;
 
 namespace Brugsen.AabnSelv.Controllers;
 
-public class DynamicShutdownController(
+public class DynamicLockdownController(
     IFrontDoorGadget frontDoorGadget,
     ILightGadget lightGadget,
     IFrontDoorLockGadget lockGadget,
     IAlarmGadget alarmGadget,
     [FromKeyedServices(ServiceKeys.ApiKeyClient)] IAkilesApiClient client,
     TimeProvider timeProvider,
-    ILogger<DynamicShutdownController> logger,
+    ILogger<DynamicLockdownController> logger,
     IOptions<BrugsenAabnSelvOptions> options
 ) : BackgroundService
 {

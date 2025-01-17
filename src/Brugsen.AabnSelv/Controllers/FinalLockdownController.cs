@@ -5,13 +5,13 @@ using Microsoft.Extensions.Options;
 
 namespace Brugsen.AabnSelv.Controllers;
 
-public class FinalShutdownController(
+public class FinalLockdownController(
     ILightGadget lightGadget,
     IFrontDoorLockGadget lockGadget,
     IAlarmGadget alarmGadget,
     [FromKeyedServices(ServiceKeys.ApiKeyClient)] IAkilesApiClient client,
     TimeProvider timeProvider,
-    ILogger<FinalShutdownController> logger,
+    ILogger<FinalLockdownController> logger,
     IOptions<BrugsenAabnSelvOptions> options
 ) : BackgroundService
 {

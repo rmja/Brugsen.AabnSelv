@@ -7,16 +7,16 @@ using Moq;
 
 namespace Brugsen.AabnSelv.Tests;
 
-public class FinalShutdownControllerTests
+public class FinalLockdownControllerTests
 {
     private readonly NoopLightGadget _lightGadget = new();
     private readonly NoopFrontDoorLockGadget _lockGadget = new();
     private readonly NoopAlarmGadget _alarmGadget = new();
     private readonly Mock<IAkilesApiClient> _clientMock = new();
     private readonly FakeTimeProvider _fakeTime = new();
-    private readonly FinalShutdownController _controller;
+    private readonly FinalLockdownController _controller;
 
-    public FinalShutdownControllerTests()
+    public FinalLockdownControllerTests()
     {
         var services = new ServiceCollection()
             .AddLogging()
@@ -28,7 +28,7 @@ public class FinalShutdownControllerTests
             .BuildServiceProvider();
 
         _fakeTime.SetLocalTimeZone(DanishTimeProvider.EuropeCopenhagen);
-        _controller = ActivatorUtilities.CreateInstance<FinalShutdownController>(services);
+        _controller = ActivatorUtilities.CreateInstance<FinalLockdownController>(services);
     }
 
     [Fact]

@@ -19,8 +19,8 @@ builder.Services.Configure<JsonOptions>(options =>
 );
 
 builder.Services.AddSingleton<TimeProvider, DanishTimeProvider>();
-builder.Services.AddHostedService<FinalShutdownController>();
-builder.Services.AddHostedService<DynamicShutdownController>();
+builder.Services.AddHostedService<FinalLockdownController>();
+builder.Services.AddHostedService<DynamicLockdownController>();
 
 builder.Services.AddSingleton<IFrontDoorGadget>(provider =>
 {

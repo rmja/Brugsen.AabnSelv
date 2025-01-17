@@ -8,7 +8,7 @@ using Moq;
 
 namespace Brugsen.AabnSelv.Tests;
 
-public class DynamicShutdownControllerTests
+public class DynamicLockdownControllerTests
 {
     private readonly Mock<IFrontDoorGadget> _doorGadgetMock = new();
     private readonly Mock<ILightGadget> _lightGadgetMock = new();
@@ -16,9 +16,9 @@ public class DynamicShutdownControllerTests
     private readonly Mock<IAlarmGadget> _alarmGadgetMock = new();
     private readonly Mock<IAkilesApiClient> _clientMock = new();
     private readonly FakeTimeProvider _fakeTime = new();
-    private readonly DynamicShutdownController _controller;
+    private readonly DynamicLockdownController _controller;
 
-    public DynamicShutdownControllerTests()
+    public DynamicLockdownControllerTests()
     {
         var services = new ServiceCollection()
             .AddLogging()
@@ -31,7 +31,7 @@ public class DynamicShutdownControllerTests
             .BuildServiceProvider();
 
         _fakeTime.SetLocalTimeZone(DanishTimeProvider.EuropeCopenhagen);
-        _controller = ActivatorUtilities.CreateInstance<DynamicShutdownController>(services);
+        _controller = ActivatorUtilities.CreateInstance<DynamicLockdownController>(services);
     }
 
     [Fact]
