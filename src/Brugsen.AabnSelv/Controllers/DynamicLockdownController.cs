@@ -101,12 +101,12 @@ public class DynamicLockdownController(
             }
         }
 
-        await TryShutdownAsync(cancellationToken);
+        await TryLockdownAsync(cancellationToken);
 
         return null;
     }
 
-    private async Task TryShutdownAsync(CancellationToken cancellationToken)
+    private async Task TryLockdownAsync(CancellationToken cancellationToken)
     {
         var now = timeProvider.GetLocalNow();
         var recentEvents = await frontDoorGadget

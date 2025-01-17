@@ -61,7 +61,7 @@ public class FinalLockdownController(
     {
         var now = timeProvider.GetLocalNow().DateTime;
 
-        // Process shutdown if scheduled
+        // Process lockdown if scheduled
         if (now >= _lightTimeout)
         {
             await lightGadget.TurnOffAsync(client, cancellationToken);
@@ -78,10 +78,9 @@ public class FinalLockdownController(
         var nextEnd = currentPeriod is not null
             ? currentPeriod.End
             : extendedSchedule.GetPeriods(startNotBefore: now).FirstOrDefault()?.End;
-
         if (nextEnd is not null)
         {
-            // Schedule final shutdown to after the next end
+            // Schedule final lockdown to after the next end
             _lightTimeout ??= nextEnd.Value.AddMinutes(10);
             _lockAndAlarmTimeout ??= nextEnd.Value.AddMinutes(15);
         }
