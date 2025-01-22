@@ -15,5 +15,6 @@ public class EventsTests(ApiFixture fixture) : IClassFixture<ApiFixture>
         // Then
         Assert.NotEmpty(events);
         Assert.True(events.Count <= 200);
+        Assert.All(events, x => Assert.Equal(DateTimeKind.Utc, x.CreatedAt.Kind));
     }
 }

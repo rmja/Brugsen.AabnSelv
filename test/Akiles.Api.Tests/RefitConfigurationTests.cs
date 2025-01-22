@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using System.Net.Http.Json;
 using Akiles.Api.Members;
 
 namespace Akiles.Api.Tests;
@@ -17,26 +18,23 @@ public class RefitConfigurationTests
     )
     {
         // Given
-        var fakeMessageHandler = new FakeMessageHandler();
+        var fakeMessageHandler = new FakeMessageHandler(HttpStatusCode.OK, new PagedList<Member>());
         var httpClient = new HttpClient(fakeMessageHandler);
         var client = new AkilesApiClient(httpClient, "access-token");
 
         // When
-        await Assert.ThrowsAsync<AkilesApiException>(
-            () =>
-                client
-                    .Members.ListMembersAsync(
-                        "created_at:desc",
-                        new()
-                        {
-                            Email = "email",
-                            IsDeleted = IsDeleted.Any,
-                            Metadata = new() { ["source"] = "hello" }
-                        },
-                        expand
-                    )
-                    .ToListAsync()
-        );
+        await client
+            .Members.ListMembersAsync(
+                "created_at:desc",
+                new()
+                {
+                    Email = "email",
+                    IsDeleted = IsDeleted.Any,
+                    Metadata = new() { ["source"] = "hello" }
+                },
+                expand
+            )
+            .ToListAsync();
 
         // Then
         var request = Assert.Single(fakeMessageHandler.RequestMessages);
@@ -47,7 +45,7 @@ public class RefitConfigurationTests
         );
     }
 
-    class FakeMessageHandler(HttpStatusCode statusCode = HttpStatusCode.NotFound)
+    class FakeMessageHandler(HttpStatusCode statusCode = HttpStatusCode.OK, object? content = null)
         : HttpMessageHandler
     {
         public List<HttpRequestMessage> RequestMessages { get; } = [];
@@ -59,7 +57,14 @@ public class RefitConfigurationTests
         {
             RequestMessages.Add(request);
             return Task.FromResult(
-                new HttpResponseMessage(statusCode) { RequestMessage = request }
+                new HttpResponseMessage(statusCode)
+                {
+                    RequestMessage = request,
+                    Content = JsonContent.Create(
+                        content,
+                        options: AkilesApiJsonSerializerOptions.Value
+                    )
+                }
             );
         }
     }

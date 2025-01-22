@@ -1,48 +1,41 @@
-﻿using System.Reflection;
+﻿using System.Net.Http.Json;
+using System.Reflection;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using Akiles.Api.Events;
 using Akiles.Api.Gadgets;
 using Akiles.Api.Members;
 using Akiles.Api.Schedules;
+using Akiles.Api.Webhooks;
 using Refit;
 
 namespace Akiles.Api;
 
 public class AkilesApiClient : IAkilesApiClient
 {
-    private static readonly JsonSerializerOptions _jsonSerializerOptions =
-        new()
-        {
-            PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower,
-            Converters =
-            {
-                new JsonStringEnumConverter(
-                    JsonNamingPolicy.SnakeCaseLower,
-                    allowIntegerValues: false
-                )
-            }
-        };
     private static readonly RefitSettings _refitSettings =
         new()
         {
-            ContentSerializer = new SystemTextJsonContentSerializer(_jsonSerializerOptions),
+            ContentSerializer = new SystemTextJsonContentSerializer(
+                AkilesApiJsonSerializerOptions.Value
+            ),
             UrlParameterKeyFormatter = new ParameterKeyFormatter(),
             UrlParameterFormatter = new ParameterFormatter(),
-            ExceptionFactory = (response) =>
+            ExceptionFactory = async (response) =>
             {
                 if (response.IsSuccessStatusCode)
                 {
-                    return Task.FromResult<Exception?>(null);
+                    return null;
                 }
 
-                return Task.FromResult<Exception?>(
-                    new AkilesApiException()
-                    {
-                        RequestUri = response.RequestMessage!.RequestUri!,
-                        StatusCode = response.StatusCode
-                    }
-                );
+                var error = await response.Content.ReadFromJsonAsync<ErrorResponse>();
+
+                return new AkilesApiException(error!.Message)
+                {
+                    RequestUri = response.RequestMessage!.RequestUri!,
+                    StatusCode = response.StatusCode,
+                    Type = error.Type,
+                    Args = error.Args,
+                };
             }
         };
 
@@ -50,6 +43,7 @@ public class AkilesApiClient : IAkilesApiClient
     public IGadgets Gadgets { get; }
     public IMembers Members { get; }
     public ISchedules Schedules { get; }
+    public IWebhooks Webhooks { get; }
 
     public AkilesApiClient(HttpClient httpClient, string accessToken)
     {
@@ -64,6 +58,7 @@ public class AkilesApiClient : IAkilesApiClient
         Gadgets = RestService.For<IGadgets>(httpClient, _refitSettings);
         Members = RestService.For<IMembers>(httpClient, _refitSettings);
         Schedules = RestService.For<ISchedules>(httpClient, _refitSettings);
+        Webhooks = RestService.For<IWebhooks>(httpClient, _refitSettings);
     }
 
     class ParameterKeyFormatter(JsonNamingPolicy namingPolicy) : IUrlParameterKeyFormatter

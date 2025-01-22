@@ -14,10 +14,17 @@ public interface IGadgets
         CancellationToken cancellationToken = default
     );
 
-    [Post("/gadgets/{gadgetId}/actions/{actionId}")]
     Task DoGadgetActionAsync(
         string gadgetId,
         string actionId,
+        CancellationToken cancellationToken = default
+    ) => DoGadgetActionAsync(gadgetId, actionId, new object(), cancellationToken);
+
+    [Post("/gadgets/{gadgetId}/actions/{actionId}")]
+    internal Task DoGadgetActionAsync(
+        string gadgetId,
+        string actionId,
+        object body,
         CancellationToken cancellationToken = default
     );
 }

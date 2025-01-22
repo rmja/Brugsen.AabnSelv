@@ -9,7 +9,7 @@ public class ApiFixture
 
     public ApiFixture()
     {
-        var config = new ConfigurationBuilder().AddUserSecrets<MembersTests>().Build();
+        var config = new ConfigurationBuilder().AddUserSecrets<ApiFixture>().Build();
         var services = new ServiceCollection()
             .AddAkilesApi(options =>
             {
