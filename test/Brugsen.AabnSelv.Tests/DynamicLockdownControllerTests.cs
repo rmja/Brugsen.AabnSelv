@@ -10,7 +10,7 @@ namespace Brugsen.AabnSelv.Tests;
 
 public class DynamicLockdownControllerTests
 {
-    private readonly Mock<IFrontDoorGadget> _doorGadgetMock = new();
+    private readonly Mock<IAccessGadget> _accessGadgetMock = new();
     private readonly Mock<ILightGadget> _lightGadgetMock = new();
     private readonly Mock<IFrontDoorLockGadget> _lockGadgetMock = new();
     private readonly Mock<IAlarmGadget> _alarmGadgetMock = new();
@@ -22,7 +22,7 @@ public class DynamicLockdownControllerTests
     {
         var services = new ServiceCollection()
             .AddLogging()
-            .AddSingleton(_doorGadgetMock.Object)
+            .AddSingleton(_accessGadgetMock.Object)
             .AddSingleton(_lightGadgetMock.Object)
             .AddSingleton(_lockGadgetMock.Object)
             .AddSingleton(_alarmGadgetMock.Object)
@@ -42,43 +42,48 @@ public class DynamicLockdownControllerTests
         _fakeTime.SetLocalNow(new DateTime(2025, 01, 17, 22, 00, 00)); // Late night
         var regularSchedule = TestSchedules.GetRegularOpeningHoursSchedule();
         var extendedSchedule = TestSchedules.GetExtendedOpeningHoursSchedule();
-        var events = new List<Event>
+        var activity = new List<AccessActivity>
         {
             new()
             {
-                Subject = new() { },
-                Verb = EventVerb.Use,
-                Object = new()
+                MemberId = "member1",
+                CheckInEvent = new()
                 {
-                    MemberId = "member1",
-                    GadgetId = "front_door",
-                    GadgetActionId = FrontDoorGadget.Actions.OpenEntry
+                    Subject = new() { },
+                    Verb = EventVerb.Use,
+                    Object = new()
+                    {
+                        MemberId = "member1",
+                        GadgetId = "access",
+                        GadgetActionId = AccessGadget.Actions.CheckIn
+                    },
+                    CreatedAt = _fakeTime.GetUtcNow().UtcDateTime
                 },
-                CreatedAt = _fakeTime.GetUtcNow().UtcDateTime
-            },
-            new()
-            {
-                Subject = new() { },
-                Verb = EventVerb.Use,
-                Object = new()
+                CheckOutEvent = new()
                 {
-                    MemberId = "member1",
-                    GadgetId = "front_door",
-                    GadgetActionId = FrontDoorGadget.Actions.OpenExit
-                },
-                CreatedAt = _fakeTime.GetUtcNow().UtcDateTime
+                    Subject = new() { },
+                    Verb = EventVerb.Use,
+                    Object = new()
+                    {
+                        MemberId = "member1",
+                        GadgetId = "access",
+                        GadgetActionId = AccessGadget.Actions.CheckOut
+                    },
+                    CreatedAt = _fakeTime.GetUtcNow().UtcDateTime
+                }
             }
         };
-        _doorGadgetMock
+        _accessGadgetMock
             .Setup(m =>
-                m.GetRecentEventsAsync(
+                m.GetActivityAsync(
                     _clientMock.Object,
+                    null,
                     It.IsAny<DateTimeOffset>(),
                     EventsExpand.None,
                     CancellationToken.None
                 )
             )
-            .Returns(events.AsEnumerable().Reverse().ToAsyncEnumerable());
+            .ReturnsAsync(activity);
         _lightGadgetMock
             .Setup(m => m.TurnOffAsync(_clientMock.Object, CancellationToken.None))
             .Verifiable();

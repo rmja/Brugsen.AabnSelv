@@ -20,4 +20,11 @@ public class NoopFrontDoorLockGadget : IFrontDoorLockGadget
         State = LockState.Locked;
         return Task.CompletedTask;
     }
+
+    public Task UnlockAsync(IAkilesApiClient client, CancellationToken cancellationToken)
+    {
+        _logger?.LogInformation("FAKE: Unlocking front door");
+        State = LockState.Unlocked;
+        return Task.CompletedTask;
+    }
 }

@@ -6,10 +6,20 @@ using Brugsen.AabnSelv.Controllers;
 using Brugsen.AabnSelv.Endpoints;
 using Brugsen.AabnSelv.Gadgets;
 using Microsoft.AspNetCore.Http.Json;
+using Microsoft.Extensions.Logging.Console;
 using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
 
 var builder = WebApplication.CreateSlimBuilder(args);
+
+// Use a reasonable console logger that includes timestamp
+// This is useful when inspecting raw console output in kubernetes
+builder.Logging.AddSimpleConsole(options =>
+{
+    options.ColorBehavior = LoggerColorBehavior.Enabled;
+    options.SingleLine = false;
+    options.TimestampFormat = "yyyy-MM-dd'T'HH:mm:ss ";
+});
 
 builder.Services.Configure<BrugsenAabnSelvOptions>(builder.Configuration);
 builder.Services.Configure<JsonOptions>(options =>
@@ -21,41 +31,10 @@ builder.Services.Configure<JsonOptions>(options =>
 builder.Services.AddSingleton<TimeProvider, DanishTimeProvider>();
 builder.Services.AddHostedService<FinalLockdownController>();
 builder.Services.AddHostedService<DynamicLockdownController>();
-
-builder.Services.AddSingleton<IFrontDoorGadget>(provider =>
-{
-    var options = provider.GetRequiredService<IOptions<BrugsenAabnSelvOptions>>();
-    return ActivatorUtilities.CreateInstance<FrontDoorGadget>(
-        provider,
-        options.Value.FrontDoorGadgetId
-    );
-});
-builder.Services.AddSingleton<IFrontDoorLockGadget>(provider =>
-{
-    var options = provider.GetRequiredService<IOptions<BrugsenAabnSelvOptions>>();
-    return options.Value.FrontDoorLockGadgetId is not null
-        ? ActivatorUtilities.CreateInstance<FrontDoorLockGadget>(
-            provider,
-            options.Value.FrontDoorLockGadgetId
-        )
-        : ActivatorUtilities.CreateInstance<NoopFrontDoorLockGadget>(provider);
-});
-builder.Services.AddSingleton<IAlarmGadget>(provider =>
-{
-    var options = provider.GetRequiredService<IOptions<BrugsenAabnSelvOptions>>();
-    return options.Value.AlarmGadgetId is not null
-        ? ActivatorUtilities.CreateInstance<AlarmGadget>(provider, options.Value.AlarmGadgetId)
-        : ActivatorUtilities.CreateInstance<NoopAlarmGadget>(provider);
-});
-builder.Services.AddSingleton<ILightGadget>(provider =>
-{
-    var options = provider.GetRequiredService<IOptions<BrugsenAabnSelvOptions>>();
-    return options.Value.LightGadgetId is not null
-        ? ActivatorUtilities.CreateInstance<LightGadget>(provider, options.Value.LightGadgetId)
-        : ActivatorUtilities.CreateInstance<NoopLightGadget>(provider);
-});
+builder.Services.AddSingleton<WebhookEventValidator>();
 
 builder.Services.AddAkilesApi();
+builder.Services.AddGadgets();
 
 builder
     .Services.AddKeyedSingleton(
@@ -85,7 +64,10 @@ app.UseRouting(); // Must be called explicitly for PathBase to have effect, see 
 HistoryEndpoints.AddRoutes(app);
 MembersEndpoints.AddRoutes(app);
 OAuthEndpoints.AddRoutes(app);
+WebhooksEndpoints.AddRoutes(app);
 app.MapFallbackToFile("index.html");
 app.UseDefaultFiles();
 app.UseStaticFiles();
 app.Run();
+
+public partial class Program { }

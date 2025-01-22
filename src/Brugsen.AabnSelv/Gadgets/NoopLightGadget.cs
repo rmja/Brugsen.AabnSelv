@@ -14,6 +14,13 @@ public class NoopLightGadget : ILightGadget
         _logger = logger;
     }
 
+    public Task TurnOnAsync(IAkilesApiClient client, CancellationToken cancellationToken)
+    {
+        _logger?.LogInformation("FAKE: Turning on the light");
+        State = LightState.On;
+        return Task.CompletedTask;
+    }
+
     public Task TurnOffAsync(IAkilesApiClient client, CancellationToken cancellationToken)
     {
         _logger?.LogInformation("FAKE: Turning off the light");

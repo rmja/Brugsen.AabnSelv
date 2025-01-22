@@ -2,7 +2,7 @@
 
 internal static class EnumerableExtensions
 {
-    public static async IAsyncEnumerable<T> ToAsyncEnumerable<T>(this IEnumerable<T> source)
+    public static async IAsyncEnumerable<T> AsAsyncEnumerable<T>(this IEnumerable<T> source)
     {
         foreach (var item in source)
         {

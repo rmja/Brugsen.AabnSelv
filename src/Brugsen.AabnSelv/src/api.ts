@@ -23,7 +23,7 @@ export interface Member {
   isApproved: boolean;
 }
 
-export class StoreActivity {
+export class AccessActivity {
   @jsonProperty()
   memberId!: string;
   @jsonProperty()
@@ -97,10 +97,10 @@ export class ApiClient {
     return http.delete(`/members/${memberId}`);
   }
 
-  getStoreActivity() {
+  getAccessActivity() {
     return http
-      .get(`/history/store-activity`)
-      .expectJsonArray(StoreActivity);
+      .get(`/history/access-activity`)
+      .expectJsonArray(AccessActivity);
   }
 
   getEvents(gadget: "alarm") {

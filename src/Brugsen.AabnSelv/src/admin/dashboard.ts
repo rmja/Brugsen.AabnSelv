@@ -20,7 +20,7 @@ export class DashboardPage implements IRouteableComponent {
     [this.pending, this.alarmEvents, this.storeActivity] = await Promise.all([
       this.api.getPendingApproval().transfer(),
       this.api.getEvents("alarm").transfer(),
-      this.api.getStoreActivity().transfer(),
+      this.api.getAccessActivity().transfer(),
     ]);
   }
 

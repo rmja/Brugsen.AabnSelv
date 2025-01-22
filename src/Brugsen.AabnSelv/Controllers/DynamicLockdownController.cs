@@ -7,7 +7,7 @@ using Microsoft.Extensions.Options;
 namespace Brugsen.AabnSelv.Controllers;
 
 public class DynamicLockdownController(
-    IFrontDoorGadget frontDoorGadget,
+    IAccessGadget accessGadget,
     ILightGadget lightGadget,
     IFrontDoorLockGadget lockGadget,
     IAlarmGadget alarmGadget,
@@ -109,37 +109,24 @@ public class DynamicLockdownController(
     private async Task TryLockdownAsync(CancellationToken cancellationToken)
     {
         var now = timeProvider.GetLocalNow();
-        var recentEvents = await frontDoorGadget
-            .GetRecentEventsAsync(
-                client,
-                notBefore: now.AddHours(-1),
-                EventsExpand.None,
-                cancellationToken
-            )
-            .ToListAsync(cancellationToken);
+        var activity = await accessGadget.GetActivityAsync(
+            client,
+            memberId: null,
+            notBefore: now.AddHours(-1),
+            EventsExpand.None,
+            cancellationToken
+        );
 
-        // Change event order to ascending
-        recentEvents.Reverse();
+        var anyEntries = activity.Any(x => x.CheckInEvent is not null);
+        var membersInStoreCount = activity.Count(x =>
+            x.CheckInEvent is not null && x.CheckOutEvent is null
+        );
 
-        var anyEntries = false;
-        var membersInStore = new HashSet<string>();
-        foreach (var evnt in recentEvents)
-        {
-            switch (evnt.Object.GadgetActionId)
-            {
-                case FrontDoorGadget.Actions.OpenEntry:
-                    anyEntries = true;
-                    membersInStore.Add(evnt.Object.MemberId!);
-                    break;
-                case FrontDoorGadget.Actions.OpenExit:
-                    membersInStore.Remove(evnt.Object.MemberId!);
-                    break;
-            }
-        }
-
-        if (anyEntries && membersInStore.Count == 0)
+        if (anyEntries && membersInStoreCount == 0)
         {
             logger.LogInformation(EventIds.LockdownSequence, "Performing dynamic lockdown");
+
+            // TODO: Should this be delayed?
 
             await lightGadget.TurnOffAsync(client, cancellationToken);
             await lockGadget.LockAsync(client, cancellationToken);

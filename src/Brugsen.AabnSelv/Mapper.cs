@@ -1,4 +1,7 @@
-﻿using Akiles.Api.Members;
+﻿using Akiles.Api.Events;
+using Akiles.Api.Members;
+using Brugsen.AabnSelv.Endpoints;
+using Brugsen.AabnSelv.Gadgets;
 using Brugsen.AabnSelv.Models;
 
 namespace Brugsen.AabnSelv;
@@ -21,4 +24,19 @@ public static class Mapper
             ),
             IsApproved = isApproved
         };
+
+    public static AccessActivityDto ToDto(this AccessActivity activity)
+    {
+        var memberName = (activity.CheckInEvent ?? activity.CheckOutEvent)?.ObjectMember?.Name;
+        return new()
+        {
+            MemberId = activity.MemberId,
+            MemberName = memberName ?? "",
+            CheckedInAt = activity.CheckInEvent?.CreatedAt,
+            CheckedOutAt = activity.CheckOutEvent?.CreatedAt
+        };
+    }
+
+    public static EventDto ToDto(this Event evnt) =>
+        new() { Action = evnt.Object.GadgetActionId!, CreatedAt = evnt.CreatedAt };
 }

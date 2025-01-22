@@ -10,34 +10,31 @@ public class AlarmGadget(string gadgetId, ILogger<AlarmGadget>? logger = null) :
         CancellationToken cancellationToken
     )
     {
-        await foreach (
-            var evnt in client
-                .Events.ListEventsAsync(sort: "created_at:desc")
-                .WithCancellation(cancellationToken)
-        )
-        {
-            if (evnt.Object.GadgetId == gadgetId)
+        var events = await client.Events.ListEventsAsync(
+            cursor: null,
+            limit: 1,
+            sort: "created_at:desc",
+            new ListEventsFilter()
             {
-                if (evnt.Object.GadgetActionId == Actions.AlarmArm)
-                {
-                    return evnt.CreatedAt;
-                }
-            }
-        }
+                Object = new() { GadgetId = gadgetId, GadgetActionId = Actions.AlarmArm }
+            },
+            EventsExpand.None,
+            cancellationToken
+        );
 
-        return null;
+        return events.Data.SingleOrDefault()?.CreatedAt;
     }
 
-    public async Task ArmAsync(IAkilesApiClient client, CancellationToken cancellationToken)
+    public Task ArmAsync(IAkilesApiClient client, CancellationToken cancellationToken)
     {
         logger?.LogInformation("Arming alarm");
-        await client.Gadgets.DoGadgetActionAsync(gadgetId, Actions.AlarmArm, cancellationToken);
+        return client.Gadgets.DoGadgetActionAsync(gadgetId, Actions.AlarmArm, cancellationToken);
     }
 
-    public async Task DisarmAsync(IAkilesApiClient client, CancellationToken cancellationToken)
+    public Task DisarmAsync(IAkilesApiClient client, CancellationToken cancellationToken)
     {
         logger?.LogInformation("Disarming alarm");
-        await client.Gadgets.DoGadgetActionAsync(gadgetId, Actions.AlarmDisarm, cancellationToken);
+        return client.Gadgets.DoGadgetActionAsync(gadgetId, Actions.AlarmDisarm, cancellationToken);
     }
 
     public IAsyncEnumerable<Event> GetRecentEventsAsync(
@@ -45,7 +42,7 @@ public class AlarmGadget(string gadgetId, ILogger<AlarmGadget>? logger = null) :
         DateTimeOffset notBefore,
         EventsExpand expand,
         CancellationToken cancellationToken
-    ) => client.Events.ListRecentEventsAsync(gadgetId, notBefore, expand, cancellationToken);
+    ) => client.Events.ListRecentGadgetEventsAsync(gadgetId, notBefore, expand, cancellationToken);
 
     public static class Actions
     {

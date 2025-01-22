@@ -1,6 +1,6 @@
 ﻿namespace Brugsen.AabnSelv.Endpoints;
 
-public record StoreActivityDto
+public record AccessActivityDto
 {
     public required string MemberId { get; set; }
     public required string MemberName { get; set; }

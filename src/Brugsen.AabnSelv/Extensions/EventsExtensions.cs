@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using Akiles.Api.Events;
 
 namespace Brugsen.AabnSelv;
@@ -11,17 +12,31 @@ public static class EventsExtensions
     /// <param name="notBefore"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    public static async IAsyncEnumerable<Event> ListRecentEventsAsync(
+    public static IAsyncEnumerable<Event> ListRecentGadgetEventsAsync(
         this IEvents events,
         string gadgetId,
         DateTimeOffset notBefore,
+        EventsExpand expand,
+        CancellationToken cancellationToken
+    ) =>
+        events.ListRecentEventsAsync(
+            notBefore,
+            new ListEventsFilter() { Object = new() { GadgetId = gadgetId } },
+            expand,
+            cancellationToken
+        );
+
+    public static async IAsyncEnumerable<Event> ListRecentEventsAsync(
+        this IEvents events,
+        DateTimeOffset notBefore,
+        ListEventsFilter filter,
         EventsExpand expand,
         [EnumeratorCancellation] CancellationToken cancellationToken
     )
     {
         await foreach (
             var evnt in events
-                .ListEventsAsync(sort: "created_at:desc", expand)
+                .ListEventsAsync(sort: "created_at:desc", filter, expand)
                 .WithCancellation(cancellationToken)
         )
         {
@@ -29,10 +44,8 @@ public static class EventsExtensions
             {
                 break;
             }
-            if (evnt.Object.GadgetId == gadgetId)
-            {
-                yield return evnt;
-            }
+
+            yield return evnt;
         }
     }
 }

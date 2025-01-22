@@ -16,8 +16,17 @@ public class AlarmGadgetTests
         var alarm = new AlarmGadget("alarm");
 
         clientMock
-            .Setup(m => m.Events.ListEventsAsync("created_at:desc", EventsExpand.None))
-            .Returns(Array.Empty<Event>().ToAsyncEnumerable());
+            .Setup(m =>
+                m.Events.ListEventsAsync(
+                    null,
+                    1,
+                    "created_at:desc",
+                    It.IsAny<ListEventsFilter>(),
+                    EventsExpand.None,
+                    CancellationToken.None
+                )
+            )
+            .ReturnsAsync(new PagedList<Event>());
 
         // When
         var lastArmed = await alarm.GetLastArmedAsync(clientMock.Object, CancellationToken.None);
@@ -32,7 +41,7 @@ public class AlarmGadgetTests
         // Given
         var alarm = new AlarmGadget("alarm");
         var armEventCreated = DateTime.UtcNow;
-        var events = new List<Event>()
+        var events = new PagedList<Event>()
         {
             new()
             {
@@ -47,8 +56,17 @@ public class AlarmGadgetTests
             },
         };
         clientMock
-            .Setup(m => m.Events.ListEventsAsync("created_at:desc", EventsExpand.None))
-            .Returns(events.ToAsyncEnumerable());
+            .Setup(m =>
+                m.Events.ListEventsAsync(
+                    null,
+                    1,
+                    "created_at:desc",
+                    It.IsAny<ListEventsFilter>(),
+                    EventsExpand.None,
+                    CancellationToken.None
+                )
+            )
+            .ReturnsAsync(events);
 
         // When
         var lastArmed = await alarm.GetLastArmedAsync(clientMock.Object, CancellationToken.None);
