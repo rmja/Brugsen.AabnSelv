@@ -5,16 +5,20 @@ namespace Brugsen.AabnSelv.Gadgets;
 public class FrontDoorLockGadget(string gadgetId, ILogger<FrontDoorLockGadget> logger)
     : IFrontDoorLockGadget
 {
-    public Task LockAsync(IAkilesApiClient client, CancellationToken cancellationToken)
+    public LockState State { get; private set; } = LockState.Unknown;
+
+    public async Task LockAsync(IAkilesApiClient client, CancellationToken cancellationToken)
     {
         logger?.LogInformation("Locking front door");
-        return client.Gadgets.DoGadgetActionAsync(gadgetId, Actions.Lock, cancellationToken);
+        await client.Gadgets.DoGadgetActionAsync(gadgetId, Actions.Lock, cancellationToken);
+        State = LockState.Locked;
     }
 
-    public Task UnlockAsync(IAkilesApiClient client, CancellationToken cancellationToken)
+    public async Task UnlockAsync(IAkilesApiClient client, CancellationToken cancellationToken)
     {
         logger?.LogInformation("Unlocking front door");
-        return client.Gadgets.DoGadgetActionAsync(gadgetId, Actions.Unlock, cancellationToken);
+        await client.Gadgets.DoGadgetActionAsync(gadgetId, Actions.Unlock, cancellationToken);
+        State = LockState.Unlocked;
     }
 
     public static class Actions

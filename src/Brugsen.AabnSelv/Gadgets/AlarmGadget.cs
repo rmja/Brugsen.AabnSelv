@@ -5,6 +5,8 @@ namespace Brugsen.AabnSelv.Gadgets;
 
 public class AlarmGadget(string gadgetId, ILogger<AlarmGadget>? logger = null) : IAlarmGadget
 {
+    public AlarmState State { get; private set; } = AlarmState.Unknown;
+
     public async Task<DateTime?> GetLastArmedAsync(
         IAkilesApiClient client,
         CancellationToken cancellationToken
@@ -25,16 +27,18 @@ public class AlarmGadget(string gadgetId, ILogger<AlarmGadget>? logger = null) :
         return events.Data.SingleOrDefault()?.CreatedAt;
     }
 
-    public Task ArmAsync(IAkilesApiClient client, CancellationToken cancellationToken)
+    public async Task ArmAsync(IAkilesApiClient client, CancellationToken cancellationToken)
     {
         logger?.LogInformation("Arming alarm");
-        return client.Gadgets.DoGadgetActionAsync(gadgetId, Actions.AlarmArm, cancellationToken);
+        await client.Gadgets.DoGadgetActionAsync(gadgetId, Actions.AlarmArm, cancellationToken);
+        State = AlarmState.Armed;
     }
 
-    public Task DisarmAsync(IAkilesApiClient client, CancellationToken cancellationToken)
+    public async Task DisarmAsync(IAkilesApiClient client, CancellationToken cancellationToken)
     {
         logger?.LogInformation("Disarming alarm");
-        return client.Gadgets.DoGadgetActionAsync(gadgetId, Actions.AlarmDisarm, cancellationToken);
+        await client.Gadgets.DoGadgetActionAsync(gadgetId, Actions.AlarmDisarm, cancellationToken);
+        State = AlarmState.Disarmed;
     }
 
     public IAsyncEnumerable<Event> GetRecentEventsAsync(

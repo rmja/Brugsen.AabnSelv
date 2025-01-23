@@ -5,6 +5,7 @@ namespace Brugsen.AabnSelv.Gadgets;
 
 public interface IAlarmGadget
 {
+    AlarmState State { get; }
     Task<DateTime?> GetLastArmedAsync(IAkilesApiClient client, CancellationToken cancellationToken);
     Task ArmAsync(IAkilesApiClient client, CancellationToken cancellationToken);
     Task DisarmAsync(IAkilesApiClient client, CancellationToken cancellationToken);

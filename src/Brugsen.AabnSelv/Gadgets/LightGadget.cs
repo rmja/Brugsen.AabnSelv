@@ -4,16 +4,20 @@ namespace Brugsen.AabnSelv.Gadgets;
 
 public class LightGadget(string gadgetId, ILogger<LightGadget>? logger = null) : ILightGadget
 {
-    public Task TurnOnAsync(IAkilesApiClient client, CancellationToken cancellationToken)
+    public LightState State { get; private set; } = LightState.Unknown;
+
+    public async Task TurnOnAsync(IAkilesApiClient client, CancellationToken cancellationToken)
     {
         logger?.LogInformation("Turning on the light");
-        return client.Gadgets.DoGadgetActionAsync(gadgetId, Actions.LightOn, cancellationToken);
+        await client.Gadgets.DoGadgetActionAsync(gadgetId, Actions.LightOn, cancellationToken);
+        State = LightState.On;
     }
 
-    public Task TurnOffAsync(IAkilesApiClient client, CancellationToken cancellationToken)
+    public async Task TurnOffAsync(IAkilesApiClient client, CancellationToken cancellationToken)
     {
         logger?.LogInformation("Turning off the light");
-        return client.Gadgets.DoGadgetActionAsync(gadgetId, Actions.LightOff, cancellationToken);
+        await client.Gadgets.DoGadgetActionAsync(gadgetId, Actions.LightOff, cancellationToken);
+        State = LightState.Off;
     }
 
     public static class Actions
