@@ -30,7 +30,7 @@
       <dd class="col-8">
         ${activity.checkedOutAt | localDateTime}
         <let duration.bind="getDuration(activity)"></let>
-        <span if.bind="duration">+ ${duration}</span>
+        <small class="text-muted" if.bind="duration">+ ${duration}</small>
       </dd>
     </dl>
   </div>

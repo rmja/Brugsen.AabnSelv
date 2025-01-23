@@ -38,7 +38,7 @@ export class DashboardPage implements IRouteableComponent {
       return activity.checkedInAt
         .until(activity.checkedOutAt)
         .toDuration()
-        .toFormat("hh:mm:ss");
+        .toFormat("mm:ss");
     }
   }
 }
