@@ -21,7 +21,7 @@ public static class SchedulesExtensions
     {
         var schedule = new Schedule
         {
-            Id = "regular_opening_hours",
+            Id = "sch_41fm7t77cmm31j8jdd91",
             OrganizationId = "",
             Name = "Normale åbningstider"
         };
@@ -50,7 +50,7 @@ public static class SchedulesExtensions
 
         schedule = new Schedule
         {
-            Id = "extended_opening_hours",
+            Id = "sch_41djhl5mae8q65bysuxh",
             OrganizationId = "",
             Name = "ÅBN SELV åbningstider"
         };

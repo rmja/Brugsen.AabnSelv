@@ -9,8 +9,8 @@ public class BrugsenAabnSelvOptions
     public string? FrontDoorLockGadgetId { get; set; }
     public string? LightGadgetId { get; set; }
     public string? AlarmGadgetId { get; set; }
-    public required string RegularOpeningHoursScheduleId { get; set; } = "regular_opening_hours";
-    public required string ExtendedOpeningHoursScheduleId { get; set; } = "extended_opening_hours";
+    public required string RegularOpeningHoursScheduleId { get; set; }
+    public required string ExtendedOpeningHoursScheduleId { get; set; }
     public string? WebhookId { get; set; }
     public string? WebhookSecret { get; set; }
 }
