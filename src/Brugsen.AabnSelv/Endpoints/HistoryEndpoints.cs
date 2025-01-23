@@ -29,7 +29,7 @@ public static class HistoryEndpoints
             client,
             memberId: null,
             notBefore,
-            EventsExpand.ObjectMember,
+            EventsExpand.SubjectMember,
             cancellationToken
         );
 

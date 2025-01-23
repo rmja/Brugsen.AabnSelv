@@ -20,38 +20,41 @@
 </table>
 <p else>Der er ingen afventende anmodninger</p>
 
+<h3>Seneste adgangsaktivitet</h3>
+<table class="table" if.bind="accessActivity.length > 0">
+<thead>
+  <tr>
+    <th>Navn</th>
+    <th>Check-ind</th>
+    <th>Check-ud</th>
+    <th>Tid</th>
+  </tr>
+</thead>
+<tbody>
+  <tr repeat.for="activity of accessActivity">
+    <td>${activity.memberName}</td>
+    <td>${activity.checkedInAt | localDateTime}</td>
+    <td>${activity.checkedOutAt | localDateTime}</td>
+    <td>${getDuration(activity)}</td>
+  </tr>
+</tbody>
+</table>
+<p else>Ingen aktivitet</p>
+
 <h3>Seneste alarmhandlinger</h3>
 <table class="table" if.bind="alarmEvents.length > 0">
 <thead>
   <tr>
-    <th>Handling</th>
     <th>Tidspunkt</th>
+    <th>Handling</th>
   </tr>
 </thead>
 <tbody>
   <tr repeat.for="event of alarmEvents">
+    <td>${event.createdAt | localDateTime}</td>
     <td>${event.activity}</td>
-    <td>${event.createdAt}</td>
   </tr>
 </tbody>
 </table>
 <p else>Ingen handlinger</p>
 
-<h3>Seneste butiksaktivitet</h3>
-<table class="table" if.bind="storeActivity.length > 0">
-<thead>
-  <tr>
-    <th>Navn</th>
-    <th>Tjekket ind</th>
-    <th>Tjekket ud</th>
-  </tr>
-</thead>
-<tbody>
-  <tr repeat.for="activity of storeActivity">
-    <td>${activity.memberName}</td>
-    <td>${activity.checkedInAt}</td>
-    <td>${activity.checkedOutAt}</td>
-  </tr>
-</tbody>
-</table>
-<p else>Ingen aktivitet</p>

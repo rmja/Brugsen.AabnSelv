@@ -5,8 +5,21 @@ import { IntlTelInputConfiguration } from "./resources/intl-tel-input";
 import { QrCodeCustomElement } from "./resources/qr-code";
 import { RouterConfiguration } from "@aurelia/router";
 import { ValuesValueConverter } from "./resources/values-value-converter";
+import { Settings } from "luxon";
+import { LocalDateTimeValueConverter } from "./resources/local-date-time-format";
 
 (<any>Symbol).metadata ??= Symbol("Symbol.metadata");
+
+Settings.defaultLocale = "da-DK";
+Settings.throwOnInvalid = true;
+
+
+declare module "luxon" {
+  interface TSSettings {
+    throwOnInvalid: true;
+  }
+}
+
 
 const aurelia = new Aurelia()
   .register(
@@ -22,7 +35,8 @@ const aurelia = new Aurelia()
       onlyCountries: ["dk", "se", "no", "de"],
     }),
     ValuesValueConverter,
-    QrCodeCustomElement
+    QrCodeCustomElement,
+    LocalDateTimeValueConverter,
   )
   .app({
     component: AppRootCustomElement,

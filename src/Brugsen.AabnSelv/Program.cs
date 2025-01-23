@@ -62,9 +62,15 @@ HistoryEndpoints.AddRoutes(app);
 MembersEndpoints.AddRoutes(app);
 OAuthEndpoints.AddRoutes(app);
 WebhooksEndpoints.AddRoutes(app);
-app.MapFallbackToFile("index.html");
-app.UseDefaultFiles();
-app.UseStaticFiles();
+app.MapWhen(
+    x => !x.Request.Path.StartsWithSegments("/api"),
+    notApi =>
+        notApi
+            .UseDefaultFiles()
+            .UseStaticFiles()
+            .UseRouting()
+            .UseEndpoints(endpoints => endpoints.MapFallbackToFile("index.html"))
+);
 app.Run();
 
 public partial class Program { }

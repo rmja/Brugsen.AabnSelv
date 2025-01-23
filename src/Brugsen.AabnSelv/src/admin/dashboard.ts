@@ -9,7 +9,7 @@ import template from "./dashboard.html";
 export class DashboardPage implements IRouteableComponent {
   pending!: MemberViewModel[];
   alarmEvents!: EventViewModel[];
-  storeActivity!: StoreActivityViewModel[];
+  accessActivity!: AccessActivityViewModel[];
 
   constructor(
     private readonly api = resolve(ApiClient),
@@ -17,7 +17,7 @@ export class DashboardPage implements IRouteableComponent {
   ) {}
 
   async loading() {
-    [this.pending, this.alarmEvents, this.storeActivity] = await Promise.all([
+    [this.pending, this.alarmEvents, this.accessActivity] = await Promise.all([
       this.api.getPendingApproval().transfer(),
       this.api.getEvents("alarm").transfer(),
       this.api.getAccessActivity().transfer(),
@@ -28,6 +28,15 @@ export class DashboardPage implements IRouteableComponent {
     return this.router.load(`../members/${memberId}/approve`, {
       context: this,
     });
+  }
+
+  getDuration(activity: AccessActivityViewModel) {
+    if (activity.checkedInAt && activity.checkedOutAt) {
+      return activity.checkedInAt
+        .until(activity.checkedOutAt)
+        .toDuration()
+        .toFormat("hh:mm:ss");
+    }
   }
 }
 
@@ -42,8 +51,8 @@ interface EventViewModel {
   createdAt: DateTime;
 }
 
-interface StoreActivityViewModel {
+interface AccessActivityViewModel {
   memberName: string;
-  checkedInAt?: DateTime,
-  checkedOutAt?: DateTime,
+  checkedInAt?: DateTime;
+  checkedOutAt?: DateTime;
 }

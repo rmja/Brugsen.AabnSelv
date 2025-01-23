@@ -27,7 +27,7 @@ public static class Mapper
 
     public static AccessActivityDto ToDto(this AccessActivity activity)
     {
-        var memberName = (activity.CheckInEvent ?? activity.CheckOutEvent)?.ObjectMember?.Name;
+        var memberName = (activity.CheckInEvent ?? activity.CheckOutEvent)?.SubjectMember?.Name;
         return new()
         {
             MemberId = activity.MemberId,
