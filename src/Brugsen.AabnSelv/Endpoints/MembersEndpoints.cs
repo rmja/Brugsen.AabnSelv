@@ -86,16 +86,6 @@ public static class MembersEndpoints
             CancellationToken.None
         );
 
-        await apiClient.Members.CreatePinAsync(
-            member.Id,
-            new()
-            {
-                Pin = init.LaesoeCardNumber,
-                Metadata = { [MetadataKeys.MemberPin.Kind] = "laesoe_card_number" }
-            },
-            CancellationToken.None
-        );
-
         return Results.Ok(member.ToDto(email, isApproved: false));
     }
 
