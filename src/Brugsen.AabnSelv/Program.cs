@@ -2,7 +2,6 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using Akiles.Api;
 using Brugsen.AabnSelv;
-using Brugsen.AabnSelv.Controllers;
 using Brugsen.AabnSelv.Endpoints;
 using Microsoft.AspNetCore.Http.Json;
 using Microsoft.Extensions.Logging.Console;
@@ -28,6 +27,7 @@ builder.Services.Configure<JsonOptions>(options =>
 
 builder.Services.AddSingleton<TimeProvider, DanishTimeProvider>();
 builder.Services.AddHostedService<LockdownController>();
+builder.Services.AddSingleton<AccessProcessor>();
 builder.Services.AddSingleton<WebhookEventValidator>();
 
 builder.Services.AddAkilesApi();

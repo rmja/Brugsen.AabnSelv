@@ -1,5 +1,4 @@
 ﻿using Akiles.Api;
-using Brugsen.AabnSelv.Controllers;
 using Brugsen.AabnSelv.Gadgets;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Time.Testing;

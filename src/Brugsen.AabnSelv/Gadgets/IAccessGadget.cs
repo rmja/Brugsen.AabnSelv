@@ -8,8 +8,6 @@ public interface IAccessGadget
     string GadgetId { get; }
     Task CheckInAsync(IAkilesApiClient client, CancellationToken cancellationToken);
     Task CheckOutAsync(IAkilesApiClient client, CancellationToken cancellationToken);
-    Task ProcessCheckInAsync(IAkilesApiClient client, string eventId, string memberId);
-    Task ProcessCheckOutAsync(IAkilesApiClient client, string eventId, string memberId);
     Task<bool> IsMemberCheckedInAsync(
         IAkilesApiClient client,
         string memberId,

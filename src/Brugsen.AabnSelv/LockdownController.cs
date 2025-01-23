@@ -3,7 +3,7 @@ using Akiles.Api.Schedules;
 using Brugsen.AabnSelv.Gadgets;
 using Microsoft.Extensions.Options;
 
-namespace Brugsen.AabnSelv.Controllers;
+namespace Brugsen.AabnSelv;
 
 public sealed class LockdownController(
     ILightGadget lightGadget,

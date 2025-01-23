@@ -43,8 +43,7 @@ public static class WebhooksEndpoints
     private static async Task<IResult> ProcessGadgetActionEventAsync(
         HttpRequest request,
         WebhookEventValidator validator,
-        IAccessGadget accessGadget,
-        [FromKeyedServices(ServiceKeys.ApiKeyClient)] IAkilesApiClient client,
+        AccessProcessor accessProcessor,
         CancellationToken cancellationToken
     )
     {
@@ -54,15 +53,15 @@ public static class WebhooksEndpoints
             return Results.BadRequest();
         }
         var memberId = evnt.Subject.MemberId;
-        if (memberId is not null && evnt.Object.GadgetId == accessGadget.GadgetId)
+        if (memberId is not null && evnt.Object.GadgetId == accessProcessor.AccessGadget.GadgetId)
         {
             switch (evnt.Object.GadgetActionId)
             {
                 case AccessGadget.Actions.CheckIn:
-                    await accessGadget.ProcessCheckInAsync(client, evnt.Id, memberId);
+                    await accessProcessor.ProcessCheckInAsync(evnt.Id, memberId);
                     break;
                 case AccessGadget.Actions.CheckOut:
-                    await accessGadget.ProcessCheckOutAsync(client, evnt.Id, memberId);
+                    await accessProcessor.ProcessCheckOutAsync(evnt.Id, memberId);
                     break;
             }
         }
