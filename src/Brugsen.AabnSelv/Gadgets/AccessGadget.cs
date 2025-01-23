@@ -23,8 +23,8 @@ public class AccessGadget(string gadgetId, ILogger<AccessGadget>? logger = null)
         IAkilesApiClient client,
         string memberId,
         DateTimeOffset notBefore,
-        string? ignoreEventId = null,
-        CancellationToken cancellationToken = default
+        string? ignoreEventId,
+        CancellationToken cancellationToken
     )
     {
         var activity = await GetActivityAsync(
@@ -48,7 +48,7 @@ public class AccessGadget(string gadgetId, ILogger<AccessGadget>? logger = null)
     public async Task<bool> IsAnyCheckedInAsync(
         IAkilesApiClient client,
         DateTimeOffset notBefore,
-        CancellationToken cancellationToken = default
+        CancellationToken cancellationToken
     )
     {
         var activities = await GetActivityAsync(
@@ -83,8 +83,8 @@ public class AccessGadget(string gadgetId, ILogger<AccessGadget>? logger = null)
         IAkilesApiClient client,
         string? memberId,
         DateTimeOffset notBefore,
-        EventsExpand expand = EventsExpand.None,
-        CancellationToken cancellationToken = default
+        EventsExpand expand,
+        CancellationToken cancellationToken
     )
     {
         var filter = new ListEventsFilter() { Object = new() { GadgetId = GadgetId }, };

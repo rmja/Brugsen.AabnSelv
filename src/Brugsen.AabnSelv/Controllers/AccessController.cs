@@ -59,7 +59,7 @@ public sealed class AccessController(
                 _blackoutSignalled = false;
                 if (light.State != LightState.Off)
                 {
-                    await light.TurnOffAsync(client, CancellationToken.None);
+                    await light.TurnOffAsync(client);
                 }
             }
 
@@ -68,7 +68,7 @@ public sealed class AccessController(
                 _lockdownSignalled = false;
                 if (alarm.State != AlarmState.Armed)
                 {
-                    await alarm.ArmAsync(client, CancellationToken.None);
+                    await alarm.ArmAsync(client);
                 }
             }
         }
@@ -90,23 +90,23 @@ public sealed class AccessController(
 
         if (alarm.State != AlarmState.Disarmed)
         {
-            await alarm.DisarmAsync(client, CancellationToken.None);
+            await alarm.DisarmAsync(client);
         }
 
         if (light.State != LightState.On)
         {
-            await light.TurnOnAsync(client, CancellationToken.None);
+            await light.TurnOnAsync(client);
         }
 
         if (doorLock.State != LockState.Unlocked)
         {
-            await doorLock.UnlockAsync(client, CancellationToken.None);
+            await doorLock.UnlockAsync(client);
 
             // Wait for the lock to perform the unlock operation before we try and open the door
             await Task.Delay(doorLock.UnlockOperationDuration, timeProvider);
         }
 
-        await door.OpenOnceAsync(client, CancellationToken.None);
+        await door.OpenOnceAsync(client);
     }
 
     public async Task ProcessCheckOutAsync(string eventId, string memberId)
@@ -150,7 +150,7 @@ public sealed class AccessController(
 
         logger.LogInformation("Checking-out member {MemberId}", memberId);
 
-        await door.OpenOnceAsync(client, CancellationToken.None);
+        await door.OpenOnceAsync(client);
 
         var anyCheckedIn = await access.IsAnyCheckedInAsync(
             client,
@@ -164,7 +164,7 @@ public sealed class AccessController(
         else
         {
             logger.LogInformation(
-                "Member {MemberId} is the last checked-in - turn off the light",
+                "Member {MemberId} is the last checked-in. Scheduling blackout and lockdown",
                 memberId
             );
 

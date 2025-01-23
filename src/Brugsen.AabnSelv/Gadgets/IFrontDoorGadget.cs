@@ -5,13 +5,9 @@ namespace Brugsen.AabnSelv.Gadgets;
 
 public interface IFrontDoorGadget
 {
-    Task OpenOnceAsync(IAkilesApiClient client, CancellationToken cancellationToken);
-    Task<bool> IsClosedAsync(IAkilesApiClient client, CancellationToken cancellationToken);
-
-    IAsyncEnumerable<Event> GetRecentEventsAsync(
+    Task OpenOnceAsync(IAkilesApiClient client, CancellationToken cancellationToken = default);
+    Task<bool> IsClosedAsync(
         IAkilesApiClient client,
-        DateTimeOffset notBefore,
-        EventsExpand expand,
-        CancellationToken cancellationToken
+        CancellationToken cancellationToken = default
     );
 }

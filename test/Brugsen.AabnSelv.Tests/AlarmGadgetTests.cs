@@ -8,13 +8,12 @@ namespace Brugsen.AabnSelv.Tests;
 public class AlarmGadgetTests
 {
     private readonly Mock<IAkilesApiClient> clientMock = new();
+    private readonly IAlarmGadget _alarmGadget = new AlarmGadget("alarm");
 
     [Fact]
     public async Task CanGetLastArmed_WhenNotPreviouslyArmed()
     {
         // Given
-        var alarm = new AlarmGadget("alarm");
-
         clientMock
             .Setup(m =>
                 m.Events.ListEventsAsync(
@@ -26,10 +25,10 @@ public class AlarmGadgetTests
                     CancellationToken.None
                 )
             )
-            .ReturnsAsync(new PagedList<Event>());
+            .ReturnsAsync([]);
 
         // When
-        var lastArmed = await alarm.GetLastArmedAsync(clientMock.Object, CancellationToken.None);
+        var lastArmed = await _alarmGadget.GetLastArmedAsync(clientMock.Object);
 
         // Then
         Assert.Null(lastArmed);
@@ -39,7 +38,6 @@ public class AlarmGadgetTests
     public async Task CanGetLastArmed()
     {
         // Given
-        var alarm = new AlarmGadget("alarm");
         var armEventCreated = DateTime.UtcNow;
         var events = new PagedList<Event>()
         {
@@ -69,7 +67,7 @@ public class AlarmGadgetTests
             .ReturnsAsync(events);
 
         // When
-        var lastArmed = await alarm.GetLastArmedAsync(clientMock.Object, CancellationToken.None);
+        var lastArmed = await _alarmGadget.GetLastArmedAsync(clientMock.Object);
 
         // Then
         Assert.Equal(armEventCreated, lastArmed);

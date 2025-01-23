@@ -1,5 +1,4 @@
 ﻿using Akiles.Api;
-using Akiles.Api.Events;
 
 namespace Brugsen.AabnSelv.Gadgets;
 
@@ -15,13 +14,6 @@ public class FrontDoorGadget(string gadgetId, ILogger<FrontDoorGadget>? logger) 
     {
         throw new NotImplementedException();
     }
-
-    public IAsyncEnumerable<Event> GetRecentEventsAsync(
-        IAkilesApiClient client,
-        DateTimeOffset notBefore,
-        EventsExpand expand,
-        CancellationToken cancellationToken
-    ) => client.Events.ListRecentGadgetEventsAsync(gadgetId, notBefore, expand, cancellationToken);
 
     public static class Actions
     {

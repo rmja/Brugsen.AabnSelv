@@ -15,7 +15,7 @@ public class AccessGadgetTests
     private readonly Mock<IFrontDoorGadget> _doorGadgetMock = new();
     private readonly Mock<IAkilesApiClient> _clientMock = new();
     private readonly FakeTimeProvider _fakeTime = new();
-    private readonly AccessGadget _accessGadget;
+    private readonly IAccessGadget _accessGadget;
 
     public AccessGadgetTests()
     {

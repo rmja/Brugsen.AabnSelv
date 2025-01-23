@@ -6,8 +6,8 @@ namespace Brugsen.AabnSelv.Gadgets;
 public interface IAccessGadget
 {
     string GadgetId { get; }
-    Task CheckInAsync(IAkilesApiClient client, CancellationToken cancellationToken);
-    Task CheckOutAsync(IAkilesApiClient client, CancellationToken cancellationToken);
+    Task CheckInAsync(IAkilesApiClient client, CancellationToken cancellationToken = default);
+    Task CheckOutAsync(IAkilesApiClient client, CancellationToken cancellationToken = default);
     Task<bool> IsMemberCheckedInAsync(
         IAkilesApiClient client,
         string memberId,
