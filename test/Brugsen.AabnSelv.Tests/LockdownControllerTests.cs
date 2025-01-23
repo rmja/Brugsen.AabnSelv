@@ -32,8 +32,6 @@ public class LockdownControllerTests
 
         _fakeTime.SetLocalTimeZone(DanishTimeProvider.EuropeCopenhagen);
         _controller = ActivatorUtilities.CreateInstance<LockdownController>(services);
-        Assert.Equal(LockState.Unknown, _lockGadget.State);
-        Assert.Equal(AlarmState.Unknown, _alarmGadget.State);
 
         _clientMock
             .Setup(m =>

@@ -26,13 +26,13 @@ public sealed class AccessController(
 
     public override Task StartAsync(CancellationToken cancellationToken)
     {
-        _blackoutTimer = TimeProvider.System.CreateTimer(
+        _blackoutTimer = timeProvider.CreateTimer(
             SignalBlackout,
             null,
             Timeout.InfiniteTimeSpan,
             Timeout.InfiniteTimeSpan
         );
-        _lockdownTimer = TimeProvider.System.CreateTimer(
+        _lockdownTimer = timeProvider.CreateTimer(
             SignalLockdown,
             null,
             Timeout.InfiniteTimeSpan,
