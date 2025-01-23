@@ -1,7 +1,7 @@
 {
-    "client_id": "app_41e92a4tuz9qpkykna91",
-    "redirect_uri": "https://brugsen.laesoe.org/aabn-selv/signin-oidc",
-    "authorization_endpoint": "https://brugsen.laesoe.org/aabn-selv/oauth2/auth",
-    "token_endpoint": "https://brugsen.laesoe.org/aabn-selv/oauth2/token",
-    "login_redirect": "/members"
+  "client_id": "app_41e92a4tuz9qpkykna91",
+  "redirect_uri": "https://brugsen.laesoe.org/aabn-selv/signin-oidc",
+  "authorization_endpoint": "https://brugsen.laesoe.org/aabn-selv/oauth2/auth",
+  "token_endpoint": "https://brugsen.laesoe.org/aabn-selv/oauth2/token",
+  "login_redirect": "/members"
 }

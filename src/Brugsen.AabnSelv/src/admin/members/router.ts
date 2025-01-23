@@ -10,5 +10,8 @@ import { customElement } from "aurelia";
     title: "Godkendelse",
   },
 ])
-@customElement({ name: "members-router", template: "<au-viewport></au-viewport>" })
+@customElement({
+  name: "members-router",
+  template: "<au-viewport></au-viewport>",
+})
 export class MembersRouter implements IRouteableComponent {}

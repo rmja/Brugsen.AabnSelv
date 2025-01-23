@@ -19,7 +19,7 @@ const aurelia = new Aurelia()
     RouterConfiguration.customize({
       title: "${componentTitles}${appTitleSeparator}Brugsen Vesterø Havn",
       useUrlFragmentHash: false,
-    })
+    }),
   )
   .register(LoggerConfiguration.create())
   .register(
@@ -37,8 +37,8 @@ const aurelia = new Aurelia()
           resources: {
             da: { translation: da },
           },
-        })
-    )
+        }),
+    ),
   )
   .app({
     component: AppRootCustomElement,

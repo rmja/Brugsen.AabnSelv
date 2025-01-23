@@ -1,8 +1,6 @@
 import { DI, customElement, resolve } from "aurelia";
 
-import {
-  IRouteableComponent,
-} from "@aurelia/router";
+import { IRouteableComponent } from "@aurelia/router";
 import { UserManager } from "oidc-client-ts";
 import config from "./config";
 
@@ -22,8 +20,8 @@ export const IUserManager = DI.createInterface<IUserManager>(
           authorization_endpoint: config.authorization_endpoint,
           token_endpoint: config.token_endpoint,
         },
-      })
-    )
+      }),
+    ),
 );
 export type IUserManager = Required<UserManager>;
 

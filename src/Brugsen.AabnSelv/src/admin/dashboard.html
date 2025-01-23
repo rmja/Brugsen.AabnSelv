@@ -28,8 +28,9 @@
       <dd class="col-8">${activity.checkedInAt | localDateTime}</dd>
       <dt class="col-4">Check-ud</dt>
       <dd class="col-8">
-        <let duration.bind="getDuration(activity)" /></let>
-        ${activity.checkedOutAt | localDateTime}<span if.bind="duration"> + ${duration}</span>
+        ${activity.checkedOutAt | localDateTime}
+        <let duration.bind="getDuration(activity)"></let>
+        <span if.bind="duration">+ ${duration}</span>
       </dd>
     </dl>
   </div>
@@ -52,7 +53,6 @@
   </tbody>
 </table>
 <p else>Ingen handlinger</p>
-
 
 <h2>Seneste alarmhandlinger</h2>
 <table class="table table-sm" if.bind="alarmEvents.length > 0">

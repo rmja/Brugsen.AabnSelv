@@ -98,12 +98,12 @@ export class ApiClient {
   }
 
   getAccessActivity() {
-    return http
-      .get(`/history/access-activity`)
-      .expectJsonArray(AccessActivity);
+    return http.get(`/history/access-activity`).expectJsonArray(AccessActivity);
   }
 
   getEvents(gadget: "alarm" | "front-door-lock") {
-    return http.get(`/history/${gadget}-events`).expectJsonArray(Event<AlarmAction>);
+    return http
+      .get(`/history/${gadget}-events`)
+      .expectJsonArray(Event<AlarmAction>);
   }
 }
