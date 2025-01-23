@@ -1,5 +1,6 @@
 ﻿using Akiles.Api;
 using Akiles.Api.Events;
+using Brugsen.AabnSelv.Controllers;
 using Brugsen.AabnSelv.Gadgets;
 using Microsoft.Extensions.Options;
 
@@ -43,7 +44,7 @@ public static class WebhooksEndpoints
     private static async Task<IResult> ProcessGadgetActionEventAsync(
         HttpRequest request,
         WebhookEventValidator validator,
-        AccessProcessor accessProcessor,
+        IAccessController accessProcessor,
         CancellationToken cancellationToken
     )
     {

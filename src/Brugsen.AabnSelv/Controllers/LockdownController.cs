@@ -3,7 +3,7 @@ using Akiles.Api.Schedules;
 using Brugsen.AabnSelv.Gadgets;
 using Microsoft.Extensions.Options;
 
-namespace Brugsen.AabnSelv;
+namespace Brugsen.AabnSelv.Controllers;
 
 public sealed class LockdownController(
     ILightGadget lightGadget,
@@ -20,7 +20,6 @@ public sealed class LockdownController(
     private ITimer? _lockdownTimer;
     private bool _blackoutSignalled = false;
     private bool _lockdownSignalled = false;
-
     private readonly SemaphoreSlim _signal = new(0);
 
     public TimeSpan BlackoutDelay { get; } = TimeSpan.FromMinutes(5);
@@ -95,12 +94,14 @@ public sealed class LockdownController(
             // Wait until signal - with some timeout so that we occasionally refresh the schedule
             await _signal.WaitAsync(TimeSpan.FromHours(1), stoppingToken);
 
-            if (Interlocked.CompareExchange(ref _blackoutSignalled, false, true))
+            if (_blackoutSignalled)
             {
+                _blackoutSignalled = false;
                 await PerformBlackoutAsync(stoppingToken);
             }
-            if (Interlocked.CompareExchange(ref _lockdownSignalled, false, true))
+            if (_lockdownSignalled)
             {
+                _lockdownSignalled = false;
                 await PerformLockdownAsync(stoppingToken);
             }
 

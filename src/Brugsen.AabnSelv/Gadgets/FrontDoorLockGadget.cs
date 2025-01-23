@@ -7,6 +7,9 @@ public class FrontDoorLockGadget(string gadgetId, ILogger<FrontDoorLockGadget> l
 {
     public LockState State { get; private set; } = LockState.Unknown;
 
+    public TimeSpan LockOperationDuration { get; } = TimeSpan.FromSeconds(3);
+    public TimeSpan UnlockOperationDuration { get; } = TimeSpan.FromSeconds(3);
+
     public async Task LockAsync(IAkilesApiClient client, CancellationToken cancellationToken)
     {
         logger?.LogInformation("Locking front door");
