@@ -76,17 +76,18 @@ public sealed class LockdownController(
         while (!stoppingToken.IsCancellationRequested)
         {
             // Wait until signal - with some timeout if the opening hours has changed
-            await _signal.WaitAsync(TimeSpan.FromHours(1), stoppingToken);
+            var waitTask = (Task)_signal.WaitAsync(TimeSpan.FromHours(1), stoppingToken);
+            await waitTask.ConfigureAwait(ConfigureAwaitOptions.SuppressThrowing);
 
             if (_blackoutSignalled)
             {
                 _blackoutSignalled = false;
-                await PerformBlackoutAsync(stoppingToken);
+                await PerformBlackoutAsync();
             }
             if (_lockdownSignalled)
             {
                 _lockdownSignalled = false;
-                await PerformLockdownAsync(stoppingToken);
+                await PerformLockdownAsync();
             }
 
             if (!BlackoutAt.HasValue)
@@ -175,25 +176,25 @@ public sealed class LockdownController(
         return duration > TimeSpan.Zero ? duration : TimeSpan.Zero;
     }
 
-    private async Task PerformBlackoutAsync(CancellationToken cancellationToken)
+    private async Task PerformBlackoutAsync()
     {
         logger.LogInformation(
             EventIds.LockdownSequence,
             "Turning off the light as part of blackout"
         );
 
-        await light.TurnOffAsync(client, cancellationToken);
+        await light.TurnOffAsync(client);
     }
 
-    private async Task PerformLockdownAsync(CancellationToken cancellationToken)
+    private async Task PerformLockdownAsync()
     {
         logger.LogInformation(
             EventIds.LockdownSequence,
             "Locking the door and arming the alarm as part of lockdown"
         );
 
-        await doorLock.LockAsync(client, cancellationToken);
-        await alarm.ArmAsync(client, cancellationToken);
+        await doorLock.LockAsync(client);
+        await alarm.ArmAsync(client);
     }
 
     private void SignalBlackout(object? state)

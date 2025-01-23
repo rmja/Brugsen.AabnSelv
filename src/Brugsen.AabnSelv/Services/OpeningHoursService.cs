@@ -16,7 +16,7 @@ public class OpeningHoursService(
 
     public override async Task StartAsync(CancellationToken cancellationToken)
     {
-        await LoadSchedulesAsync(cancellationToken);
+        await LoadSchedulesAsync();
         await base.StartAsync(cancellationToken);
     }
 
@@ -26,21 +26,24 @@ public class OpeningHoursService(
         {
             var nextMidnight = timeProvider.GetLocalNow().AddDays(1).Date;
             var duration = nextMidnight - timeProvider.GetLocalNow();
-            await Task.Delay(duration, timeProvider, stoppingToken);
+            await Task.Delay(duration, timeProvider, stoppingToken)
+                .ConfigureAwait(ConfigureAwaitOptions.SuppressThrowing);
+            if (stoppingToken.IsCancellationRequested)
+            {
+                break;
+            }
 
-            await LoadSchedulesAsync(stoppingToken);
+            await LoadSchedulesAsync();
         }
     }
 
-    private async Task LoadSchedulesAsync(CancellationToken cancellationToken)
+    private async Task LoadSchedulesAsync()
     {
         RegularSchedule = await client.Schedules.GetScheduleAsync(
-            options.Value.RegularOpeningHoursScheduleId,
-            cancellationToken
+            options.Value.RegularOpeningHoursScheduleId
         );
         ExtendedSchedule = await client.Schedules.GetScheduleAsync(
-            options.Value.ExtendedOpeningHoursScheduleId,
-            cancellationToken
+            options.Value.ExtendedOpeningHoursScheduleId
         );
 
         logger.LogInformation(

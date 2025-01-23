@@ -54,7 +54,9 @@ public sealed class AccessController(
     {
         while (!stoppingToken.IsCancellationRequested)
         {
-            await _signal.WaitAsync(stoppingToken);
+            await _signal
+                .WaitAsync(stoppingToken)
+                .ConfigureAwait(ConfigureAwaitOptions.SuppressThrowing);
 
             if (_blackoutSignalled)
             {
