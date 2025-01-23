@@ -4,10 +4,8 @@ using Akiles.Api;
 using Brugsen.AabnSelv;
 using Brugsen.AabnSelv.Controllers;
 using Brugsen.AabnSelv.Endpoints;
-using Brugsen.AabnSelv.Gadgets;
 using Microsoft.AspNetCore.Http.Json;
 using Microsoft.Extensions.Logging.Console;
-using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
 
 var builder = WebApplication.CreateSlimBuilder(args);
@@ -29,8 +27,7 @@ builder.Services.Configure<JsonOptions>(options =>
 );
 
 builder.Services.AddSingleton<TimeProvider, DanishTimeProvider>();
-builder.Services.AddHostedService<FinalLockdownController>();
-builder.Services.AddHostedService<DynamicLockdownController>();
+builder.Services.AddHostedService<LockdownController>();
 builder.Services.AddSingleton<WebhookEventValidator>();
 
 builder.Services.AddAkilesApi();

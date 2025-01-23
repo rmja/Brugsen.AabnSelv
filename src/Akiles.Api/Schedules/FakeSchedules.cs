@@ -1,14 +1,11 @@
-﻿using Akiles.Api.Schedules;
+﻿namespace Akiles.Api.Schedules;
 
-namespace Brugsen.AabnSelv;
-
-public static class SchedulesExtensions
+public class FakeSchedules : ISchedules
 {
-    private static Dictionary<string, Schedule> _schedules = GetSchedules()
+    private static readonly Dictionary<string, Schedule> _schedules = GetSchedules()
         .ToDictionary(x => x.Id, x => x);
 
-    public static Task<Schedule> GetScheduleAsync(
-        this ISchedules schedules,
+    public Task<Schedule> GetScheduleAsync(
         string scheduleId,
         CancellationToken cancellationToken = default
     )

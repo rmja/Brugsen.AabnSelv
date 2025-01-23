@@ -4,6 +4,6 @@ namespace Akiles.Api.Schedules;
 
 public interface ISchedules
 {
-    [Get("/not/yet/available")]
-    public Task TodoAsync();
+    [Get("/schedules/{scheduleId}")]
+    public Task<Schedule> GetScheduleAsync(string scheduleId, CancellationToken cancellationToken);
 }

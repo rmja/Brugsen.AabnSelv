@@ -57,7 +57,7 @@ public class AkilesApiClient : IAkilesApiClient
         Events = RestService.For<IEvents>(httpClient, _refitSettings);
         Gadgets = RestService.For<IGadgets>(httpClient, _refitSettings);
         Members = RestService.For<IMembers>(httpClient, _refitSettings);
-        Schedules = RestService.For<ISchedules>(httpClient, _refitSettings);
+        Schedules = new FakeSchedules(); // RestService.For<ISchedules>(httpClient, _refitSettings);
         Webhooks = RestService.For<IWebhooks>(httpClient, _refitSettings);
     }
 

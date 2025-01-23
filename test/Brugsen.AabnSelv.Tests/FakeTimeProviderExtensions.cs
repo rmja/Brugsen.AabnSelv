@@ -9,4 +9,10 @@ public static class FakeTimeProviderExtensions
         var nowUtc = TimeZoneInfo.ConvertTimeToUtc(now, fakeTime.LocalTimeZone);
         fakeTime.SetUtcNow(new DateTimeOffset(nowUtc, TimeSpan.Zero));
     }
+
+    public static void AdvanceToLocal(this FakeTimeProvider fakeTime, DateTime value)
+    {
+        var delta = value - fakeTime.GetLocalNow().DateTime;
+        fakeTime.Advance(delta);
+    }
 }
