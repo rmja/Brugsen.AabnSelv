@@ -1,5 +1,6 @@
 ﻿using Akiles.Api;
 using Brugsen.AabnSelv.Gadgets;
+using Brugsen.AabnSelv.Services;
 
 namespace Brugsen.AabnSelv.Controllers;
 
@@ -9,8 +10,9 @@ public sealed class AccessController(
     ILightGadget light,
     IFrontDoorLockGadget doorLock,
     IFrontDoorGadget door,
-    TimeProvider timeProvider,
     [FromKeyedServices(ServiceKeys.ApiKeyClient)] IAkilesApiClient client,
+    IOpeningHoursService openingHours,
+    TimeProvider timeProvider,
     ILogger<AccessController> logger
 ) : BackgroundService, IAccessController
 {
@@ -59,16 +61,35 @@ public sealed class AccessController(
                 _blackoutSignalled = false;
                 if (light.State != LightState.Off)
                 {
-                    await light.TurnOffAsync(client);
+                    if (openingHours.GetAccessMode() == AccessMode.ExtendedAccess)
+                    {
+                        await light.TurnOffAsync(client, CancellationToken.None);
+                    }
+                    else
+                    {
+                        logger.LogWarning(
+                            "Ignoring blackout as we are not currently in extended access"
+                        );
+                    }
                 }
             }
 
             if (_lockdownSignalled)
             {
                 _lockdownSignalled = false;
+
                 if (alarm.State != AlarmState.Armed)
                 {
-                    await alarm.ArmAsync(client);
+                    if (openingHours.GetAccessMode() == AccessMode.ExtendedAccess)
+                    {
+                        await alarm.ArmAsync(client, CancellationToken.None);
+                    }
+                    else
+                    {
+                        logger.LogWarning(
+                            "Ignoring lockdown as we are not currently in extended access"
+                        );
+                    }
                 }
             }
         }
@@ -76,6 +97,14 @@ public sealed class AccessController(
 
     public async Task ProcessCheckInAsync(string eventId, string memberId)
     {
+        if (openingHours.GetAccessMode() != AccessMode.NoAccess)
+        {
+            logger.LogWarning(
+                "Check-in outside extended opening hours for member {MemberId}",
+                memberId
+            );
+        }
+
         logger.LogInformation(
             "Processing check-in event {EventId} for member {MemberId}",
             eventId,
@@ -111,6 +140,14 @@ public sealed class AccessController(
 
     public async Task ProcessCheckOutAsync(string eventId, string memberId)
     {
+        if (openingHours.GetAccessMode() != AccessMode.ExtendedAccess)
+        {
+            logger.LogWarning(
+                "Check-out outside extended opening hours for member {MemberId}",
+                memberId
+            );
+        }
+
         logger.LogInformation(
             "Processing check-out event {EventId} for member {MemberId}",
             eventId,

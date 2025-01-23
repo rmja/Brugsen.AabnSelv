@@ -1,6 +1,7 @@
 ﻿using Akiles.Api;
 using Brugsen.AabnSelv.Controllers;
 using Brugsen.AabnSelv.Gadgets;
+using Brugsen.AabnSelv.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Time.Testing;
 using Moq;
@@ -15,6 +16,7 @@ public class AccessControllerTests
     private readonly NoopFrontDoorLockGadget _lockGadget = new();
     private readonly Mock<IFrontDoorGadget> _doorGadgetMock = new();
     private readonly Mock<IAkilesApiClient> _clientMock = new();
+    private readonly Mock<IOpeningHoursService> _openingHoursMock = new();
     private readonly FakeTimeProvider _fakeTime = new();
     private readonly AccessController _controller;
 
@@ -28,11 +30,14 @@ public class AccessControllerTests
             .AddSingleton<IFrontDoorLockGadget>(_lockGadget)
             .AddSingleton(_doorGadgetMock.Object)
             .AddKeyedSingleton(ServiceKeys.ApiKeyClient, _clientMock.Object)
+            .AddSingleton(_openingHoursMock.Object)
             .AddSingleton<TimeProvider>(_fakeTime)
             .BuildServiceProvider();
 
         _fakeTime.SetLocalTimeZone(DanishTimeProvider.EuropeCopenhagen);
         _controller = ActivatorUtilities.CreateInstance<AccessController>(services);
+
+        _openingHoursMock.Setup(m => m.GetAccessMode(null)).Returns(AccessMode.ExtendedAccess);
     }
 
     [Fact]
@@ -106,7 +111,7 @@ public class AccessControllerTests
         _doorGadgetMock.Verify();
     }
 
-    private async Task WaitForAsync(Func<bool> condition)
+    private static async Task WaitForAsync(Func<bool> condition)
     {
         while (!condition())
         {

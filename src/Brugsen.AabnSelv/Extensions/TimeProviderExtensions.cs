@@ -2,23 +2,25 @@
 
 public static class TimeProviderExtensions
 {
-    public static DateTimeOffset GetDateTimeOffset(
+    public static DateTimeOffset GetLocalDateTimeOffset(
         this TimeProvider timeProvider,
-        DateTime dateTime,
-        bool forceLocalOffset = false
+        DateTime value
     )
     {
-        if (dateTime.Kind == DateTimeKind.Utc)
+        if (value.Kind == DateTimeKind.Utc)
         {
-            if (!forceLocalOffset)
-            {
-                return new DateTimeOffset(dateTime, TimeSpan.Zero);
-            }
-
-            dateTime = TimeZoneInfo.ConvertTimeFromUtc(dateTime, timeProvider.LocalTimeZone);
+            value = TimeZoneInfo.ConvertTimeFromUtc(value, timeProvider.LocalTimeZone);
         }
 
-        var utcOffset = timeProvider.LocalTimeZone.GetUtcOffset(dateTime);
-        return new DateTimeOffset(dateTime, utcOffset);
+        var utcOffset = timeProvider.LocalTimeZone.GetUtcOffset(value);
+        return new DateTimeOffset(value, utcOffset);
+    }
+
+    public static DateTimeOffset GetLocalDateTimeOffset(
+        this TimeProvider timeProvider,
+        DateTimeOffset value
+    )
+    {
+        return TimeZoneInfo.ConvertTime(value, timeProvider.LocalTimeZone);
     }
 }

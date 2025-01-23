@@ -1,6 +1,7 @@
 ﻿using Akiles.Api;
 using Brugsen.AabnSelv.Controllers;
 using Brugsen.AabnSelv.Gadgets;
+using Brugsen.AabnSelv.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Time.Testing;
 using Moq;
@@ -13,6 +14,7 @@ public class LockdownControllerTests
     private readonly NoopFrontDoorLockGadget _lockGadget = new();
     private readonly NoopAlarmGadget _alarmGadget = new();
     private readonly Mock<IAkilesApiClient> _clientMock = new();
+    private readonly Mock<IOpeningHoursService> _openingHoursMock = new();
     private readonly FakeTimeProvider _fakeTime = new();
     private readonly LockdownController _controller;
 
@@ -24,23 +26,16 @@ public class LockdownControllerTests
             .AddSingleton<IFrontDoorLockGadget>(_lockGadget)
             .AddSingleton<IAlarmGadget>(_alarmGadget)
             .AddKeyedSingleton(ServiceKeys.ApiKeyClient, _clientMock.Object)
+            .AddSingleton(_openingHoursMock.Object)
             .AddSingleton<TimeProvider>(_fakeTime)
-            .Configure<BrugsenAabnSelvOptions>(options =>
-                options.ExtendedOpeningHoursScheduleId = "extended_opening_hours"
-            )
             .BuildServiceProvider();
 
         _fakeTime.SetLocalTimeZone(DanishTimeProvider.EuropeCopenhagen);
         _controller = ActivatorUtilities.CreateInstance<LockdownController>(services);
 
-        _clientMock
-            .Setup(m =>
-                m.Schedules.GetScheduleAsync(
-                    "extended_opening_hours",
-                    It.IsAny<CancellationToken>()
-                )
-            )
-            .ReturnsAsync(() => TestSchedules.GetExtendedOpeningHoursSchedule());
+        _openingHoursMock
+            .Setup(m => m.ExtendedSchedule)
+            .Returns(TestSchedules.GetExtendedOpeningHoursSchedule());
     }
 
     [Fact]

@@ -4,6 +4,7 @@ using Akiles.Api;
 using Brugsen.AabnSelv;
 using Brugsen.AabnSelv.Controllers;
 using Brugsen.AabnSelv.Endpoints;
+using Brugsen.AabnSelv.Services;
 using Microsoft.AspNetCore.Http.Json;
 using Microsoft.Extensions.Logging.Console;
 using Microsoft.Net.Http.Headers;
@@ -27,7 +28,15 @@ builder.Services.Configure<JsonOptions>(options =>
 );
 
 builder.Services.AddSingleton<TimeProvider, DanishTimeProvider>();
-builder.Services.AddHostedService<LockdownController>();
+
+builder.Services.AddSingleton<OpeningHoursService>();
+builder.Services.AddSingleton<IOpeningHoursService>(provider =>
+    provider.GetRequiredService<OpeningHoursService>()
+);
+builder.Services.AddSingleton<IHostedService>(provider =>
+    provider.GetRequiredService<OpeningHoursService>()
+);
+
 builder.Services.AddSingleton<AccessController>();
 builder.Services.AddSingleton<IAccessController>(provider =>
     provider.GetRequiredService<AccessController>()
@@ -35,6 +44,9 @@ builder.Services.AddSingleton<IAccessController>(provider =>
 builder.Services.AddSingleton<IHostedService>(provider =>
     provider.GetRequiredService<AccessController>()
 );
+
+builder.Services.AddHostedService<LockdownController>();
+
 builder.Services.AddSingleton<WebhookEventValidator>();
 
 builder.Services.AddAkilesApi();
