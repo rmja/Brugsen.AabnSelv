@@ -5,8 +5,8 @@ namespace Brugsen.AabnSelv.Gadgets;
 public class FrontDoorLockGadget(string gadgetId, ILogger<FrontDoorLockGadget> logger)
     : IFrontDoorLockGadget
 {
+    public string GadgetId { get; } = gadgetId;
     public LockState State { get; private set; } = LockState.Unknown;
-
     public TimeSpan LockOperationDuration { get; } = TimeSpan.FromSeconds(3);
     public TimeSpan UnlockOperationDuration { get; } = TimeSpan.FromSeconds(3);
 

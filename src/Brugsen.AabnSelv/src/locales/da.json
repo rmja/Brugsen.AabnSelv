@@ -1,0 +1,8 @@
+{
+    "actions": {
+        "arm_past": "Tilkoblet",
+        "disarm_past": "Frakoblet",
+        "lock_past": "Låst",
+        "unlock_past": "Låst op"
+    }
+}

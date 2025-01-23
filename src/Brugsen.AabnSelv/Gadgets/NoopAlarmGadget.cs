@@ -8,6 +8,7 @@ public class NoopAlarmGadget : IAlarmGadget
 {
     private readonly ILogger<NoopAlarmGadget>? _logger;
 
+    public string GadgetId { get; } = "noop-alarm";
     public AlarmState State { get; set; } = AlarmState.Unknown;
     public DateTime? LastArmed { get; set; }
 

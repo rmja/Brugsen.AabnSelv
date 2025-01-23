@@ -103,7 +103,7 @@ export class ApiClient {
       .expectJsonArray(AccessActivity);
   }
 
-  getEvents(gadget: "alarm") {
+  getEvents(gadget: "alarm" | "front-door-lock") {
     return http.get(`/history/${gadget}-events`).expectJsonArray(Event<AlarmAction>);
   }
 }

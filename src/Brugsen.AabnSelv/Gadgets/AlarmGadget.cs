@@ -5,6 +5,7 @@ namespace Brugsen.AabnSelv.Gadgets;
 
 public class AlarmGadget(string gadgetId, ILogger<AlarmGadget>? logger = null) : IAlarmGadget
 {
+    public string GadgetId { get; } = gadgetId;
     public AlarmState State { get; private set; } = AlarmState.Unknown;
 
     public async Task<DateTime?> GetLastArmedAsync(
@@ -40,13 +41,6 @@ public class AlarmGadget(string gadgetId, ILogger<AlarmGadget>? logger = null) :
         await client.Gadgets.DoGadgetActionAsync(gadgetId, Actions.AlarmDisarm, cancellationToken);
         State = AlarmState.Disarmed;
     }
-
-    public IAsyncEnumerable<Event> GetRecentEventsAsync(
-        IAkilesApiClient client,
-        DateTimeOffset notBefore,
-        EventsExpand expand,
-        CancellationToken cancellationToken
-    ) => client.Events.ListRecentGadgetEventsAsync(gadgetId, notBefore, expand, cancellationToken);
 
     public static class Actions
     {

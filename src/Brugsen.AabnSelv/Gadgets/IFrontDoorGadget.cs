@@ -1,5 +1,4 @@
 ﻿using Akiles.Api;
-using Akiles.Api.Events;
 
 namespace Brugsen.AabnSelv.Gadgets;
 

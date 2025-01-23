@@ -7,19 +7,12 @@ import { RouterConfiguration } from "@aurelia/router";
 import { ValuesValueConverter } from "./resources/values-value-converter";
 import { Settings } from "luxon";
 import { LocalDateTimeValueConverter } from "./resources/local-date-time-format";
+import { I18nConfiguration } from "@aurelia/i18n";
+import * as da from "./locales/da.json";
 
 (<any>Symbol).metadata ??= Symbol("Symbol.metadata");
-
 Settings.defaultLocale = "da-DK";
 Settings.throwOnInvalid = true;
-
-
-declare module "luxon" {
-  interface TSSettings {
-    throwOnInvalid: true;
-  }
-}
-
 
 const aurelia = new Aurelia()
   .register(
@@ -37,6 +30,15 @@ const aurelia = new Aurelia()
     ValuesValueConverter,
     QrCodeCustomElement,
     LocalDateTimeValueConverter,
+    I18nConfiguration.customize(
+      (options) =>
+        (options.initOptions = {
+          lng: "da",
+          resources: {
+            da: { translation: da },
+          },
+        })
+    )
   )
   .app({
     component: AppRootCustomElement,

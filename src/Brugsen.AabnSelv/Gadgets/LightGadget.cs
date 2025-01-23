@@ -4,6 +4,7 @@ namespace Brugsen.AabnSelv.Gadgets;
 
 public class LightGadget(string gadgetId, ILogger<LightGadget>? logger = null) : ILightGadget
 {
+    public string GadgetId { get; } = gadgetId;
     public LightState State { get; private set; } = LightState.Unknown;
 
     public async Task TurnOnAsync(IAkilesApiClient client, CancellationToken cancellationToken)

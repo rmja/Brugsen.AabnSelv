@@ -1,5 +1,4 @@
-<h3>Afventer godkendelse</h3>
-
+<h2>Adgangsanmodninger</h2>
 <table class="table" if.bind="pending.length > 0">
   <thead>
     <tr>
@@ -20,41 +19,54 @@
 </table>
 <p else>Der er ingen afventende anmodninger</p>
 
-<h3>Seneste adgangsaktivitet</h3>
-<table class="table" if.bind="accessActivity.length > 0">
-<thead>
-  <tr>
-    <th>Navn</th>
-    <th>Check-ind</th>
-    <th>Check-ud</th>
-    <th>Tid</th>
-  </tr>
-</thead>
-<tbody>
-  <tr repeat.for="activity of accessActivity">
-    <td>${activity.memberName}</td>
-    <td>${activity.checkedInAt | localDateTime}</td>
-    <td>${activity.checkedOutAt | localDateTime}</td>
-    <td>${getDuration(activity)}</td>
-  </tr>
-</tbody>
-</table>
+<h2>Seneste adgangsaktivitet</h2>
+<div class="list-group mb-4" if.bind="accessActivity.length > 0">
+  <div class="list-group-item" repeat.for="activity of accessActivity">
+    <h6 class="mb-1">${activity.memberName}</h6>
+    <dl class="row mb-0">
+      <dt class="col-4">Check-ind</dt>
+      <dd class="col-8">${activity.checkedInAt | localDateTime}</dd>
+      <dt class="col-4">Check-ud</dt>
+      <dd class="col-8">
+        <let duration.bind="getDuration(activity)" /></let>
+        ${activity.checkedOutAt | localDateTime}<span if.bind="duration"> + ${duration}</span>
+      </dd>
+    </dl>
+  </div>
+</div>
 <p else>Ingen aktivitet</p>
 
-<h3>Seneste alarmhandlinger</h3>
-<table class="table" if.bind="alarmEvents.length > 0">
-<thead>
-  <tr>
-    <th>Tidspunkt</th>
-    <th>Handling</th>
-  </tr>
-</thead>
-<tbody>
-  <tr repeat.for="event of alarmEvents">
-    <td>${event.createdAt | localDateTime}</td>
-    <td>${event.action}</td>
-  </tr>
-</tbody>
+<h2>Seneste låshandlinger</h2>
+<table class="table table-sm" if.bind="lockEvents.length > 0">
+  <thead>
+    <tr>
+      <th>Tidspunkt</th>
+      <th>Handling</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr repeat.for="event of lockEvents">
+      <td>${event.createdAt | localDateTime}</td>
+      <td t="actions.${event.action}" t-params.bind="{ context: 'past' }"></td>
+    </tr>
+  </tbody>
 </table>
 <p else>Ingen handlinger</p>
 
+
+<h2>Seneste alarmhandlinger</h2>
+<table class="table table-sm" if.bind="alarmEvents.length > 0">
+  <thead>
+    <tr>
+      <th>Tidspunkt</th>
+      <th>Handling</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr repeat.for="event of alarmEvents">
+      <td>${event.createdAt | localDateTime}</td>
+      <td t="actions.${event.action}" t-params.bind="{ context: 'past' }"></td>
+    </tr>
+  </tbody>
+</table>
+<p else>Ingen handlinger</p>
