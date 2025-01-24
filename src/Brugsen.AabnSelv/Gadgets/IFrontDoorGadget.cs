@@ -2,7 +2,7 @@
 
 namespace Brugsen.AabnSelv.Gadgets;
 
-public interface IFrontDoorGadget
+public interface IFrontDoorGadget : IGadget
 {
     Task OpenOnceAsync(IAkilesApiClient client, CancellationToken cancellationToken = default);
     Task<bool> IsClosedAsync(

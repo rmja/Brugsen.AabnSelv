@@ -6,6 +6,7 @@ public class FrontDoorLockGadget(string gadgetId, ILogger<FrontDoorLockGadget> l
     : IFrontDoorLockGadget
 {
     public string GadgetId { get; } = gadgetId;
+    public GadgetEntity GadgetEntity => GadgetEntity.FrontDoorLock;
     public LockState State { get; private set; } = LockState.Unknown;
     public TimeSpan LockOperationDuration { get; } = TimeSpan.FromSeconds(3);
     public TimeSpan UnlockOperationDuration { get; } = TimeSpan.FromSeconds(3);
@@ -13,14 +14,14 @@ public class FrontDoorLockGadget(string gadgetId, ILogger<FrontDoorLockGadget> l
     public async Task LockAsync(IAkilesApiClient client, CancellationToken cancellationToken)
     {
         logger?.LogInformation("Locking front door");
-        await client.Gadgets.DoGadgetActionAsync(gadgetId, Actions.Lock, cancellationToken);
+        await client.Gadgets.DoGadgetActionAsync(GadgetId, Actions.Lock, cancellationToken);
         State = LockState.Locked;
     }
 
     public async Task UnlockAsync(IAkilesApiClient client, CancellationToken cancellationToken)
     {
         logger?.LogInformation("Unlocking front door");
-        await client.Gadgets.DoGadgetActionAsync(gadgetId, Actions.Unlock, cancellationToken);
+        await client.Gadgets.DoGadgetActionAsync(GadgetId, Actions.Unlock, cancellationToken);
         State = LockState.Unlocked;
     }
 

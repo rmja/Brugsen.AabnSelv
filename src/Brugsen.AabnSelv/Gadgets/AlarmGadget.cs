@@ -6,6 +6,8 @@ namespace Brugsen.AabnSelv.Gadgets;
 public class AlarmGadget(string gadgetId, ILogger<AlarmGadget>? logger = null) : IAlarmGadget
 {
     public string GadgetId { get; } = gadgetId;
+    public GadgetEntity GadgetEntity => GadgetEntity.Alarm;
+
     public AlarmState State { get; private set; } = AlarmState.Unknown;
 
     public async Task<DateTime?> GetLastArmedAsync(
@@ -19,7 +21,7 @@ public class AlarmGadget(string gadgetId, ILogger<AlarmGadget>? logger = null) :
             sort: "created_at:desc",
             new ListEventsFilter()
             {
-                Object = new() { GadgetId = gadgetId, GadgetActionId = Actions.AlarmArm }
+                Object = new() { GadgetId = GadgetId, GadgetActionId = Actions.AlarmArm }
             },
             EventsExpand.None,
             cancellationToken
@@ -31,14 +33,14 @@ public class AlarmGadget(string gadgetId, ILogger<AlarmGadget>? logger = null) :
     public async Task ArmAsync(IAkilesApiClient client, CancellationToken cancellationToken)
     {
         logger?.LogInformation("Arming alarm");
-        await client.Gadgets.DoGadgetActionAsync(gadgetId, Actions.AlarmArm, cancellationToken);
+        await client.Gadgets.DoGadgetActionAsync(GadgetId, Actions.AlarmArm, cancellationToken);
         State = AlarmState.Armed;
     }
 
     public async Task DisarmAsync(IAkilesApiClient client, CancellationToken cancellationToken)
     {
         logger?.LogInformation("Disarming alarm");
-        await client.Gadgets.DoGadgetActionAsync(gadgetId, Actions.AlarmDisarm, cancellationToken);
+        await client.Gadgets.DoGadgetActionAsync(GadgetId, Actions.AlarmDisarm, cancellationToken);
         State = AlarmState.Disarmed;
     }
 

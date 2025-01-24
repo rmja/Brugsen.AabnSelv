@@ -2,9 +2,8 @@
 
 namespace Brugsen.AabnSelv.Gadgets;
 
-public interface IFrontDoorLockGadget
+public interface IFrontDoorLockGadget : IGadget
 {
-    string GadgetId { get; }
     LockState State { get; }
     TimeSpan LockOperationDuration { get; }
     TimeSpan UnlockOperationDuration { get; }

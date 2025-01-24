@@ -3,9 +3,8 @@ using Akiles.Api.Events;
 
 namespace Brugsen.AabnSelv.Gadgets;
 
-public interface IAccessGadget
+public interface IAccessGadget : IGadget
 {
-    string GadgetId { get; }
     Task CheckInAsync(IAkilesApiClient client, CancellationToken cancellationToken = default);
     Task CheckOutAsync(IAkilesApiClient client, CancellationToken cancellationToken = default);
     Task<bool> IsMemberCheckedInAsync(

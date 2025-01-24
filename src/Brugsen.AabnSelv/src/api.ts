@@ -1,6 +1,6 @@
 import "@utiliread/http/json";
 
-import { Http, Message } from "@utiliread/http";
+import { Http, HttpBuilderOfT, Message } from "@utiliread/http";
 import { dateTimeConverter, jsonProperty } from "@utiliread/json";
 
 import { DateTime } from "luxon";
@@ -34,7 +34,7 @@ export class AccessActivity {
   checkedOutAt?: DateTime;
 }
 
-export class Event<T = string> {
+export class ActionEvent<T = string> {
   @jsonProperty()
   action!: T;
   @jsonProperty({ converter: dateTimeConverter })
@@ -42,6 +42,7 @@ export class Event<T = string> {
 }
 
 export type AlarmAction = "arm" | "disarm";
+export type LockAction = "lock" | "unlock";
 
 export type MemberInit = Omit<Member, "id" | "isApproved">;
 
@@ -101,9 +102,11 @@ export class ApiClient {
     return http.get(`/history/access-activity`).expectJsonArray(AccessActivity);
   }
 
-  getEvents(gadget: "alarm" | "front-door-lock") {
+  getActionEvents(gadget: "alarm"): HttpBuilderOfT<ActionEvent<AlarmAction>[]>;
+  getActionEvents(gadget: "front-door-lock"): HttpBuilderOfT<ActionEvent<LockAction>[]>;
+  getActionEvents<TAction>(gadget: string) {
     return http
-      .get(`/history/${gadget}-events`)
-      .expectJsonArray(Event<AlarmAction>);
+      .get(`/history/${gadget}-action-events`)
+      .expectJsonArray(ActionEvent<TAction>);
   }
 }

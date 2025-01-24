@@ -6,7 +6,8 @@ public class NoopFrontDoorLockGadget : IFrontDoorLockGadget
 {
     private readonly ILogger<NoopLightGadget>? _logger;
 
-    public string GadgetId { get; } = "noop-front-door";
+    public string GadgetId { get; } = "noop-front-door-lock";
+    public GadgetEntity GadgetEntity => GadgetEntity.FrontDoorLock;
     public LockState State { get; set; } = LockState.Unknown;
     public TimeSpan LockOperationDuration { get; set; } = TimeSpan.Zero;
     public TimeSpan UnlockOperationDuration { get; set; } = TimeSpan.Zero;

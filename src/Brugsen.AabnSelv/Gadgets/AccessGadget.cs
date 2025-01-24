@@ -6,6 +6,7 @@ namespace Brugsen.AabnSelv.Gadgets;
 public class AccessGadget(string gadgetId, ILogger<AccessGadget>? logger = null) : IAccessGadget
 {
     public string GadgetId { get; } = gadgetId;
+    public GadgetEntity GadgetEntity => GadgetEntity.Access;
 
     public Task CheckInAsync(IAkilesApiClient client, CancellationToken cancellationToken)
     {

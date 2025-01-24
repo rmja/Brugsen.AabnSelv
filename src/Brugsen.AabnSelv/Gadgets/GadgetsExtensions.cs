@@ -9,51 +9,54 @@ public static class GadgetsExtensions
     public static IServiceCollection AddGadgets(this IServiceCollection services)
     {
         return services
-            .AddSingleton<IAccessGadget>(provider =>
+            .AddGadget<IAccessGadget, AccessGadget>(options => options.AccessGadgetId)
+            .AddGadget<IFrontDoorGadget, FrontDoorGadget>(options => options.FrontDoorGadgetId)
+            .AddGadget<IFrontDoorLockGadget, FrontDoorLockGadget, NoopFrontDoorLockGadget>(
+                options => options.FrontDoorLockGadgetId
+            )
+            .AddGadget<IAlarmGadget, AlarmGadget, NoopAlarmGadget>(options => options.AlarmGadgetId)
+            .AddGadget<ILightGadget, LightGadget, NoopLightGadget>(options =>
+                options.LightGadgetId
+            );
+    }
+
+    private static IServiceCollection AddGadget<TService, TImplementation>(
+        this IServiceCollection services,
+        Func<BrugsenAabnSelvOptions, string> getGadgetId
+    )
+        where TService : class, IGadget
+        where TImplementation : class, TService
+    {
+        return services
+            .AddSingleton<IGadget>(provider => provider.GetRequiredService<TService>())
+            .AddSingleton<TService>(provider =>
             {
                 var options = provider.GetRequiredService<IOptions<BrugsenAabnSelvOptions>>();
-                return ActivatorUtilities.CreateInstance<AccessGadget>(
-                    provider,
-                    options.Value.AccessGadgetId
-                );
-            })
-            .AddSingleton<IFrontDoorGadget>(provider =>
+                var gadgetId = getGadgetId(options.Value);
+                return ActivatorUtilities.CreateInstance<TImplementation>(provider, gadgetId);
+            });
+    }
+
+    private static IServiceCollection AddGadget<TService, TImplementation, TNoopImplementation>(
+        this IServiceCollection services,
+        Func<BrugsenAabnSelvOptions, string?> getGadgetId
+    )
+        where TService : class, IGadget
+        where TImplementation : class, TService
+        where TNoopImplementation : class, TService
+    {
+        return services
+            .AddSingleton<IGadget>(provider => provider.GetRequiredService<TService>())
+            .AddSingleton<TService>(provider =>
             {
                 var options = provider.GetRequiredService<IOptions<BrugsenAabnSelvOptions>>();
-                return ActivatorUtilities.CreateInstance<FrontDoorGadget>(
-                    provider,
-                    options.Value.FrontDoorGadgetId
-                );
-            })
-            .AddSingleton<IFrontDoorLockGadget>(provider =>
-            {
-                var options = provider.GetRequiredService<IOptions<BrugsenAabnSelvOptions>>();
-                return options.Value.FrontDoorLockGadgetId is not null
-                    ? ActivatorUtilities.CreateInstance<FrontDoorLockGadget>(
-                        provider,
-                        options.Value.FrontDoorLockGadgetId
-                    )
-                    : ActivatorUtilities.CreateInstance<NoopFrontDoorLockGadget>(provider);
-            })
-            .AddSingleton<IAlarmGadget>(provider =>
-            {
-                var options = provider.GetRequiredService<IOptions<BrugsenAabnSelvOptions>>();
-                return options.Value.AlarmGadgetId is not null
-                    ? ActivatorUtilities.CreateInstance<AlarmGadget>(
-                        provider,
-                        options.Value.AlarmGadgetId
-                    )
-                    : ActivatorUtilities.CreateInstance<NoopAlarmGadget>(provider);
-            })
-            .AddSingleton<ILightGadget>(provider =>
-            {
-                var options = provider.GetRequiredService<IOptions<BrugsenAabnSelvOptions>>();
-                return options.Value.LightGadgetId is not null
-                    ? ActivatorUtilities.CreateInstance<LightGadget>(
-                        provider,
-                        options.Value.LightGadgetId
-                    )
-                    : ActivatorUtilities.CreateInstance<NoopLightGadget>(provider);
+                var gadgetId = getGadgetId(options.Value);
+                if (gadgetId is null)
+                {
+                    return ActivatorUtilities.CreateInstance<TNoopImplementation>(provider);
+                }
+
+                return ActivatorUtilities.CreateInstance<TImplementation>(provider, gadgetId);
             });
     }
 }

@@ -2,9 +2,8 @@
 
 namespace Brugsen.AabnSelv.Gadgets;
 
-public interface IAlarmGadget
+public interface IAlarmGadget : IGadget
 {
-    string GadgetId { get; }
     AlarmState State { get; }
     Task<DateTime?> GetLastArmedAsync(
         IAkilesApiClient client,

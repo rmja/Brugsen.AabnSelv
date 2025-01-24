@@ -7,6 +7,7 @@ public class NoopLightGadget : ILightGadget
     private readonly ILogger<NoopLightGadget>? _logger;
 
     public string GadgetId { get; } = "noop-light";
+    public GadgetEntity GadgetEntity => GadgetEntity.Light;
     public LightState State { get; set; } = LightState.Unknown;
 
     public NoopLightGadget(ILogger<NoopLightGadget>? logger = null)
