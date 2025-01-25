@@ -142,6 +142,7 @@ public class LockdownControllerTests
         _alarmGadget.State = AlarmState.Unknown;
 
         _fakeTime.AdvanceToLocal(end.Add(_controller.BlackoutDelay));
+        Assert.Null(_controller.BlackoutAt);
         await ArmedAsync();
         Assert.Equal(LightState.Off, _lightGadget.State);
         Assert.Equal(LockState.Unknown, _lockGadget.State);
@@ -150,6 +151,7 @@ public class LockdownControllerTests
         Assert.Equal(end.Add(_controller.LockdownDelay), _controller.LockdownAt);
 
         _fakeTime.AdvanceToLocal(end.Add(_controller.LockdownDelay));
+        Assert.Null(_controller.LockdownAt);
         await ArmedAsync();
         Assert.Equal(LightState.Off, _lightGadget.State);
         Assert.Equal(LockState.Locked, _lockGadget.State);
@@ -162,10 +164,7 @@ public class LockdownControllerTests
 
     async Task ArmedAsync()
     {
-        while (
-            _controller.ExecuteTask?.IsCompleted != true
-            && (!_controller.LockdownAt.HasValue || !_controller.BlackoutAt.HasValue)
-        )
+        while (!_controller.BlackoutAt.HasValue || !_controller.LockdownAt.HasValue)
         {
             await Task.Yield();
         }

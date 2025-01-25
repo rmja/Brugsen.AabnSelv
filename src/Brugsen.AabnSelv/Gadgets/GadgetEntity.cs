@@ -7,4 +7,6 @@ public enum GadgetEntity
     FrontDoor,
     FrontDoorLock,
     Light,
+    CheckInPinpad,
+    CheckOutPinpad,
 }

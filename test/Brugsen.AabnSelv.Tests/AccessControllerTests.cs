@@ -62,8 +62,11 @@ public class AccessControllerTests
         _doorGadgetMock.Verify();
     }
 
-    [Fact]
-    public async Task CanProcessCheckOut()
+    [Theory]
+    [InlineData(false, false)]
+    [InlineData(false, true)]
+    [InlineData(true, true)]
+    public async Task CanProcessCheckOut(bool enforceCheckedIn, bool isCheckedIn)
     {
         // Given
         _doorGadgetMock
@@ -80,7 +83,7 @@ public class AccessControllerTests
                     CancellationToken.None
                 )
             )
-            .ReturnsAsync(true);
+            .ReturnsAsync(isCheckedIn);
 
         var checkedOut = new DateTime(2025, 01, 23, 20, 00, 00);
         _fakeTime.SetLocalNow(checkedOut);
@@ -88,7 +91,7 @@ public class AccessControllerTests
         // When
         await _controller.StartAsync(CancellationToken.None);
 
-        await _controller.ProcessCheckOutAsync("check_out", "member1");
+        await _controller.ProcessCheckOutAsync("check_out", "member1", enforceCheckedIn);
         Assert.Equal(AlarmState.Unknown, _alarmGadget.State);
         Assert.Equal(LightState.Unknown, _lightGadget.State);
         Assert.Equal(LockState.Unknown, _lockGadget.State);
@@ -109,6 +112,35 @@ public class AccessControllerTests
 
         // Then
         _doorGadgetMock.Verify();
+    }
+
+    [Fact]
+    public async Task CannotProcessCheckOut_WhenCheckInIsInforced_NotCheckedIn()
+    {
+        // Given
+        _accessGadgetMock
+            .Setup(m =>
+                m.IsMemberCheckedInAsync(
+                    _clientMock.Object,
+                    "member1",
+                    It.IsAny<DateTimeOffset>(),
+                    "check_out",
+                    CancellationToken.None
+                )
+            )
+            .ReturnsAsync(false);
+
+        var checkedOut = new DateTime(2025, 01, 23, 20, 00, 00);
+        _fakeTime.SetLocalNow(checkedOut);
+
+        // When
+        await _controller.StartAsync(CancellationToken.None);
+
+        await _controller.ProcessCheckOutAsync("check_out", "member1", enforceCheckedIn: true);
+
+        await _controller.StopAsync(CancellationToken.None);
+
+        // Then
     }
 
     private static async Task WaitForAsync(Func<bool> condition)

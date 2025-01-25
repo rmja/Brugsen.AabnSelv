@@ -140,7 +140,7 @@ public sealed class AccessController(
         await door.OpenOnceAsync(client);
     }
 
-    public async Task ProcessCheckOutAsync(string eventId, string memberId)
+    public async Task ProcessCheckOutAsync(string eventId, string memberId, bool enforceCheckedIn)
     {
         if (openingHours.GetAccessMode() != AccessMode.ExtendedAccess)
         {
@@ -158,33 +158,26 @@ public sealed class AccessController(
 
         var now = timeProvider.GetLocalNow();
 
-        // Ensure that we are checked-in, otherwise we might open the door without turning off the alarm.
-        // We are actually checked out at this point, as this processing happens after the "check-out" event.
-        // We therefore explicity ignore the current check-out event when determining if we are currently checked in.
-        var memberIsCheckedIn = await access.IsMemberCheckedInAsync(
-            client,
-            memberId,
-            notBefore: now.AddHours(-1),
-            ignoreEventId: eventId
-        );
-        if (!memberIsCheckedIn)
+        if (enforceCheckedIn)
         {
-            var activity = await access.GetActivityAsync(
+            // Ensure that we are checked-in, otherwise we might open the door without turning off the alarm.
+            // We are actually checked out at this point, as this processing happens after the "check-out" event.
+            // We therefore explicity ignore the current check-out event when determining if we are currently checked in.
+            var memberIsCheckedIn = await access.IsMemberCheckedInAsync(
                 client,
                 memberId,
-                notBefore: now.AddHours(-1)
+                notBefore: now.AddHours(-1),
+                ignoreEventId: eventId
             );
-            var recentActivity = activity.FirstOrDefault();
-
-            logger.LogWarning(
-                "Member {MemberId} tried to check-out but was not checked in. Ignored event {IgnoreEventId} ({CheckOutEventIgnored}). Most recent check-in/check-out: {RecentCheckIn} / {RecentCheckOut}",
-                memberId,
-                eventId,
-                recentActivity?.CheckOutEvent?.Id == eventId,
-                recentActivity?.CheckInEvent?.CreatedAt,
-                recentActivity?.CheckOutEvent?.CreatedAt
-            );
-            return;
+            if (!memberIsCheckedIn)
+            {
+                logger.LogWarning(
+                    "Member {MemberId} tried to check-out but was not checked in. Ignored event {IgnoreEventId}",
+                    memberId,
+                    eventId
+                );
+                return;
+            }
         }
 
         logger.LogInformation("Checking-out member {MemberId}", memberId);

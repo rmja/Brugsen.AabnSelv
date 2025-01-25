@@ -15,8 +15,12 @@ public static class GadgetsExtensions
                 options => options.FrontDoorLockGadgetId
             )
             .AddGadget<IAlarmGadget, AlarmGadget, NoopAlarmGadget>(options => options.AlarmGadgetId)
-            .AddGadget<ILightGadget, LightGadget, NoopLightGadget>(options =>
-                options.LightGadgetId
+            .AddGadget<ILightGadget, LightGadget, NoopLightGadget>(options => options.LightGadgetId)
+            .AddGadget<ICheckInPinpadGadget, CheckInPinpadGadget, NoopCheckInPinpadGadget>(
+                options => options.CheckInPinpadGadgetId
+            )
+            .AddGadget<ICheckOutPinpadGadget, CheckOutPinpadGadget, NoopCheckOutPinpadGadget>(
+                options => options.CheckOutPinpadGadgetId
             );
     }
 

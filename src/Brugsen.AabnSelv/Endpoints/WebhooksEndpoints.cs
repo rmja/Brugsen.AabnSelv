@@ -44,6 +44,9 @@ public static class WebhooksEndpoints
     private static async Task<IResult> ProcessGadgetActionEventAsync(
         HttpRequest request,
         WebhookEventValidator validator,
+        IAccessGadget accessGadget,
+        ICheckInPinpadGadget checkInPinpadGadget,
+        ICheckOutPinpadGadget checkOutPinpadGadget,
         IAccessController accessProcessor,
         CancellationToken cancellationToken
     )
@@ -54,7 +57,12 @@ public static class WebhooksEndpoints
             return Results.BadRequest();
         }
         var memberId = evnt.Subject.MemberId;
-        if (memberId is not null && evnt.Object.GadgetId == accessProcessor.AccessGadget.GadgetId)
+        if (memberId is null)
+        {
+            return Results.NoContent();
+        }
+
+        if (evnt.Object.GadgetId == accessGadget.GadgetId)
         {
             switch (evnt.Object.GadgetActionId)
             {
@@ -62,8 +70,38 @@ public static class WebhooksEndpoints
                     await accessProcessor.ProcessCheckInAsync(evnt.Id, memberId);
                     break;
                 case AccessGadget.Actions.CheckOut:
-                    await accessProcessor.ProcessCheckOutAsync(evnt.Id, memberId);
+                    await accessProcessor.ProcessCheckOutAsync(
+                        evnt.Id,
+                        memberId,
+                        enforceCheckedIn: true
+                    );
                     break;
+            }
+        }
+        else if (evnt.Object.GadgetId == checkInPinpadGadget.GadgetId)
+        {
+            switch (evnt.Object.GadgetActionId)
+            {
+                case CheckInPinpadGadget.Actions.CheckIn:
+                {
+                    await accessProcessor.ProcessCheckInAsync(evnt.Id, memberId);
+                    break;
+                }
+            }
+        }
+        else if (evnt.Object.GadgetId == checkOutPinpadGadget.GadgetId)
+        {
+            switch (evnt.Object.GadgetActionId)
+            {
+                case CheckOutPinpadGadget.Actions.CheckOut:
+                {
+                    await accessProcessor.ProcessCheckOutAsync(
+                        evnt.Id,
+                        memberId,
+                        enforceCheckedIn: false
+                    );
+                    break;
+                }
             }
         }
 
