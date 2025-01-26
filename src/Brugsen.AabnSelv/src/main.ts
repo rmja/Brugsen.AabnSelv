@@ -9,6 +9,7 @@ import { Settings } from "luxon";
 import { LocalDateTimeValueConverter } from "./resources/local-date-time-format";
 import { I18nConfiguration } from "@aurelia/i18n";
 import * as da from "./locales/da.json";
+import { DawaAutocompleteCustomAttribute } from "./resources/dawa-autocomplete";
 
 (<any>Symbol).metadata ??= Symbol("Symbol.metadata");
 Settings.defaultLocale = "da-DK";
@@ -30,6 +31,7 @@ const aurelia = new Aurelia()
     ValuesValueConverter,
     QrCodeCustomElement,
     LocalDateTimeValueConverter,
+    DawaAutocompleteCustomAttribute,
     I18nConfiguration.customize(
       (options) =>
         (options.initOptions = {

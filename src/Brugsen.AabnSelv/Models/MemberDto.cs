@@ -8,6 +8,8 @@ public record MemberDto
     public required string Email { get; init; }
     public required string Name { get; init; }
     public required string Address { get; init; }
+
+    [RegularExpression("^\\+[0-9]+$")]
     public required string Phone { get; init; }
 
     [RegularExpression("^[0-9]{8}$")]
