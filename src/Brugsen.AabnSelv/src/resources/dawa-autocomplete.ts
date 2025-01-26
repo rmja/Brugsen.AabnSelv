@@ -17,6 +17,10 @@ export class DawaAutocompleteCustomAttribute
   private element = resolve(INode) as HTMLInputElement;
   private instance?: DawaAutocomplete;
 
+  constructor() {
+    this.onChange = this.onChange.bind(this);
+  }
+
   binding() {
     this.instance = dawaAutocomplete(this.element, {
       select: (selected) => {
@@ -26,10 +30,17 @@ export class DawaAutocompleteCustomAttribute
         }
       },
     });
+    this.element.addEventListener("change", this.onChange);
   }
 
   unbinding() {
+    this.element.removeEventListener("change", this.onChange);
     this.instance?.destroy();
     this.instance = undefined;
+  }
+
+  // Not triggered when assigned with this.element.value = "..."
+  private onChange() {
+    this.id = null;
   }
 }
