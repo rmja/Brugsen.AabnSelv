@@ -18,6 +18,7 @@ export class SignupPage implements IRouteableComponent {
   busy = false;
   name = "";
   address = "";
+  addressId: string | null = null;
   @observable() email = "";
   emailIsUsed = false;
   phone = "";
@@ -28,12 +29,15 @@ export class SignupPage implements IRouteableComponent {
   colors: Record<CardColor, CardColorViewModel> = colors;
   termsAccepted = false;
 
+  get addressIsInvalid() {
+    return this.address.length > 0 && !this.addressId;
+  }
+
   get canSubmit() {
     return (
       this.name.length > 5 &&
       this.name.trim().includes(" ") &&
-      this.address.length > 5 &&
-      this.address.trim().includes(" ") &&
+      this.addressId &&
       emailRegex.test(this.email) &&
       this.phone &&
       membershipNumberRegex.test(this.membershipNumber) &&

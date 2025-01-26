@@ -9,10 +9,10 @@
   <div class="form-floating mb-3">
     <input
       type="text"
-      class="form-control"
+      class="form-control ${addressIsInvalid ? 'is-invalid' : ''}"
       value.bind="address"
       name="address"
-      dawa-autocomplete
+      dawa-autocomplete="id.bind: addressId"
     />
     <label>Adresse</label>
   </div>
