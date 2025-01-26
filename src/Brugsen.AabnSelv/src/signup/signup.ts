@@ -27,6 +27,7 @@ export class SignupPage implements IRouteableComponent {
   cardNumberIsUsed = false;
   cardColor: CardColor = "red";
   colors: Record<CardColor, CardColorViewModel> = colors;
+  gdprAccepted = false;
   termsAccepted = false;
 
   get addressIsInvalid() {
@@ -42,6 +43,7 @@ export class SignupPage implements IRouteableComponent {
       this.phone &&
       membershipNumberRegex.test(this.membershipNumber) &&
       cardNumberRegex.test(this.cardNumber) &&
+      this.gdprAccepted &&
       this.termsAccepted
     );
   }
