@@ -48,11 +48,7 @@ public class AkilesApiClient : IAkilesApiClient
     public AkilesApiClient(HttpClient httpClient, string accessToken)
     {
         httpClient.BaseAddress = new("https://api.akiles.app/v2");
-
-        httpClient.DefaultRequestHeaders.TryAddWithoutValidation(
-            "Authorization",
-            "Bearer " + accessToken
-        );
+        httpClient.DefaultRequestHeaders.Authorization = new("Bearer", accessToken);
 
         Events = RestService.For<IEvents>(httpClient, _refitSettings);
         Gadgets = RestService.For<IGadgets>(httpClient, _refitSettings);

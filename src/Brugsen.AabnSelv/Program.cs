@@ -50,6 +50,9 @@ builder.Services.AddHostedService<LockdownController>();
 builder.Services.AddSingleton<WebhookEventValidator>();
 
 builder.Services.AddAkilesApi();
+builder.Services.AddGatewayApi(options =>
+    options.Token = builder.Configuration["GatewayApiToken"]!
+);
 builder.Services.AddGadgets();
 
 builder
