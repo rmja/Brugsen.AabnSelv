@@ -20,7 +20,7 @@ public static class AkilesApiJsonSerializerOptions
         };
 }
 
-class TimeOnlyJsonConverter : JsonConverter<TimeOnly>
+file class TimeOnlyJsonConverter : JsonConverter<TimeOnly>
 {
     public override TimeOnly Read(
         ref Utf8JsonReader reader,

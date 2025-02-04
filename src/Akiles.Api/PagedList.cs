@@ -43,7 +43,7 @@ file class PagedListJsonConverter<T> : JsonConverter<PagedList<T>>
         JsonSerializerOptions options
     )
     {
-        var model = JsonSerializer.Deserialize<PagedListModel<T>>(ref reader, options);
+        var model = JsonSerializer.Deserialize<Model>(ref reader, options);
         if (model is null)
         {
             return null;
@@ -62,7 +62,7 @@ file class PagedListJsonConverter<T> : JsonConverter<PagedList<T>>
         JsonSerializerOptions options
     )
     {
-        var model = new PagedListModel<T>
+        var model = new Model
         {
             Data = value.Data,
             HasNext = value.HasNext,
@@ -70,11 +70,11 @@ file class PagedListJsonConverter<T> : JsonConverter<PagedList<T>>
         };
         JsonSerializer.Serialize(writer, model, options);
     }
-}
 
-file class PagedListModel<T>
-{
-    public required List<T> Data { get; set; }
-    public bool HasNext { get; set; }
-    public string? CursorNext { get; set; }
+    private class Model
+    {
+        public required List<T> Data { get; set; }
+        public bool HasNext { get; set; }
+        public string? CursorNext { get; set; }
+    }
 }
