@@ -30,7 +30,7 @@ public class SmsTests(ApiFixture fixture) : IClassFixture<ApiFixture>
         );
     }
 
-    [Fact]
+    [Fact(Skip = "Avoid sms spam")]
     public async Task CanSendSmsMessage()
     {
         // Given
