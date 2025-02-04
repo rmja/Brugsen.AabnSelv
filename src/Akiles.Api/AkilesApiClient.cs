@@ -33,8 +33,8 @@ public class AkilesApiClient : IAkilesApiClient
                 {
                     RequestUri = response.RequestMessage!.RequestUri!,
                     StatusCode = response.StatusCode,
-                    Type = error.Type,
-                    Args = error.Args,
+                    ErrorType = error.Type,
+                    ErrorArgs = error.Args,
                 };
             }
         };

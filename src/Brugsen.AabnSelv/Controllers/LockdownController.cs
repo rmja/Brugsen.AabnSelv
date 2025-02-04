@@ -183,7 +183,14 @@ public sealed class LockdownController(
             "Turning off the light as part of blackout"
         );
 
-        await light.TurnOffAsync(client);
+        try
+        {
+            await light.TurnOffAsync(client);
+        }
+        catch (AkilesApiException ex) when (ex.ErrorType == AkilesErrorTypes.HardwareOffline)
+        {
+            logger.LogError(ex, "Unable to perform blackout as hardware is offline");
+        }
     }
 
     private async Task PerformLockdownAsync()
@@ -193,8 +200,15 @@ public sealed class LockdownController(
             "Locking the door and arming the alarm as part of lockdown"
         );
 
-        await doorLock.LockAsync(client);
-        await alarm.ArmAsync(client);
+        try
+        {
+            await doorLock.LockAsync(client);
+            await alarm.ArmAsync(client);
+        }
+        catch (AkilesApiException ex) when (ex.ErrorType == AkilesErrorTypes.HardwareOffline)
+        {
+            logger.LogError(ex, "Unable to perform lockdown as hardware is offline");
+        }
     }
 
     private void SignalBlackout(object? state)

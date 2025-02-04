@@ -65,7 +65,18 @@ public sealed class AccessController(
                 {
                     if (openingHours.GetAccessMode() == AccessMode.ExtendedAccess)
                     {
-                        await light.TurnOffAsync(client, CancellationToken.None);
+                        try
+                        {
+                            await light.TurnOffAsync(client, CancellationToken.None);
+                        }
+                        catch (AkilesApiException ex)
+                            when (ex.ErrorType == AkilesErrorTypes.HardwareOffline)
+                        {
+                            logger.LogError(
+                                ex,
+                                "Unable to perform blackout as hardware is offline"
+                            );
+                        }
                     }
                     else
                     {
@@ -84,7 +95,18 @@ public sealed class AccessController(
                 {
                     if (openingHours.GetAccessMode() == AccessMode.ExtendedAccess)
                     {
-                        await alarm.ArmAsync(client, CancellationToken.None);
+                        try
+                        {
+                            await alarm.ArmAsync(client, CancellationToken.None);
+                        }
+                        catch (AkilesApiException ex)
+                            when (ex.ErrorType == AkilesErrorTypes.HardwareOffline)
+                        {
+                            logger.LogError(
+                                ex,
+                                "Unable to perform lockdown as hardware is offline"
+                            );
+                        }
                     }
                     else
                     {
@@ -119,25 +141,32 @@ public sealed class AccessController(
         _blackoutSignalled = false;
         _lockdownSignalled = false;
 
-        if (alarm.State != AlarmState.Disarmed)
+        try
         {
-            await alarm.DisarmAsync(client);
-        }
+            if (alarm.State != AlarmState.Disarmed)
+            {
+                await alarm.DisarmAsync(client);
+            }
 
-        if (light.State != LightState.On)
+            if (light.State != LightState.On)
+            {
+                await light.TurnOnAsync(client);
+            }
+
+            if (doorLock.State != LockState.Unlocked)
+            {
+                await doorLock.UnlockAsync(client);
+
+                // Wait for the lock to perform the unlock operation before we try and open the door
+                await Task.Delay(doorLock.UnlockOperationDuration, timeProvider);
+            }
+
+            await door.OpenOnceAsync(client);
+        }
+        catch (AkilesApiException ex) when (ex.ErrorType == AkilesErrorTypes.HardwareOffline)
         {
-            await light.TurnOnAsync(client);
+            logger.LogError(ex, "Unable to process check-in as hardware is offline");
         }
-
-        if (doorLock.State != LockState.Unlocked)
-        {
-            await doorLock.UnlockAsync(client);
-
-            // Wait for the lock to perform the unlock operation before we try and open the door
-            await Task.Delay(doorLock.UnlockOperationDuration, timeProvider);
-        }
-
-        await door.OpenOnceAsync(client);
     }
 
     public async Task ProcessCheckOutAsync(string eventId, string memberId, bool enforceCheckedIn)
@@ -182,7 +211,14 @@ public sealed class AccessController(
 
         logger.LogInformation("Checking-out member {MemberId}", memberId);
 
-        await door.OpenOnceAsync(client);
+        try
+        {
+            await door.OpenOnceAsync(client);
+        }
+        catch (AkilesApiException ex) when (ex.ErrorType == AkilesErrorTypes.HardwareOffline)
+        {
+            logger.LogError(ex, "Unable to process check-out as hardware is offline");
+        }
 
         var anyCheckedIn = await access.IsAnyCheckedInAsync(
             client,
