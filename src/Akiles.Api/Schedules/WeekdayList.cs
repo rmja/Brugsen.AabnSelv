@@ -3,9 +3,6 @@
 public class WeekdayList<T> : List<T>
     where T : new()
 {
-    public WeekdayList()
-        : base(Enumerable.Range(0, 7).Select(x => new T())) { }
-
     public T this[DayOfWeek weekday] => this[GetIndex(weekday)];
 
     private static int GetIndex(DayOfWeek weekday) =>
