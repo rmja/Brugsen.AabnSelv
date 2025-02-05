@@ -3,6 +3,7 @@ using System.Reflection;
 using System.Text.Json;
 using Akiles.Api.Events;
 using Akiles.Api.Gadgets;
+using Akiles.Api.MemberGroups;
 using Akiles.Api.Members;
 using Akiles.Api.Schedules;
 using Akiles.Api.Webhooks;
@@ -42,6 +43,7 @@ public class AkilesApiClient : IAkilesApiClient
     public IEvents Events { get; }
     public IGadgets Gadgets { get; }
     public IMembers Members { get; }
+    public IMemberGroups MemberGroups { get; }
     public ISchedules Schedules { get; }
     public IWebhooks Webhooks { get; }
 
@@ -53,6 +55,7 @@ public class AkilesApiClient : IAkilesApiClient
         Events = RestService.For<IEvents>(httpClient, _refitSettings);
         Gadgets = RestService.For<IGadgets>(httpClient, _refitSettings);
         Members = RestService.For<IMembers>(httpClient, _refitSettings);
+        MemberGroups = RestService.For<IMemberGroups>(httpClient, _refitSettings);
         Schedules = RestService.For<ISchedules>(httpClient, _refitSettings);
         Webhooks = RestService.For<IWebhooks>(httpClient, _refitSettings);
     }

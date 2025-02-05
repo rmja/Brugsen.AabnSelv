@@ -1,5 +1,6 @@
 ﻿using Akiles.Api.Events;
 using Akiles.Api.Gadgets;
+using Akiles.Api.MemberGroups;
 using Akiles.Api.Members;
 using Akiles.Api.Schedules;
 using Akiles.Api.Webhooks;
@@ -11,6 +12,7 @@ public interface IAkilesApiClient
     IEvents Events { get; }
     IGadgets Gadgets { get; }
     IMembers Members { get; }
+    IMemberGroups MemberGroups { get; }
     ISchedules Schedules { get; }
     IWebhooks Webhooks { get; }
 }
