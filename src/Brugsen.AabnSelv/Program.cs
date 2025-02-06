@@ -7,6 +7,7 @@ using Brugsen.AabnSelv.Endpoints;
 using Brugsen.AabnSelv.Services;
 using Microsoft.AspNetCore.Http.Json;
 using Microsoft.Extensions.Logging.Console;
+using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
 
 var builder = WebApplication.CreateSlimBuilder(args);
@@ -78,6 +79,26 @@ builder
     .AddHttpContextAccessor();
 
 var app = builder.Build();
+
+var options = app.Services.GetRequiredService<IOptions<BrugsenAabnSelvOptions>>().Value;
+if (options.CheckInPinpadGadgetId is not null)
+{
+    var client = app.Services.GetRequiredKeyedService<IAkilesApiClient>(ServiceKeys.ApiKeyClient);
+    var group = await client.MemberGroups.GetMemberGroupAsync(options.ApprovedMemberGroupId);
+    var permission = group.Permissions.FirstOrDefault(x =>
+        x.GadgetId == options.CheckInPinpadGadgetId
+    );
+    if (permission?.AccessMethods is not null)
+    {
+        if (permission.AccessMethods.Pin)
+        {
+            app.Logger.LogWarning(
+                "External facing check-in pinpad accepts insecure phone number pins"
+            );
+        }
+    }
+}
+
 app.UsePathBase(app.Configuration["PathBase"]);
 app.UseRouting(); // Must be called explicitly for PathBase to have effect, see https://andrewlock.net/using-pathbase-with-dotnet-6-webapplicationbuilder/#option-1-controlling-the-location-of-userouting-
 HistoryEndpoints.AddRoutes(app);

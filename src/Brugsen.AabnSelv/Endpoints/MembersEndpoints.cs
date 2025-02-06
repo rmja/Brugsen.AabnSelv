@@ -86,6 +86,15 @@ public static class MembersEndpoints
             CancellationToken.None
         );
 
+        // The pin is only used on check-out, so it is not "that sensitive".
+        // When Akiles support multiple pins with different sensitivity level,
+        // then this pin should clearly be marked as "not sensitive".
+        await apiClient.Members.CreatePinAsync(
+            member.Id,
+            new() { Pin = init.Phone.TrimStart('+') },
+            CancellationToken.None
+        );
+
         return Results.Ok(member.ToDto(email, isApproved: false));
     }
 
