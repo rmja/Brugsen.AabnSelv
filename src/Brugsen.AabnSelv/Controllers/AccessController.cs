@@ -5,7 +5,7 @@ using Brugsen.AabnSelv.Services;
 namespace Brugsen.AabnSelv.Controllers;
 
 public sealed class AccessController(
-    IAccessGadget access,
+    IAccessService access,
     IAlarmGadget alarm,
     ILightGadget light,
     IFrontDoorLockGadget doorLock,
@@ -22,7 +22,6 @@ public sealed class AccessController(
     private bool _lockdownSignalled = false;
     private readonly SemaphoreSlim _signal = new(0);
 
-    public IAccessGadget AccessGadget => access;
     public TimeSpan BlackoutDelay { get; } = TimeSpan.FromSeconds(30);
     public TimeSpan LockdownDelay { get; } = TimeSpan.FromSeconds(60);
 

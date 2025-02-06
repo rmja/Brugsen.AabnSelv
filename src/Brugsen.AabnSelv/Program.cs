@@ -30,6 +30,7 @@ builder.Services.Configure<JsonOptions>(options =>
 
 builder.Services.AddSingleton<TimeProvider, DanishTimeProvider>();
 
+builder.Services.AddSingleton<IAccessService, AccessService>();
 builder.Services.AddSingleton<OpeningHoursService>();
 builder.Services.AddSingleton<IOpeningHoursService>(provider =>
     provider.GetRequiredService<OpeningHoursService>()

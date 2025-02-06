@@ -1,20 +1,21 @@
 ﻿using Akiles.Api;
-using Brugsen.AabnSelv.Gadgets;
+using Brugsen.AabnSelv.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Brugsen.AabnSelv.Tests;
 
-public class AccessGadgetIntegrationTests
+public class AccessServiceIntegrationTests
 {
     private readonly IAkilesApiClient _client;
-    private readonly IAccessGadget _accessGadget;
+    private readonly IAccessService _accessService;
 
-    public AccessGadgetIntegrationTests()
+    public AccessServiceIntegrationTests()
     {
         var config = new ConfigurationBuilder().AddUserSecrets<Program>().Build();
         var services = new ServiceCollection()
             .AddLogging()
+            .AddSingleton<IAccessService, AccessService>()
             .AddAkilesApi()
             .AddGadgets()
             .AddKeyedSingleton(
@@ -31,7 +32,7 @@ public class AccessGadgetIntegrationTests
             .BuildServiceProvider();
 
         _client = services.GetRequiredKeyedService<IAkilesApiClient>(ServiceKeys.ApiKeyClient);
-        _accessGadget = services.GetRequiredService<IAccessGadget>();
+        _accessService = services.GetRequiredService<IAccessService>();
     }
 
     [Fact]
@@ -41,7 +42,7 @@ public class AccessGadgetIntegrationTests
         const string MemberId = "mem_41eleh9x15dus6z8yqyh";
 
         // When
-        var result = await _accessGadget.IsMemberCheckedInAsync(
+        var result = await _accessService.IsMemberCheckedInAsync(
             _client,
             MemberId,
             notBefore: DateTimeOffset.Now.AddHours(-1)

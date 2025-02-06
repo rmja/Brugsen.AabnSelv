@@ -1,13 +1,14 @@
 ﻿using Akiles.Api;
 using Akiles.Api.Events;
 using Brugsen.AabnSelv.Gadgets;
+using Brugsen.AabnSelv.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Time.Testing;
 using Moq;
 
 namespace Brugsen.AabnSelv.Tests;
 
-public class AccessGadgetTests
+public class AccessServiceTests
 {
     private readonly Mock<IAlarmGadget> _alarmGadgetMock = new();
     private readonly Mock<ILightGadget> _lightGadgetMock = new();
@@ -15,9 +16,9 @@ public class AccessGadgetTests
     private readonly Mock<IFrontDoorGadget> _doorGadgetMock = new();
     private readonly Mock<IAkilesApiClient> _clientMock = new();
     private readonly FakeTimeProvider _fakeTime = new();
-    private readonly IAccessGadget _accessGadget;
+    private readonly IAccessService _accessService;
 
-    public AccessGadgetTests()
+    public AccessServiceTests()
     {
         var services = new ServiceCollection()
             .AddLogging()
@@ -30,7 +31,7 @@ public class AccessGadgetTests
 
         _fakeTime.SetLocalTimeZone(DanishTimeProvider.EuropeCopenhagen);
         _fakeTime.AutoAdvanceAmount = TimeSpan.FromMinutes(1);
-        _accessGadget = ActivatorUtilities.CreateInstance<AccessGadget>(services, "access");
+        _accessService = ActivatorUtilities.CreateInstance<AccessService>(services);
     }
 
     [Fact]
@@ -51,7 +52,7 @@ public class AccessGadgetTests
             .Returns(events.AsEnumerable().Reverse().AsAsyncEnumerable());
 
         // When
-        var isCheckedId = await _accessGadget.IsMemberCheckedInAsync(
+        var isCheckedId = await _accessService.IsMemberCheckedInAsync(
             _clientMock.Object,
             "member",
             notBefore
@@ -93,7 +94,7 @@ public class AccessGadgetTests
             .Returns(events.AsEnumerable().Reverse().AsAsyncEnumerable());
 
         // When
-        var isCheckedId = await _accessGadget.IsMemberCheckedInAsync(
+        var isCheckedId = await _accessService.IsMemberCheckedInAsync(
             _clientMock.Object,
             "member",
             notBefore
@@ -147,7 +148,7 @@ public class AccessGadgetTests
             .Returns(events.AsEnumerable().Reverse().AsAsyncEnumerable());
 
         // When
-        var isCheckedId = await _accessGadget.IsMemberCheckedInAsync(
+        var isCheckedId = await _accessService.IsMemberCheckedInAsync(
             _clientMock.Object,
             "member",
             notBefore,
@@ -202,7 +203,7 @@ public class AccessGadgetTests
             .Returns(events.AsEnumerable().Reverse().AsAsyncEnumerable());
 
         // When
-        var isCheckedId = await _accessGadget.IsMemberCheckedInAsync(
+        var isCheckedId = await _accessService.IsMemberCheckedInAsync(
             _clientMock.Object,
             "member",
             notBefore
@@ -267,7 +268,7 @@ public class AccessGadgetTests
             .Returns(events.AsEnumerable().Reverse().AsAsyncEnumerable());
 
         // When
-        var anyCheckedIn = await _accessGadget.IsAnyCheckedInAsync(_clientMock.Object, notBefore);
+        var anyCheckedIn = await _accessService.IsAnyCheckedInAsync(_clientMock.Object, notBefore);
 
         // Then
         Assert.False(anyCheckedIn);
@@ -316,7 +317,7 @@ public class AccessGadgetTests
             .Returns(events.AsEnumerable().Reverse().AsAsyncEnumerable());
 
         // When
-        var activities = await _accessGadget.GetActivityAsync(
+        var activities = await _accessService.GetActivityAsync(
             _clientMock.Object,
             memberId: null,
             notBefore

@@ -10,7 +10,7 @@ namespace Brugsen.AabnSelv.Tests;
 
 public class AccessControllerTests
 {
-    private readonly Mock<IAccessGadget> _accessGadgetMock = new();
+    private readonly Mock<IAccessService> _accessServiceMock = new();
     private readonly NoopAlarmGadget _alarmGadget = new();
     private readonly NoopLightGadget _lightGadget = new();
     private readonly NoopFrontDoorLockGadget _lockGadget = new();
@@ -24,7 +24,7 @@ public class AccessControllerTests
     {
         var services = new ServiceCollection()
             .AddLogging()
-            .AddSingleton(_accessGadgetMock.Object)
+            .AddSingleton(_accessServiceMock.Object)
             .AddSingleton<IAlarmGadget>(_alarmGadget)
             .AddSingleton<ILightGadget>(_lightGadget)
             .AddSingleton<IFrontDoorLockGadget>(_lockGadget)
@@ -73,7 +73,7 @@ public class AccessControllerTests
             .Setup(m => m.OpenOnceAsync(_clientMock.Object, CancellationToken.None))
             .Verifiable();
 
-        _accessGadgetMock
+        _accessServiceMock
             .Setup(m =>
                 m.IsMemberCheckedInAsync(
                     _clientMock.Object,
@@ -118,7 +118,7 @@ public class AccessControllerTests
     public async Task CannotProcessCheckOut_WhenCheckInIsInforced_NotCheckedIn()
     {
         // Given
-        _accessGadgetMock
+        _accessServiceMock
             .Setup(m =>
                 m.IsMemberCheckedInAsync(
                     _clientMock.Object,
@@ -151,7 +151,7 @@ public class AccessControllerTests
             .Setup(m => m.OpenOnceAsync(_clientMock.Object, CancellationToken.None))
             .Verifiable();
 
-        _accessGadgetMock
+        _accessServiceMock
             .Setup(m =>
                 m.IsMemberCheckedInAsync(
                     _clientMock.Object,

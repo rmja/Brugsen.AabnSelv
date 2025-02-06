@@ -3,6 +3,7 @@ using Akiles.Api;
 using Akiles.Api.Events;
 using Brugsen.AabnSelv.Gadgets;
 using Brugsen.AabnSelv.Models;
+using Brugsen.AabnSelv.Services;
 using Microsoft.Extensions.Options;
 
 namespace Brugsen.AabnSelv.Endpoints;
@@ -23,14 +24,14 @@ public static class HistoryEndpoints
 
     private static async Task<IResult> GetAccessActivityAsync(
         DateTime? notBefore,
-        IAccessGadget accessGadget,
+        IAccessService accessService,
         IAkilesApiClient client,
         IOptions<BrugsenAabnSelvOptions> options,
         TimeProvider timeProvider,
         CancellationToken cancellationToken
     )
     {
-        var activity = await accessGadget.GetActivityAsync(
+        var activity = await accessService.GetActivityAsync(
             client,
             memberId: null,
             notBefore: timeProvider.GetLocalDateTimeOffset(
