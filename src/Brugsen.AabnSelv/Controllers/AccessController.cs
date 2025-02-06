@@ -22,8 +22,8 @@ public sealed class AccessController(
     private bool _lockdownSignalled = false;
     private readonly SemaphoreSlim _signal = new(0);
 
-    public TimeSpan BlackoutDelay { get; } = TimeSpan.FromSeconds(30);
-    public TimeSpan LockdownDelay { get; } = TimeSpan.FromSeconds(60);
+    public TimeSpan BlackoutDelay { get; } = TimeSpan.FromSeconds(5);
+    public TimeSpan LockdownDelay { get; } = TimeSpan.FromSeconds(30);
 
     public override Task StartAsync(CancellationToken cancellationToken)
     {
