@@ -7,6 +7,6 @@ public class CheckOutPinpadGadget(string gadgetId) : ICheckOutPinpadGadget
 
     public static class Actions
     {
-        public const string CheckOut = "check_out";
+        public const string CheckOut = AccessGadget.Actions.CheckOut;
     }
 }
