@@ -17,7 +17,7 @@ public static class Mapper
             Address = member.Metadata[MetadataKeys.Member.Address],
             Phone = member.Metadata[MetadataKeys.Member.Phone],
             CoopMembershipNumber = member.Metadata[MetadataKeys.Member.CoopMembershipNumber],
-            LaesoeCardNumber = member.Metadata[MetadataKeys.Member.CoopMembershipNumber],
+            LaesoeCardNumber = member.Metadata[MetadataKeys.Member.LaesoeCardNumber],
             LaesoeCardColor = Enum.Parse<LaesoeCardColor>(
                 member.Metadata[MetadataKeys.Member.LaesoeCardColor],
                 true
