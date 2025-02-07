@@ -97,7 +97,7 @@ public static class WebhooksEndpoints
                 }
             }
         }
-        else if (evnt.Object.DeviceId == checkOutPinpadDevice.DeviceId)
+        else // if (evnt.Object.DeviceId == checkOutPinpadDevice.DeviceId)
         {
             switch (evnt.Object.GadgetActionId)
             {

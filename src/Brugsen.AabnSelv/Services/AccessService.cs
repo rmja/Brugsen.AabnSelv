@@ -120,8 +120,8 @@ public class AccessService(
                 ProcessCheckIn();
             }
             else if (
-                evnt.Object.DeviceId == checkOutPinpadDevice.DeviceId
-                && evnt.Object.GadgetId == frontDoorGadget.GadgetId
+                /* evnt.Object.DeviceId == checkOutPinpadDevice.DeviceId
+                && */evnt.Object.GadgetId == frontDoorGadget.GadgetId
             )
             {
                 ProcessCheckOut();
