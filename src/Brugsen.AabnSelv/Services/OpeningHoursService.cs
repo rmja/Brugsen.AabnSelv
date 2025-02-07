@@ -11,7 +11,6 @@ public class OpeningHoursService(
     ILogger<OpeningHoursService> logger
 ) : BackgroundService, IOpeningHoursService
 {
-    public Schedule RegularSchedule { get; set; } = null!;
     public Schedule ExtendedSchedule { get; set; } = null!;
 
     public override async Task StartAsync(CancellationToken cancellationToken)
@@ -39,37 +38,13 @@ public class OpeningHoursService(
 
     private async Task LoadSchedulesAsync()
     {
-        RegularSchedule = await client.Schedules.GetScheduleAsync(
-            options.Value.RegularOpeningHoursScheduleId
-        );
         ExtendedSchedule = await client.Schedules.GetScheduleAsync(
             options.Value.ExtendedOpeningHoursScheduleId
         );
 
         logger.LogInformation(
-            "Regular schedule {RegularSchedule} and extended schedule {ExtendedSchedule} was loaded",
-            RegularSchedule.Name,
+            "Extended schedule {ExtendedSchedule} was loaded",
             ExtendedSchedule.Name
         );
-    }
-
-    public AccessMode GetAccessMode(DateTimeOffset? at = null)
-    {
-        var time = at.HasValue
-            ? timeProvider.GetLocalDateTimeOffset(at.Value)
-            : timeProvider.GetLocalNow();
-        var regularPeriod = RegularSchedule.GetCurrentPeriod(time.DateTime);
-        if (regularPeriod is not null)
-        {
-            return AccessMode.RegularAccess;
-        }
-
-        var extendedPeriod = ExtendedSchedule.GetCurrentPeriod(time.DateTime);
-        if (extendedPeriod is not null)
-        {
-            return AccessMode.ExtendedAccess;
-        }
-
-        return AccessMode.NoAccess;
     }
 }

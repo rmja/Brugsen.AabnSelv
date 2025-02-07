@@ -36,8 +36,6 @@ public class AccessControllerTests
 
         _fakeTime.SetLocalTimeZone(DanishTimeProvider.EuropeCopenhagen);
         _controller = ActivatorUtilities.CreateInstance<AccessController>(services);
-
-        _openingHoursMock.Setup(m => m.GetAccessMode(null)).Returns(AccessMode.ExtendedAccess);
     }
 
     [Fact]
@@ -93,15 +91,18 @@ public class AccessControllerTests
 
         // When
         await _controller.StartAsync(CancellationToken.None);
+        Assert.Equal(AlarmState.Armed, _alarmGadget.State);
+        Assert.Equal(LightState.Off, _lightGadget.State);
+        Assert.Equal(LockState.Unknown, _lockGadget.State);
 
         await _controller.ProcessCheckOutAsync("check_out", "member1", openDoor);
-        Assert.Equal(AlarmState.Unknown, _alarmGadget.State);
-        Assert.Equal(LightState.Unknown, _lightGadget.State);
+        Assert.Equal(AlarmState.Armed, _alarmGadget.State);
+        Assert.Equal(LightState.Off, _lightGadget.State);
         Assert.Equal(LockState.Unknown, _lockGadget.State);
 
         _fakeTime.Advance(_controller.BlackoutDelay);
         await WaitForAsync(() => _lightGadget.State == LightState.Off);
-        Assert.Equal(AlarmState.Unknown, _alarmGadget.State);
+        Assert.Equal(AlarmState.Armed, _alarmGadget.State);
         Assert.Equal(LightState.Off, _lightGadget.State);
         Assert.Equal(LockState.Unknown, _lockGadget.State);
 
@@ -171,10 +172,13 @@ public class AccessControllerTests
 
         // When
         await _controller.StartAsync(CancellationToken.None);
+        Assert.Equal(AlarmState.Armed, _alarmGadget.State);
+        Assert.Equal(LightState.Off, _lightGadget.State);
+        Assert.Equal(LockState.Unknown, _lockGadget.State);
 
         await _controller.ProcessCheckOutAsync("check_out", "member1", openDoor: false);
-        Assert.Equal(AlarmState.Unknown, _alarmGadget.State);
-        Assert.Equal(LightState.Unknown, _lightGadget.State);
+        Assert.Equal(AlarmState.Armed, _alarmGadget.State);
+        Assert.Equal(LightState.Off, _lightGadget.State);
         Assert.Equal(LockState.Unknown, _lockGadget.State);
 
         _fakeTime.Advance(_controller.BlackoutDelay / 2);

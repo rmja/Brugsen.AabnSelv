@@ -5,11 +5,11 @@ using Brugsen.AabnSelv.Services;
 namespace Brugsen.AabnSelv.Controllers;
 
 public sealed class AccessController(
-    IAccessService access,
-    IAlarmGadget alarm,
-    ILightGadget light,
-    IFrontDoorLockGadget doorLock,
-    IFrontDoorGadget door,
+    IAccessService accessService,
+    IAlarmGadget alarmGadget,
+    ILightGadget lightGadget,
+    IFrontDoorLockGadget doorLockGadget,
+    IFrontDoorGadget doorGadget,
     [FromKeyedServices(ServiceKeys.ApiKeyClient)] IAkilesApiClient client,
     IOpeningHoursService openingHours,
     TimeProvider timeProvider,
@@ -25,21 +25,30 @@ public sealed class AccessController(
     public TimeSpan BlackoutDelay { get; } = TimeSpan.FromSeconds(10);
     public TimeSpan LockdownDelay { get; } = TimeSpan.FromSeconds(30);
 
-    public override Task StartAsync(CancellationToken cancellationToken)
+    public override async Task StartAsync(CancellationToken cancellationToken)
     {
+        var anyCheckedIn = await accessService.IsAnyCheckedInAsync(
+            client,
+            notBefore: timeProvider.GetLocalNow().AddHours(-1),
+            CancellationToken.None
+        );
+
+        var due = anyCheckedIn ? Timeout.InfiniteTimeSpan : TimeSpan.Zero;
+
         _blackoutTimer = timeProvider.CreateTimer(
             SignalBlackout,
             null,
-            Timeout.InfiniteTimeSpan,
+            due,
             Timeout.InfiniteTimeSpan
         );
         _lockdownTimer = timeProvider.CreateTimer(
             SignalLockdown,
             null,
-            Timeout.InfiniteTimeSpan,
+            due,
             Timeout.InfiniteTimeSpan
         );
-        return base.StartAsync(cancellationToken);
+
+        await base.StartAsync(cancellationToken);
     }
 
     public override Task StopAsync(CancellationToken cancellationToken)
@@ -60,28 +69,16 @@ public sealed class AccessController(
             if (_blackoutSignalled)
             {
                 _blackoutSignalled = false;
-                if (light.State != LightState.Off)
+                if (lightGadget.State != LightState.Off)
                 {
-                    if (openingHours.GetAccessMode() == AccessMode.ExtendedAccess)
+                    try
                     {
-                        try
-                        {
-                            await light.TurnOffAsync(client, CancellationToken.None);
-                        }
-                        catch (AkilesApiException ex)
-                            when (ex.ErrorType == AkilesErrorTypes.HardwareOffline)
-                        {
-                            logger.LogError(
-                                ex,
-                                "Unable to perform blackout as hardware is offline"
-                            );
-                        }
+                        await lightGadget.TurnOffAsync(client, CancellationToken.None);
                     }
-                    else
+                    catch (AkilesApiException ex)
+                        when (ex.ErrorType == AkilesErrorTypes.HardwareOffline)
                     {
-                        logger.LogWarning(
-                            "Ignoring blackout as we are not currently in extended access"
-                        );
+                        logger.LogError(ex, "Unable to perform blackout as hardware is offline");
                     }
                 }
             }
@@ -90,28 +87,16 @@ public sealed class AccessController(
             {
                 _lockdownSignalled = false;
 
-                if (alarm.State != AlarmState.Armed)
+                if (alarmGadget.State != AlarmState.Armed)
                 {
-                    if (openingHours.GetAccessMode() == AccessMode.ExtendedAccess)
+                    try
                     {
-                        try
-                        {
-                            await alarm.ArmAsync(client, CancellationToken.None);
-                        }
-                        catch (AkilesApiException ex)
-                            when (ex.ErrorType == AkilesErrorTypes.HardwareOffline)
-                        {
-                            logger.LogError(
-                                ex,
-                                "Unable to perform lockdown as hardware is offline"
-                            );
-                        }
+                        await alarmGadget.ArmAsync(client, CancellationToken.None);
                     }
-                    else
+                    catch (AkilesApiException ex)
+                        when (ex.ErrorType == AkilesErrorTypes.HardwareOffline)
                     {
-                        logger.LogWarning(
-                            "Ignoring lockdown as we are not currently in extended access"
-                        );
+                        logger.LogError(ex, "Unable to perform lockdown as hardware is offline");
                     }
                 }
             }
@@ -120,14 +105,6 @@ public sealed class AccessController(
 
     public async Task ProcessCheckInAsync(string eventId, string memberId)
     {
-        if (openingHours.GetAccessMode() != AccessMode.NoAccess)
-        {
-            logger.LogWarning(
-                "Check-in outside extended opening hours for member {MemberId}",
-                memberId
-            );
-        }
-
         logger.LogInformation(
             "Processing check-in event {EventId} for member {MemberId}",
             eventId,
@@ -142,25 +119,25 @@ public sealed class AccessController(
 
         try
         {
-            if (alarm.State != AlarmState.Disarmed)
+            if (alarmGadget.State != AlarmState.Disarmed)
             {
-                await alarm.DisarmAsync(client);
+                await alarmGadget.DisarmAsync(client);
             }
 
-            if (light.State != LightState.On)
+            if (lightGadget.State != LightState.On)
             {
-                await light.TurnOnAsync(client);
+                await lightGadget.TurnOnAsync(client);
             }
 
-            if (doorLock.State != LockState.Unlocked)
+            if (doorLockGadget.State != LockState.Unlocked)
             {
-                await doorLock.UnlockAsync(client);
+                await doorLockGadget.UnlockAsync(client);
 
                 // Wait for the lock to perform the unlock operation before we try and open the door
-                await Task.Delay(doorLock.UnlockOperationDuration, timeProvider);
+                await Task.Delay(doorLockGadget.UnlockOperationDuration, timeProvider);
             }
 
-            await door.OpenOnceAsync(client);
+            await doorGadget.OpenOnceAsync(client);
         }
         catch (AkilesApiException ex) when (ex.ErrorType == AkilesErrorTypes.HardwareOffline)
         {
@@ -170,14 +147,6 @@ public sealed class AccessController(
 
     public async Task ProcessCheckOutAsync(string eventId, string memberId, bool openDoor)
     {
-        if (openingHours.GetAccessMode() != AccessMode.ExtendedAccess)
-        {
-            logger.LogWarning(
-                "Check-out outside extended opening hours for member {MemberId}",
-                memberId
-            );
-        }
-
         logger.LogInformation(
             "Processing check-out event {EventId} for member {MemberId}",
             eventId,
@@ -191,7 +160,7 @@ public sealed class AccessController(
             // Ensure that we are checked-in, otherwise we might open the door without turning off the alarm.
             // We are actually checked out at this point, as this processing happens after the "check-out" event.
             // We therefore explicity ignore the current check-out event when determining if we are currently checked in.
-            var memberIsCheckedIn = await access.IsMemberCheckedInAsync(
+            var memberIsCheckedIn = await accessService.IsMemberCheckedInAsync(
                 client,
                 memberId,
                 notBefore: now.AddHours(-1),
@@ -213,7 +182,7 @@ public sealed class AccessController(
                     "Opening door during check-out for member member {MemberId}",
                     memberId
                 );
-                await door.OpenOnceAsync(client);
+                await doorGadget.OpenOnceAsync(client);
             }
             catch (AkilesApiException ex) when (ex.ErrorType == AkilesErrorTypes.HardwareOffline)
             {
@@ -221,7 +190,7 @@ public sealed class AccessController(
             }
         }
 
-        var anyCheckedIn = await access.IsAnyCheckedInAsync(
+        var anyCheckedIn = await accessService.IsAnyCheckedInAsync(
             client,
             notBefore: timeProvider.GetLocalNow().AddHours(-1),
             CancellationToken.None
