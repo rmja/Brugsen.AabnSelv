@@ -168,7 +168,7 @@ public sealed class AccessController(
         }
     }
 
-    public async Task ProcessCheckOutAsync(string eventId, string memberId, bool enforceCheckedIn)
+    public async Task ProcessCheckOutAsync(string eventId, string memberId, bool openDoor)
     {
         if (openingHours.GetAccessMode() != AccessMode.ExtendedAccess)
         {
@@ -186,7 +186,7 @@ public sealed class AccessController(
 
         var now = timeProvider.GetLocalNow();
 
-        if (enforceCheckedIn)
+        if (openDoor)
         {
             // Ensure that we are checked-in, otherwise we might open the door without turning off the alarm.
             // We are actually checked out at this point, as this processing happens after the "check-out" event.
@@ -206,17 +206,19 @@ public sealed class AccessController(
                 );
                 return;
             }
-        }
 
-        logger.LogInformation("Checking-out member {MemberId}", memberId);
-
-        try
-        {
-            await door.OpenOnceAsync(client);
-        }
-        catch (AkilesApiException ex) when (ex.ErrorType == AkilesErrorTypes.HardwareOffline)
-        {
-            logger.LogError(ex, "Unable to process check-out as hardware is offline");
+            try
+            {
+                logger.LogInformation(
+                    "Opening door during check-out for member member {MemberId}",
+                    memberId
+                );
+                await door.OpenOnceAsync(client);
+            }
+            catch (AkilesApiException ex) when (ex.ErrorType == AkilesErrorTypes.HardwareOffline)
+            {
+                logger.LogError(ex, "Unable to process check-out as hardware is offline");
+            }
         }
 
         var anyCheckedIn = await access.IsAnyCheckedInAsync(

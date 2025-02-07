@@ -55,7 +55,7 @@ builder.Services.AddAkilesApi();
 builder.Services.AddGatewayApi(options =>
     options.Token = builder.Configuration["GatewayApiToken"]!
 );
-builder.Services.AddGadgets();
+builder.Services.AddGadgets().AddDevices();
 
 builder
     .Services.AddKeyedSingleton(

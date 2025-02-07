@@ -18,6 +18,7 @@ public class AccessServiceIntegrationTests
             .AddSingleton<IAccessService, AccessService>()
             .AddAkilesApi()
             .AddGadgets()
+            .AddDevices()
             .AddKeyedSingleton(
                 ServiceKeys.ApiKeyClient,
                 (services, _) =>

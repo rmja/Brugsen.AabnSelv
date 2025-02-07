@@ -9,58 +9,29 @@ public static class GadgetsExtensions
     public static IServiceCollection AddGadgets(this IServiceCollection services)
     {
         return services
-            .AddGadget<IAccessGadget, AccessGadget>(options => options.AccessGadgetId)
-            .AddGadget<IFrontDoorGadget, FrontDoorGadget>(options => options.FrontDoorGadgetId)
-            .AddGadget<IFrontDoorLockGadget, FrontDoorLockGadget, NoopFrontDoorLockGadget>(
-                options => options.FrontDoorLockGadgetId
+            .AddAkilesEntity<IGadget, IAppAccessGadget, AppAccessGadget>(options =>
+                options.AppAccessGadgetId
             )
-            .AddGadget<IAlarmGadget, AlarmGadget, NoopAlarmGadget>(options => options.AlarmGadgetId)
-            .AddGadget<ILightGadget, LightGadget, NoopLightGadget>(options => options.LightGadgetId)
-            .AddGadget<ICheckInPinpadGadget, CheckInPinpadGadget, NoopCheckInPinpadGadget>(
-                options => options.CheckInPinpadGadgetId
+            .AddAkilesEntity<IGadget, IFrontDoorGadget, FrontDoorGadget>(options =>
+                options.FrontDoorGadgetId
             )
-            .AddGadget<ICheckOutPinpadGadget, CheckOutPinpadGadget, NoopCheckOutPinpadGadget>(
-                options => options.CheckOutPinpadGadgetId
-            );
-    }
-
-    private static IServiceCollection AddGadget<TService, TImplementation>(
-        this IServiceCollection services,
-        Func<BrugsenAabnSelvOptions, string> getGadgetId
-    )
-        where TService : class, IGadget
-        where TImplementation : class, TService
-    {
-        return services
-            .AddSingleton<IGadget>(provider => provider.GetRequiredService<TService>())
-            .AddSingleton<TService>(provider =>
-            {
-                var options = provider.GetRequiredService<IOptions<BrugsenAabnSelvOptions>>();
-                var gadgetId = getGadgetId(options.Value);
-                return ActivatorUtilities.CreateInstance<TImplementation>(provider, gadgetId);
-            });
-    }
-
-    private static IServiceCollection AddGadget<TService, TImplementation, TNoopImplementation>(
-        this IServiceCollection services,
-        Func<BrugsenAabnSelvOptions, string?> getGadgetId
-    )
-        where TService : class, IGadget
-        where TImplementation : class, TService
-        where TNoopImplementation : class, TService
-    {
-        return services
-            .AddSingleton<IGadget>(provider => provider.GetRequiredService<TService>())
-            .AddSingleton<TService>(provider =>
-            {
-                var options = provider.GetRequiredService<IOptions<BrugsenAabnSelvOptions>>();
-                var gadgetId = getGadgetId(options.Value);
-                if (gadgetId is null)
-                {
-                    return ActivatorUtilities.CreateInstance<TNoopImplementation>(provider);
-                }
-
-                return ActivatorUtilities.CreateInstance<TImplementation>(provider, gadgetId);
-            });
+            .AddAkilesEntity<
+                IGadget,
+                IFrontDoorLockGadget,
+                FrontDoorLockGadget,
+                NoopFrontDoorLockGadget
+            >(options => options.FrontDoorLockGadgetId)
+            .AddAkilesEntity<IGadget, IAlarmGadget, AlarmGadget, NoopAlarmGadget>(options =>
+                options.AlarmGadgetId
+            )
+            .AddAkilesEntity<IGadget, ILightGadget, LightGadget, NoopLightGadget>(options =>
+                options.LightGadgetId
+            )
+            .AddAkilesEntity<
+                IGadget,
+                ICheckInPinpadGadget,
+                CheckInPinpadGadget,
+                NoopCheckInPinpadGadget
+            >(options => options.CheckInPinpadGadgetId);
     }
 }

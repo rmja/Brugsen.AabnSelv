@@ -1,10 +1,16 @@
 ﻿using Akiles.Api;
 using Akiles.Api.Events;
+using Brugsen.AabnSelv.Devices;
 using Brugsen.AabnSelv.Gadgets;
 
 namespace Brugsen.AabnSelv.Services;
 
-public class AccessService : IAccessService
+public class AccessService(
+    IAppAccessGadget appAccessGadget,
+    ICheckInPinpadGadget checkInPinpadGadget,
+    ICheckOutPinpadDevice checkOutPinpadDevice,
+    IFrontDoorGadget frontDoorGadget
+) : IAccessService
 {
     public async Task<bool> IsMemberCheckedInAsync(
         IAkilesApiClient client,
@@ -97,41 +103,51 @@ public class AccessService : IAccessService
                 continue;
             }
 
-            // Note that check-in and check-out can happen from multiple gadgets, but their gadget action id is the same
-
-            switch (evnt.Object.GadgetActionId)
+            if (evnt.Object.GadgetId == appAccessGadget.GadgetId)
             {
-                //case CheckInPinpadGadget.Actions.CheckIn:
-                case AccessGadget.Actions.CheckIn:
+                switch (evnt.Object.GadgetActionId)
+                {
+                    case AppAccessGadget.Actions.CheckIn:
+                        ProcessCheckIn();
+                        break;
+                    case AppAccessGadget.Actions.CheckOut:
+                        ProcessCheckOut();
+                        break;
+                }
+            }
+            else if (evnt.Object.GadgetId == checkInPinpadGadget.GadgetId)
+            {
+                ProcessCheckIn();
+            }
+            else if (
+                evnt.Object.DeviceId == checkOutPinpadDevice.DeviceId
+                && evnt.Object.GadgetId == frontDoorGadget.GadgetId
+            )
+            {
+                ProcessCheckOut();
+            }
 
-                    {
-                        var activity = new AccessActivity()
-                        {
-                            MemberId = memberId,
-                            CheckInEvent = evnt
-                        };
-                        activities.Add(activity);
+            void ProcessCheckIn()
+            {
+                var activity = new AccessActivity() { MemberId = memberId, CheckInEvent = evnt };
+                activities.Add(activity);
 
-                        // Override any in-store in case the member exited by other means
-                        inStore[memberId] = activity;
-                    }
-                    break;
-                //case CheckOutPinpadGadget.Actions.CheckOut:
-                case AccessGadget.Actions.CheckOut:
+                // Override any in-store in case the member exited by other means
+                inStore[memberId] = activity;
+            }
 
-                    {
-                        if (inStore.Remove(memberId, out var activity))
-                        {
-                            activity.CheckOutEvent = evnt;
-                        }
-                        else
-                        {
-                            activities.Add(
-                                new AccessActivity { MemberId = memberId, CheckOutEvent = evnt }
-                            );
-                        }
-                    }
-                    break;
+            void ProcessCheckOut()
+            {
+                if (inStore.Remove(memberId, out var activity))
+                {
+                    activity.CheckOutEvent = evnt;
+                }
+                else
+                {
+                    activities.Add(
+                        new AccessActivity { MemberId = memberId, CheckOutEvent = evnt }
+                    );
+                }
             }
         }
 
@@ -140,4 +156,11 @@ public class AccessService : IAccessService
 
         return activities;
     }
+}
+
+public record AccessActivity
+{
+    public required string MemberId { get; init; }
+    public Event? CheckInEvent { get; set; }
+    public Event? CheckOutEvent { get; set; }
 }

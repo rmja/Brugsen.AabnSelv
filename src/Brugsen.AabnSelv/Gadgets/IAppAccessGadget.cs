@@ -2,7 +2,7 @@
 
 namespace Brugsen.AabnSelv.Gadgets;
 
-public interface IAccessGadget : IGadget
+public interface IAppAccessGadget : IGadget
 {
     Task CheckInAsync(IAkilesApiClient client, CancellationToken cancellationToken = default);
     Task CheckOutAsync(IAkilesApiClient client, CancellationToken cancellationToken = default);

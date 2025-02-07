@@ -66,12 +66,15 @@ public class AccessControllerTests
     [InlineData(false, false)]
     [InlineData(false, true)]
     [InlineData(true, true)]
-    public async Task CanProcessCheckOut(bool enforceCheckedIn, bool isCheckedIn)
+    public async Task CanProcessCheckOut(bool openDoor, bool isCheckedIn)
     {
         // Given
-        _doorGadgetMock
-            .Setup(m => m.OpenOnceAsync(_clientMock.Object, CancellationToken.None))
-            .Verifiable();
+        if (openDoor)
+        {
+            _doorGadgetMock
+                .Setup(m => m.OpenOnceAsync(_clientMock.Object, CancellationToken.None))
+                .Verifiable();
+        }
 
         _accessServiceMock
             .Setup(m =>
@@ -91,7 +94,7 @@ public class AccessControllerTests
         // When
         await _controller.StartAsync(CancellationToken.None);
 
-        await _controller.ProcessCheckOutAsync("check_out", "member1", enforceCheckedIn);
+        await _controller.ProcessCheckOutAsync("check_out", "member1", openDoor);
         Assert.Equal(AlarmState.Unknown, _alarmGadget.State);
         Assert.Equal(LightState.Unknown, _lightGadget.State);
         Assert.Equal(LockState.Unknown, _lockGadget.State);
@@ -136,7 +139,7 @@ public class AccessControllerTests
         // When
         await _controller.StartAsync(CancellationToken.None);
 
-        await _controller.ProcessCheckOutAsync("check_out", "member1", enforceCheckedIn: true);
+        await _controller.ProcessCheckOutAsync("check_out", "member1", openDoor: true);
 
         await _controller.StopAsync(CancellationToken.None);
 
@@ -169,7 +172,7 @@ public class AccessControllerTests
         // When
         await _controller.StartAsync(CancellationToken.None);
 
-        await _controller.ProcessCheckOutAsync("check_out", "member1", enforceCheckedIn: false);
+        await _controller.ProcessCheckOutAsync("check_out", "member1", openDoor: false);
         Assert.Equal(AlarmState.Unknown, _alarmGadget.State);
         Assert.Equal(LightState.Unknown, _lightGadget.State);
         Assert.Equal(LockState.Unknown, _lockGadget.State);

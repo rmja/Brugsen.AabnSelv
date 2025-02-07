@@ -1,8 +1,8 @@
 ﻿using Akiles.Api.Events;
 using Akiles.Api.Members;
 using Brugsen.AabnSelv.Endpoints;
-using Brugsen.AabnSelv.Gadgets;
 using Brugsen.AabnSelv.Models;
+using Brugsen.AabnSelv.Services;
 
 namespace Brugsen.AabnSelv;
 

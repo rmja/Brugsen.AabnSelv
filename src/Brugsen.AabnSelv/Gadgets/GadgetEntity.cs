@@ -8,5 +8,4 @@ public enum GadgetEntity
     FrontDoorLock,
     Light,
     CheckInPinpad,
-    CheckOutPinpad,
 }

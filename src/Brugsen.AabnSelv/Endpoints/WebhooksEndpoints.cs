@@ -1,6 +1,7 @@
 ﻿using Akiles.Api;
 using Akiles.Api.Events;
 using Brugsen.AabnSelv.Controllers;
+using Brugsen.AabnSelv.Devices;
 using Brugsen.AabnSelv.Gadgets;
 using Microsoft.Extensions.Options;
 
@@ -44,10 +45,11 @@ public static class WebhooksEndpoints
     private static async Task<IResult> ProcessGadgetActionEventAsync(
         HttpRequest request,
         WebhookEventValidator validator,
-        IAccessGadget accessGadget,
+        IAppAccessGadget appAccessGadget,
         ICheckInPinpadGadget checkInPinpadGadget,
-        ICheckOutPinpadGadget checkOutPinpadGadget,
+        ICheckOutPinpadDevice checkOutPinpadDevice,
         IAccessController accessProcessor,
+        ILogger<Endpoint> logger,
         CancellationToken cancellationToken
     )
     {
@@ -62,19 +64,25 @@ public static class WebhooksEndpoints
             return Results.NoContent();
         }
 
-        if (evnt.Object.GadgetId == accessGadget.GadgetId)
+        var logLevel = evnt.Verb == EventVerb.Use ? LogLevel.Information : LogLevel.Debug;
+        logger.Log(
+            logLevel,
+            "Received {Verb} verb for gadget {GadgetId} with action {GadgetActionId} for member {MemberId}",
+            evnt.Verb,
+            evnt.Object.GadgetId,
+            evnt.Object.GadgetActionId,
+            memberId
+        );
+
+        if (evnt.Object.GadgetId == appAccessGadget.GadgetId)
         {
             switch (evnt.Object.GadgetActionId)
             {
-                case AccessGadget.Actions.CheckIn:
+                case AppAccessGadget.Actions.CheckIn:
                     await accessProcessor.ProcessCheckInAsync(evnt.Id, memberId);
                     break;
-                case AccessGadget.Actions.CheckOut:
-                    await accessProcessor.ProcessCheckOutAsync(
-                        evnt.Id,
-                        memberId,
-                        enforceCheckedIn: true
-                    );
+                case AppAccessGadget.Actions.CheckOut:
+                    await accessProcessor.ProcessCheckOutAsync(evnt.Id, memberId, openDoor: true);
                     break;
             }
         }
@@ -89,17 +97,13 @@ public static class WebhooksEndpoints
                 }
             }
         }
-        else if (evnt.Object.GadgetId == checkOutPinpadGadget.GadgetId)
+        else if (evnt.Object.DeviceId == checkOutPinpadDevice.DeviceId)
         {
             switch (evnt.Object.GadgetActionId)
             {
-                case CheckOutPinpadGadget.Actions.CheckOut:
+                case FrontDoorGadget.Actions.OpenOnce:
                 {
-                    await accessProcessor.ProcessCheckOutAsync(
-                        evnt.Id,
-                        memberId,
-                        enforceCheckedIn: false
-                    );
+                    await accessProcessor.ProcessCheckOutAsync(evnt.Id, memberId, openDoor: false);
                     break;
                 }
             }

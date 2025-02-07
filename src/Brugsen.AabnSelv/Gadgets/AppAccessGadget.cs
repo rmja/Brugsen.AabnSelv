@@ -1,9 +1,9 @@
 ﻿using Akiles.Api;
-using Akiles.Api.Events;
 
 namespace Brugsen.AabnSelv.Gadgets;
 
-public class AccessGadget(string gadgetId, ILogger<AccessGadget>? logger = null) : IAccessGadget
+public class AppAccessGadget(string gadgetId, ILogger<AppAccessGadget>? logger = null)
+    : IAppAccessGadget
 {
     public string GadgetId { get; } = gadgetId;
     public GadgetEntity GadgetEntity => GadgetEntity.Access;
@@ -25,11 +25,4 @@ public class AccessGadget(string gadgetId, ILogger<AccessGadget>? logger = null)
         public const string CheckIn = "check_in";
         public const string CheckOut = "check_out";
     }
-}
-
-public record AccessActivity
-{
-    public required string MemberId { get; init; }
-    public Event? CheckInEvent { get; set; }
-    public Event? CheckOutEvent { get; set; }
 }
