@@ -15,7 +15,7 @@ public record MemberDto
     [RegularExpression("^[0-9]{8}$")]
     public required string CoopMembershipNumber { get; init; }
 
-    [RegularExpression("^[0-9]{10}$")]
+    [RegularExpression("^[0-9]{7,10}$")]
     public required string LaesoeCardNumber { get; init; }
     public LaesoeCardColor LaesoeCardColor { get; init; }
     public bool IsApproved { get; init; }
