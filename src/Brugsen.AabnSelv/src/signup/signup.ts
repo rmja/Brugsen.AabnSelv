@@ -9,7 +9,7 @@ import template from "./signup.html";
 
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const membershipNumberRegex = /^[0-9]{8}$/;
-const cardNumberRegex = /^[0-9]{10}$/;
+const cardNumberRegex = /^[0-9]{7,10}$/;
 
 type CardColor = "red" | "blue" | "green";
 
@@ -30,19 +30,42 @@ export class SignupPage implements IRouteableComponent {
   gdprAccepted = false;
   termsAccepted = false;
 
+  get nameIsValid() {
+    return this.name.length > 5 && this.name.trim().includes(" ");
+  }
+
+  get addressIsValid() {
+    return !!this.addressId;
+  }
+
   get addressIsInvalid() {
     return this.address.length > 0 && !this.addressId;
   }
 
+  get emailIsValid() {
+    return emailRegex.test(this.email);
+  }
+
+  get phoneIsValid() {
+    return !!this.phone;
+  }
+
+  get membershipNumberIsValid() {
+    return membershipNumberRegex.test(this.membershipNumber);
+  }
+
+  get cardNumberIsValid() {
+    return cardNumberRegex.test(this.cardNumber);
+  }
+
   get canSubmit() {
     return (
-      this.name.length > 5 &&
-      this.name.trim().includes(" ") &&
-      this.addressId &&
-      emailRegex.test(this.email) &&
-      this.phone &&
-      membershipNumberRegex.test(this.membershipNumber) &&
-      cardNumberRegex.test(this.cardNumber) &&
+      this.nameIsValid &&
+      this.addressIsValid &&
+      this.emailIsValid &&
+      this.phoneIsValid &&
+      this.membershipNumberIsValid &&
+      this.cardNumberIsValid &&
       this.gdprAccepted &&
       this.termsAccepted
     );
@@ -50,7 +73,7 @@ export class SignupPage implements IRouteableComponent {
 
   constructor(
     private api = resolve(ApiClient),
-    private router: IRouter = resolve(IRouter),
+    private router: IRouter = resolve(IRouter)
   ) {}
 
   emailChanged() {

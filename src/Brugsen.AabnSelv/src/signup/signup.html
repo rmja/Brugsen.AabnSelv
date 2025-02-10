@@ -2,14 +2,19 @@
 
 <form submit.trigger="submit()">
   <div class="form-floating mb-3">
-    <input type="text" class="form-control" value.bind="name" name="name" />
+    <input
+      type="text"
+      class="form-control ${nameIsValid ? 'is-valid' : ''}"
+      value.bind="name"
+      name="name"
+    />
     <label>Navn</label>
   </div>
 
   <div class="form-floating mb-3">
     <input
       type="text"
-      class="form-control ${addressIsInvalid ? 'is-invalid' : ''}"
+      class="form-control ${addressIsValid ? 'is-valid' : ''} ${addressIsInvalid ? 'is-invalid' : ''}"
       value.bind="address"
       name="address"
       dawa-autocomplete="id.bind: addressId"
@@ -20,7 +25,7 @@
   <div class="form-floating mb-3">
     <input
       type="email"
-      class="form-control ${emailIsUsed ? 'is-invalid' : ''}"
+      class="form-control ${emailIsValid ? 'is-valid' : ''} ${emailIsUsed ? 'is-invalid' : ''}"
       value.bind="email"
       name="email"
     />
@@ -33,7 +38,7 @@
   <div class="form-floating mb-3">
     <input
       type="tel"
-      class="form-control"
+      class="form-control ${phoneIsValid ? 'is-valid' : ''}"
       intl-tel-input.bind="phone"
       name="phone"
     />
@@ -43,7 +48,7 @@
   <div class="form-floating mb-3">
     <input
       type="number"
-      class="form-control"
+      class="form-control ${membershipNumberIsValid ? 'is-valid' : ''}"
       value.bind="membershipNumber"
       step="1"
       name="coopMembershopNumber"
@@ -55,7 +60,7 @@
     <div class="form-floating">
       <input
         type="number"
-        class="form-control ${cardNumberIsUsed ? 'is-invalid' : ''}"
+        class="form-control ${cardNumberIsValid ? 'is-valid' : ''} ${cardNumberIsUsed ? 'is-invalid' : ''}"
         value.bind="cardNumber"
         step="1"
         name="laesoeCardNumber"
