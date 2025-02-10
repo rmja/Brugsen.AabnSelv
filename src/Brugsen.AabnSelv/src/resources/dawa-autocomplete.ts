@@ -16,6 +16,7 @@ export class DawaAutocompleteCustomAttribute
   @bindable({ mode: "twoWay" }) id: string | null = null;
   private element = resolve(INode) as HTMLInputElement;
   private instance?: DawaAutocomplete;
+  private selectedValue?: string;
 
   constructor() {
     this.onChange = this.onChange.bind(this);
@@ -27,6 +28,7 @@ export class DawaAutocompleteCustomAttribute
         if (selected.type === "adresse") {
           this.element.value = selected.tekst;
           this.id = selected.data.id ?? null;
+          this.selectedValue = selected.tekst;
         }
       },
     });
@@ -39,8 +41,9 @@ export class DawaAutocompleteCustomAttribute
     this.instance = undefined;
   }
 
-  // Not triggered when assigned with this.element.value = "..."
   private onChange() {
-    this.id = null;
+    if (this.element.value !== this.selectedValue) {
+      this.id = null;
+    }
   }
 }
