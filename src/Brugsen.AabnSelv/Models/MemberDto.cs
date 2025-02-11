@@ -12,7 +12,7 @@ public record MemberDto
     [RegularExpression("^\\+[0-9]+$")]
     public required string Phone { get; init; }
 
-    [RegularExpression("^[0-9]{8}$")]
+    [RegularExpression("^[0-9]{6,8}$")]
     public required string CoopMembershipNumber { get; init; }
 
     [RegularExpression("^[0-9]{7,10}$")]

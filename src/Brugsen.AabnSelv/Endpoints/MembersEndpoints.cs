@@ -70,7 +70,8 @@ public static class MembersEndpoints
                 {
                     [MetadataKeys.Member.Phone] = init.Phone,
                     [MetadataKeys.Member.Address] = init.Address,
-                    [MetadataKeys.Member.CoopMembershipNumber] = init.CoopMembershipNumber,
+                    [MetadataKeys.Member.CoopMembershipNumber] =
+                        init.CoopMembershipNumber.TrimStart('0'),
                     [MetadataKeys.Member.LaesoeCardNumber] = init.LaesoeCardNumber,
                     [MetadataKeys.Member.LaesoeCardColor] = init
                         .LaesoeCardColor.ToString()

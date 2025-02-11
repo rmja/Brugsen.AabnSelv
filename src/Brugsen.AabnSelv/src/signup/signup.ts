@@ -8,7 +8,7 @@ import { HttpError } from "@utiliread/http";
 import template from "./signup.html";
 
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const membershipNumberRegex = /^[0-9]{8}$/;
+const membershipNumberRegex = /^[0-9]{6,8}$/;
 const cardNumberRegex = /^[0-9]{7,10}$/;
 
 type CardColor = "red" | "blue" | "green";
