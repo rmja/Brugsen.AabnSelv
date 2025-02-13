@@ -66,6 +66,7 @@ public static class MembersEndpoints
             new()
             {
                 Name = init.Name,
+                Language = "da",
                 Metadata =
                 {
                     [MetadataKeys.Member.Phone] = init.Phone,

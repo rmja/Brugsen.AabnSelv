@@ -7,6 +7,7 @@ public record Member
     public required string Name { get; set; }
     public DateTime? StartsAt { get; set; }
     public DateTime? EndsAt { get; set; }
+    public string Language { get; set; } = "";
     public bool IsDeleted { get; set; }
     public DateTime CreatedAt { get; set; }
     public Dictionary<string, string> Metadata { get; set; } = [];
