@@ -101,7 +101,7 @@ public static class MembersEndpoints
         }
         catch (AkilesApiException ex) when (ex.ErrorType == AkilesErrorTypes.InvalidRequest)
         {
-            // Swallow - The pin is already being used
+            // Swallow - The pin is already being used, i.e. the phone number is being used again
         }
 
         return Results.Ok(member.ToDto(email, isApproved: false));
