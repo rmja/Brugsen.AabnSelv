@@ -21,7 +21,8 @@ export class SignupPage implements IRouteableComponent {
   addressId: string | null = null;
   @observable() email = "";
   emailIsUsed = false;
-  phone = "";
+  @observable() phone = "";
+  phoneIsUsed = false;
   membershipNumber = "";
   @observable() cardNumber = "";
   cardNumberIsUsed = false;
@@ -80,6 +81,10 @@ export class SignupPage implements IRouteableComponent {
     this.emailIsUsed = false;
   }
 
+  phoneChanged() {
+    this.phoneIsUsed = false;
+  }
+
   cardNumberChanged() {
     this.cardNumberIsUsed = false;
   }
@@ -111,6 +116,8 @@ export class SignupPage implements IRouteableComponent {
         const details = await error.details();
         if (details.type.endsWith("/email-conflict")) {
           this.emailIsUsed = true;
+        } else if (details.type.endsWith("/phone-conflict")) {
+          this.phoneIsUsed = true;
         } else if (details.type.endsWith("/laesoe-card-number-conflict")) {
           this.cardNumberIsUsed = true;
         }

@@ -38,11 +38,14 @@
   <div class="form-floating mb-3">
     <input
       type="tel"
-      class="form-control ${phoneIsValid ? 'is-valid' : ''}"
+      class="form-control ${phoneIsValid ? 'is-valid' : ''} ${phoneIsUsed ? 'is-invalid' : ''}"
       intl-tel-input.bind="phone"
       name="phone"
     />
     <label>Telefon</label>
+    <div class="invalid-feedback">
+      En bruger med dette telefonnummer eksisterer allerede.
+    </div>
   </div>
 
   <div class="form-floating mb-3">

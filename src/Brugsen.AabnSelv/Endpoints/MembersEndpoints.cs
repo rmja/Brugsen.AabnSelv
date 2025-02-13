@@ -36,6 +36,15 @@ public static class MembersEndpoints
                         null,
                         new ListMembersFilter()
                         {
+                            Metadata = new() { [MetadataKeys.Member.Phone] = init.Phone }
+                        }
+                    )
+                    .FirstOrDefaultAsync(cancellationToken),
+                apiClient
+                    .Members.ListMembersAsync(
+                        null,
+                        new ListMembersFilter()
+                        {
                             Metadata = new()
                             {
                                 [MetadataKeys.Member.LaesoeCardNumber] = init.LaesoeCardNumber
@@ -55,6 +64,14 @@ public static class MembersEndpoints
         }
 
         if (existing[1] is not null)
+        {
+            return Results.Problem(
+                type: "api://members/signup/phone-conflict",
+                statusCode: StatusCodes.Status409Conflict
+            );
+        }
+
+        if (existing[2] is not null)
         {
             return Results.Problem(
                 type: "api://members/signup/laesoe-card-number-conflict",
@@ -101,7 +118,9 @@ public static class MembersEndpoints
         }
         catch (AkilesApiException ex) when (ex.ErrorType == AkilesErrorTypes.InvalidRequest)
         {
-            // Swallow - The pin is already being used, i.e. the phone number is being used again
+            // Swallow
+            // The pin could not be created as it is already being used
+            // This does not make any sense as we have already validated that the phone number is unique
         }
 
         return Results.Ok(member.ToDto(email, isApproved: false));
