@@ -1,7 +1,8 @@
-﻿using Akiles.Api;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
+
+namespace Akiles.Api;
 
 public static class AkilesApiExtensions
 {

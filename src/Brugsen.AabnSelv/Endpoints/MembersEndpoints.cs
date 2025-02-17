@@ -137,10 +137,7 @@ public static class MembersEndpoints
                 filter: new() { IsDeleted = IsDeleted.False },
                 expand: MembersExpand.GroupAssociations | MembersExpand.Emails
             )
-            .WhereAsync(
-                x => !x.IsApproved(options.Value) && x.Emails?.Any() == true,
-                cancellationToken
-            )
+            .WhereAsync(x => !x.IsApproved(options.Value) && x.Emails?.Count > 0, cancellationToken)
             .ToListAsync(cancellationToken);
         return Results.Ok(members.Select(x => x.ToDto(x.Emails!.First(), isApproved: true)));
     }
@@ -156,10 +153,7 @@ public static class MembersEndpoints
                 filter: new() { IsDeleted = IsDeleted.False },
                 expand: MembersExpand.GroupAssociations | MembersExpand.Emails
             )
-            .WhereAsync(
-                x => x.IsApproved(options.Value) && x.Emails?.Any() == true,
-                cancellationToken
-            )
+            .WhereAsync(x => x.IsApproved(options.Value) && x.Emails?.Count > 0, cancellationToken)
             .ToListAsync(cancellationToken);
         return Results.Ok(members.Select(x => x.ToDto(x.Emails!.First(), isApproved: true)));
     }
