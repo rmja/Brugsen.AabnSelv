@@ -34,9 +34,9 @@ export class DashboardPage implements IRouteableComponent {
   }
 
   getDuration(activity: AccessActivityViewModel) {
-    if (activity.checkedInAt && activity.checkedOutAt) {
-      return activity.checkedInAt
-        .until(activity.checkedOutAt)
+    if (activity.checkInEvent && activity.checkOutEvent) {
+      return activity.checkInEvent.createdAt
+        .until(activity.checkOutEvent.createdAt)
         .toDuration()
         .toFormat("mm:ss");
     }
@@ -51,11 +51,12 @@ interface MemberViewModel {
 
 interface ActionEventViewModel {
   action: string;
+  method: string | null;
   createdAt: DateTime;
 }
 
 interface AccessActivityViewModel {
   memberName: string;
-  checkedInAt?: DateTime;
-  checkedOutAt?: DateTime;
+  checkInEvent: ActionEventViewModel | null;
+  checkOutEvent: ActionEventViewModel | null;
 }

@@ -68,7 +68,7 @@ public static class HistoryEndpoints
 
         if (gadget.GadgetId.StartsWith("noop-"))
         {
-            return Results.Ok(Array.Empty<EventDto>());
+            return Results.Ok(Array.Empty<ActionEventDto>());
         }
 
         var events = await client

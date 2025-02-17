@@ -1,9 +1,9 @@
-﻿namespace Brugsen.AabnSelv.Endpoints;
+﻿namespace Brugsen.AabnSelv.Models;
 
 public record AccessActivityDto
 {
     public required string MemberId { get; set; }
     public required string MemberName { get; set; }
-    public DateTime? CheckedInAt { get; set; }
-    public DateTime? CheckedOutAt { get; set; }
+    public ActionEventDto? CheckInEvent { get; set; }
+    public ActionEventDto? CheckOutEvent { get; set; }
 }

@@ -23,22 +23,24 @@ export interface Member {
   isApproved: boolean;
 }
 
+export class ActionEvent<T = string> {
+  @jsonProperty()
+  action!: T;
+  @jsonProperty()
+  method!: "app" | "pin" | "nfc" | null;
+  @jsonProperty({ converter: dateTimeConverter })
+  createdAt!: DateTime;
+}
+
 export class AccessActivity {
   @jsonProperty()
   memberId!: string;
   @jsonProperty()
   memberName!: string;
-  @jsonProperty({ converter: dateTimeConverter })
-  checkedInAt?: DateTime;
-  @jsonProperty({ converter: dateTimeConverter })
-  checkedOutAt?: DateTime;
-}
-
-export class ActionEvent<T = string> {
-  @jsonProperty()
-  action!: T;
-  @jsonProperty({ converter: dateTimeConverter })
-  createdAt!: DateTime;
+  @jsonProperty({ type: ActionEvent })
+  checkInEvent!: ActionEvent<"check_in"> | null;
+  @jsonProperty({ type: ActionEvent })
+  checkOutEvent!: ActionEvent<"check_out" | "open_once"> | null;
 }
 
 export type AlarmAction = "arm" | "disarm";
@@ -103,7 +105,9 @@ export class ApiClient {
   }
 
   getActionEvents(gadget: "alarm"): HttpBuilderOfT<ActionEvent<AlarmAction>[]>;
-  getActionEvents(gadget: "front-door-lock"): HttpBuilderOfT<ActionEvent<LockAction>[]>;
+  getActionEvents(
+    gadget: "front-door-lock",
+  ): HttpBuilderOfT<ActionEvent<LockAction>[]>;
   getActionEvents<TAction>(gadget: string) {
     return http
       .get(`/history/${gadget}-action-events`)

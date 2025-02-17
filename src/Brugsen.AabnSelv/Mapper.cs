@@ -1,6 +1,7 @@
 ﻿using Akiles.Api.Events;
 using Akiles.Api.Members;
 using Brugsen.AabnSelv.Endpoints;
+using Brugsen.AabnSelv.Gadgets;
 using Brugsen.AabnSelv.Models;
 using Brugsen.AabnSelv.Services;
 
@@ -32,11 +33,59 @@ public static class Mapper
         {
             MemberId = activity.MemberId,
             MemberName = memberName ?? "",
-            CheckedInAt = activity.CheckInEvent?.CreatedAt,
-            CheckedOutAt = activity.CheckOutEvent?.CreatedAt
+            CheckInEvent = activity.CheckInEvent?.ToDto(),
+            CheckOutEvent = activity.CheckOutEvent?.ToDto(),
         };
     }
 
-    public static EventDto ToDto(this Event evnt) =>
-        new() { Action = evnt.Object.GadgetActionId!, CreatedAt = evnt.CreatedAt };
+    public static ActionEventDto ToDto(this Event evnt) =>
+        new()
+        {
+            Action = evnt.Object.GadgetActionId!,
+            Method = GetAccessMethod(evnt),
+            CreatedAt = evnt.CreatedAt
+        };
+
+    private static AccessMethodDto? GetAccessMethod(Event evnt)
+    {
+        if (
+            evnt.Object.GadgetActionId == AppAccessGadget.Actions.CheckIn
+            && evnt.Object.HardwareId is null
+        )
+        {
+            return AccessMethodDto.App;
+        }
+        else if (
+            evnt.Object.GadgetActionId == AppAccessGadget.Actions.CheckIn
+            && evnt.Object.HardwareId is not null
+        )
+        {
+            return AccessMethodDto.Nfc;
+        }
+        else if (
+            evnt.Object.GadgetActionId == AppAccessGadget.Actions.CheckOut
+            && evnt.Object.HardwareId is null
+        )
+        {
+            return AccessMethodDto.App;
+        }
+        else if (
+            evnt.Object.GadgetActionId == FrontDoorGadget.Actions.OpenOnce
+            && evnt.Subject.MemberPinId is not null
+        )
+        {
+            return AccessMethodDto.Pin;
+        }
+        else if (
+            evnt.Object.GadgetActionId == FrontDoorGadget.Actions.OpenOnce
+            && evnt.Subject.MemberPinId is null
+        )
+        {
+            return AccessMethodDto.Nfc;
+        }
+        else
+        {
+            return null;
+        }
+    }
 }

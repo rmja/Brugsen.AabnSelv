@@ -74,7 +74,7 @@ export class SignupPage implements IRouteableComponent {
 
   constructor(
     private api = resolve(ApiClient),
-    private router: IRouter = resolve(IRouter)
+    private router: IRouter = resolve(IRouter),
   ) {}
 
   emailChanged() {

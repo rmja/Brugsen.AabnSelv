@@ -1,4 +1,9 @@
-<a href="https://admin.akiles.app" external class="btn btn-secondary w-100 mt-3 mb-3">Åbn <strong>Akiles Admin</strong></a>
+<a
+  href="https://admin.akiles.app"
+  external
+  class="btn btn-secondary w-100 mt-3 mb-3"
+  >Åbn <strong>Akiles Admin</strong></a
+>
 
 <h2>Adgangsanmodninger</h2>
 <table class="table" if.bind="pending.length > 0">
@@ -27,10 +32,14 @@
     <h6 class="mb-1">${activity.memberName}</h6>
     <dl class="row mb-0">
       <dt class="col-4">Check-ind</dt>
-      <dd class="col-8">${activity.checkedInAt | localDateTime}</dd>
+      <dd class="col-8" if.bind="activity.checkInEvent">
+        ${activity.checkInEvent.createdAt | localDateTime}
+        (${activity.checkInEvent.method})
+      </dd>
       <dt class="col-4">Check-ud</dt>
-      <dd class="col-8">
-        ${activity.checkedOutAt | localDateTime}
+      <dd class="col-8" if.bind="activity.checkOutEvent">
+        ${activity.checkOutEvent.createdAt | localDateTime}
+        (${activity.checkOutEvent.method})
         <let duration.bind="getDuration(activity)"></let>
         <small class="text-muted" if.bind="duration">+ ${duration}</small>
       </dd>
