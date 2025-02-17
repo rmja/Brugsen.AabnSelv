@@ -11,7 +11,6 @@ public sealed class AccessController(
     IFrontDoorLockGadget doorLockGadget,
     IFrontDoorGadget doorGadget,
     [FromKeyedServices(ServiceKeys.ApiKeyClient)] IAkilesApiClient client,
-    IOpeningHoursService openingHours,
     TimeProvider timeProvider,
     ILogger<AccessController> logger
 ) : BackgroundService, IAccessController
@@ -22,6 +21,7 @@ public sealed class AccessController(
     private bool _lockdownSignalled = false;
     private readonly SemaphoreSlim _signal = new(0);
 
+    public TimeSpan CheckoutTimeout { get; } = TimeSpan.FromHours(1);
     public TimeSpan BlackoutDelay { get; } = TimeSpan.FromSeconds(10);
     public TimeSpan LockdownDelay { get; } = TimeSpan.FromSeconds(30);
 
@@ -29,7 +29,7 @@ public sealed class AccessController(
     {
         var anyCheckedIn = await accessService.IsAnyCheckedInAsync(
             client,
-            notBefore: timeProvider.GetLocalNow().AddHours(-1),
+            notBefore: timeProvider.GetLocalNow().Subtract(CheckoutTimeout),
             CancellationToken.None
         );
 
@@ -111,9 +111,9 @@ public sealed class AccessController(
             memberId
         );
 
-        // Disarm timers
-        _blackoutTimer!.Change(Timeout.InfiniteTimeSpan, Timeout.InfiniteTimeSpan);
-        _lockdownTimer!.Change(Timeout.InfiniteTimeSpan, Timeout.InfiniteTimeSpan);
+        // Disarm timers by setting them to after checkout timeout
+        _blackoutTimer!.Change(CheckoutTimeout + BlackoutDelay, Timeout.InfiniteTimeSpan);
+        _lockdownTimer!.Change(CheckoutTimeout + LockdownDelay, Timeout.InfiniteTimeSpan);
         _blackoutSignalled = false;
         _lockdownSignalled = false;
 
@@ -163,7 +163,7 @@ public sealed class AccessController(
             var memberIsCheckedIn = await accessService.IsMemberCheckedInAsync(
                 client,
                 memberId,
-                notBefore: now.AddHours(-1),
+                notBefore: now.Subtract(CheckoutTimeout),
                 ignoreEventId: eventId
             );
             if (!memberIsCheckedIn)
@@ -192,7 +192,7 @@ public sealed class AccessController(
 
         var anyCheckedIn = await accessService.IsAnyCheckedInAsync(
             client,
-            notBefore: timeProvider.GetLocalNow().AddHours(-1),
+            notBefore: timeProvider.GetLocalNow().Subtract(CheckoutTimeout),
             CancellationToken.None
         );
         if (anyCheckedIn)

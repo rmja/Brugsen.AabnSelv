@@ -199,6 +199,51 @@ public class AccessControllerTests
         _doorGadgetMock.Verify();
     }
 
+    [Fact]
+    public async Task CheckInWithoutCheckOut_BlackoutAndLockdownIsRunAfterTimeout()
+    {
+        // Given
+        _doorGadgetMock
+            .Setup(m => m.OpenOnceAsync(_clientMock.Object, CancellationToken.None))
+            .Verifiable();
+
+        var checkedIn = new DateTime(2025, 02, 17, 13, 00, 00);
+        _fakeTime.SetLocalNow(checkedIn);
+
+        // When
+        await _controller.StartAsync(CancellationToken.None);
+        Assert.Equal(AlarmState.Armed, _alarmGadget.State);
+        Assert.Equal(LightState.Off, _lightGadget.State);
+        Assert.Equal(LockState.Unknown, _lockGadget.State);
+
+        await _controller.ProcessCheckInAsync("check_in", "member1");
+        Assert.Equal(AlarmState.Disarmed, _alarmGadget.State);
+        Assert.Equal(LightState.On, _lightGadget.State);
+        Assert.Equal(LockState.Unlocked, _lockGadget.State);
+
+        _fakeTime.Advance(_controller.CheckoutTimeout);
+        Assert.Equal(AlarmState.Disarmed, _alarmGadget.State);
+        Assert.Equal(LightState.On, _lightGadget.State);
+        Assert.Equal(LockState.Unlocked, _lockGadget.State);
+
+        _fakeTime.Advance(_controller.BlackoutDelay);
+        await WaitForAsync(() => _lightGadget.State == LightState.Off);
+        Assert.Equal(AlarmState.Disarmed, _alarmGadget.State);
+        Assert.Equal(LightState.Off, _lightGadget.State);
+        Assert.Equal(LockState.Unlocked, _lockGadget.State);
+
+        _fakeTime.Advance(_controller.LockdownDelay); // Way past configured lockdown
+        await WaitForAsync(() => _alarmGadget.State == AlarmState.Armed);
+        Assert.Equal(AlarmState.Armed, _alarmGadget.State);
+        Assert.Equal(LightState.Off, _lightGadget.State);
+        Assert.Equal(LockState.Unlocked, _lockGadget.State);
+
+        await _controller.StopAsync(CancellationToken.None);
+
+        // Then
+        _doorGadgetMock.Verify();
+    }
+
     private static async Task WaitForAsync(Func<bool> condition)
     {
         while (!condition())
