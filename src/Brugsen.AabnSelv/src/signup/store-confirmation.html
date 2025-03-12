@@ -16,10 +16,12 @@
   <qr-code value.bind="approveAbsoluteUrl" else></qr-code>
 </div>
 
-<button
-  class="btn btn-secondary offset-sm-4 col-sm-4 col-12 mt-3"
-  type="button"
-  click.trigger="verifyApproved()"
->
-  Fortsæt
-</button>
+<div class="mb-3">
+  <button
+    class="btn btn-secondary offset-sm-4 col-sm-4 col-12 p-3"
+    type="button"
+    click.trigger="verifyApproved()"
+  >
+    Fortsæt
+  </button>
+</div>
