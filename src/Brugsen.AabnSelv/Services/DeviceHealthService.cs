@@ -41,6 +41,11 @@ public sealed class DeviceHealthService(
     {
         using var timer = new PeriodicTimer(TimeSpan.FromSeconds(60), timeProvider);
 
+        logger.LogInformation(
+            "Alerts will be sent to the following recipients: {Recipients}",
+            options.Value.AlertRecipients
+        );
+
         while (await timer.WaitForNextTickAsync(stoppingToken))
         {
             var devices = await akilesClient

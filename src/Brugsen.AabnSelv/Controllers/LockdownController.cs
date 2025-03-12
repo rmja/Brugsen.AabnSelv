@@ -54,7 +54,7 @@ public sealed class LockdownController(
 
         logger.LogInformation(
             EventIds.LockdownSchedule,
-            "Initial blackout scheduled at {BlackoutAt} (due in {BlackoutDue} and lockout scheduled at {LockdownAt} (due in {LockdownDue})",
+            "Initial blackout scheduled at {BlackoutAt} (due in {BlackoutDue}) and lockout scheduled at {LockdownAt} (due in {LockdownDue})",
             BlackoutAt,
             blackoutDue,
             LockdownAt,
