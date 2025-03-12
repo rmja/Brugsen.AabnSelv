@@ -49,6 +49,8 @@ builder.Services.AddSingleton<IHostedService>(provider =>
 
 builder.Services.AddHostedService<LockdownController>();
 
+builder.Services.AddHostedService<DeviceHealthService>();
+
 builder.Services.AddSingleton<WebhookEventValidator>();
 
 builder.Services.AddAkilesApi();

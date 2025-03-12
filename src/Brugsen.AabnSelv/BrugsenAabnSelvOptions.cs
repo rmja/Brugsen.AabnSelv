@@ -14,4 +14,5 @@ public class BrugsenAabnSelvOptions
     public required string ExtendedOpeningHoursScheduleId { get; set; }
     public string? WebhookId { get; set; }
     public string? WebhookSecret { get; set; }
+    public long[] AlertRecipients { get; set; } = [];
 }

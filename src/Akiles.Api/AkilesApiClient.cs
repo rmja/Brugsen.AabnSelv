@@ -1,6 +1,7 @@
 ﻿using System.Net.Http.Json;
 using System.Reflection;
 using System.Text.Json;
+using Akiles.Api.Devices;
 using Akiles.Api.Events;
 using Akiles.Api.Gadgets;
 using Akiles.Api.MemberGroups;
@@ -40,6 +41,7 @@ public class AkilesApiClient : IAkilesApiClient
             }
         };
 
+    public IDevices Devices { get; }
     public IEvents Events { get; }
     public IGadgets Gadgets { get; }
     public IMembers Members { get; }
@@ -52,6 +54,7 @@ public class AkilesApiClient : IAkilesApiClient
         httpClient.BaseAddress = new("https://api.akiles.app/v2");
         httpClient.DefaultRequestHeaders.Authorization = new("Bearer", accessToken);
 
+        Devices = RestService.For<IDevices>(httpClient, _refitSettings);
         Events = RestService.For<IEvents>(httpClient, _refitSettings);
         Gadgets = RestService.For<IGadgets>(httpClient, _refitSettings);
         Members = RestService.For<IMembers>(httpClient, _refitSettings);
