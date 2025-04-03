@@ -1,4 +1,5 @@
-﻿using Akiles.Api;
+﻿using System.Collections.Concurrent;
+using Akiles.Api;
 using GatewayApi.Api;
 using GatewayApi.Api.Sms;
 using Microsoft.Extensions.Options;
@@ -13,19 +14,20 @@ public sealed class DeviceHealthService(
     ILogger<DeviceHealthService> logger
 ) : BackgroundService, IDisposable
 {
-    private ITimer? _clearThrottleTimer;
-    private readonly HashSet<string> _throttle = [];
+    private ITimer? _clearBatteryPercentageTimer;
+    private readonly Dictionary<string, DateTimeOffset> _offlineRegistered = [];
+    private readonly ConcurrentDictionary<string, double> _batteryPercentage = [];
 
     public override Task StartAsync(CancellationToken cancellationToken)
     {
         var now = timeProvider.GetLocalNow();
-        var startOfNextHour = now.AddHours(1).AddTicks(-now.Ticks % TimeSpan.TicksPerHour);
-        var due = startOfNextHour - now;
-        _clearThrottleTimer = timeProvider.CreateTimer(
-            ClearThrottle,
+        var tomorrowAtEight = now.AddDays(1).Date.AddHours(8);
+        var due = tomorrowAtEight - now;
+        _clearBatteryPercentageTimer = timeProvider.CreateTimer(
+            ClearBatteryPercentage,
             null,
             due,
-            TimeSpan.FromHours(1)
+            TimeSpan.FromHours(24)
         );
 
         return base.StartAsync(cancellationToken);
@@ -33,7 +35,7 @@ public sealed class DeviceHealthService(
 
     public override Task StopAsync(CancellationToken cancellationToken)
     {
-        _clearThrottleTimer?.Change(Timeout.InfiniteTimeSpan, Timeout.InfiniteTimeSpan);
+        _clearBatteryPercentageTimer?.Change(Timeout.InfiniteTimeSpan, Timeout.InfiniteTimeSpan);
         return base.StopAsync(cancellationToken);
     }
 
@@ -58,9 +60,17 @@ public sealed class DeviceHealthService(
                 if (!device.Status.Online)
                 {
                     logger.LogWarning("Device {DeviceName} was found to be offline", device.Name);
-                    await SendAlertAsync(
-                        device.Id,
-                        $"Ingen forbindelse til {device.Name}",
+
+                    if (_offlineRegistered.TryAdd(device.Id, timeProvider.GetUtcNow()))
+                    {
+                        await SendSmsAsync($"Ingen forbindelse til {device.Name}.", stoppingToken);
+                    }
+                }
+                else if (_offlineRegistered.TryGetValue(device.Id, out var offlineRegistered))
+                {
+                    var offlineDuration = timeProvider.GetUtcNow() - offlineRegistered;
+                    await SendSmsAsync(
+                        $"Forbindelse genetableret til {device.Name}. Forbindelsen var afbrudt {offlineDuration}.",
                         stoppingToken
                     );
                 }
@@ -72,30 +82,21 @@ public sealed class DeviceHealthService(
                         device.Name,
                         device.Status.BatteryPercent
                     );
-                    await SendAlertAsync(
-                        device.Id,
-                        $"Batteriet på enheden {device.Name} er ved at løbe tørt og skal udskiftes, resterende batteri: {device.Status.BatteryPercent}%",
-                        stoppingToken
-                    );
+
+                    if (_batteryPercentage.TryAdd(device.Id, device.Status.BatteryPercent))
+                    {
+                        await SendSmsAsync(
+                            $"Batteriet på enheden {device.Name} er ved at løbe tørt og bør udskiftes. Resterende batteri: {device.Status.BatteryPercent}%.",
+                            stoppingToken
+                        );
+                    }
                 }
             }
         }
     }
 
-    private async Task SendAlertAsync(
-        string deviceId,
-        string message,
-        CancellationToken cancellationToken
-    )
+    private async Task SendSmsAsync(string message, CancellationToken cancellationToken)
     {
-        lock (_throttle)
-        {
-            if (_throttle.Contains(deviceId))
-            {
-                return;
-            }
-        }
-
         var recipients = options.Value.AlertRecipients.Select(x => new SmsRecipient(x)).ToList();
 
         logger.LogInformation(
@@ -113,24 +114,16 @@ public sealed class DeviceHealthService(
             },
             cancellationToken
         );
-
-        lock (_throttle)
-        {
-            _throttle.Add(deviceId);
-        }
     }
 
-    private void ClearThrottle(object? state)
+    private void ClearBatteryPercentage(object? state)
     {
-        lock (_throttle)
-        {
-            _throttle.Clear();
-        }
+        _batteryPercentage.Clear();
     }
 
     public override void Dispose()
     {
         base.Dispose();
-        _clearThrottleTimer?.Dispose();
+        _clearBatteryPercentageTimer?.Dispose();
     }
 }
