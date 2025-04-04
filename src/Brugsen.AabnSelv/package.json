@@ -3,7 +3,7 @@
     "scripts": {
         "start": "webpack --mode development --watch",
         "build": "webpack --mode production",
-        "prettier": "prettier --plugin=prettier-plugin-ejs --write *.ejs *.mjs tsconfig*.json src/**/*.html src/**/*.ts src/**/*.json",
+        "prettier": "prettier --plugin=prettier-plugin-ejs --write *.ejs *.mjs tsconfig*.json src/**/*.{html,ts,css,json}",
         "clean": "rimraf dist"
     },
     "devDependencies": {
