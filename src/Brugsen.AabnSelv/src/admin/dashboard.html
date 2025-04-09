@@ -50,23 +50,6 @@
 </div>
 <p else>Ingen aktivitet</p>
 
-<h2>Seneste låshandlinger</h2>
-<table class="table table-sm" if.bind="lockEvents.length > 0">
-  <thead>
-    <tr>
-      <th>Tidspunkt</th>
-      <th>Handling</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr repeat.for="event of lockEvents">
-      <td>${event.createdAt | localDateTime}</td>
-      <td t="actions.${event.action}" t-params.bind="{ context: 'past' }"></td>
-    </tr>
-  </tbody>
-</table>
-<p else>Ingen handlinger</p>
-
 <h2>Seneste alarmhandlinger</h2>
 <table class="table table-sm" if.bind="alarmEvents.length > 0">
   <thead>

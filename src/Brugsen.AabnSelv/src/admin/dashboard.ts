@@ -8,7 +8,6 @@ import template from "./dashboard.html";
 @customElement({ name: "dashboard-page", template })
 export class DashboardPage implements IRouteableComponent {
   pending!: MemberViewModel[];
-  lockEvents!: ActionEventViewModel[];
   alarmEvents!: ActionEventViewModel[];
   accessActivity!: AccessActivityViewModel[];
 
@@ -18,10 +17,9 @@ export class DashboardPage implements IRouteableComponent {
   ) {}
 
   async loading() {
-    [this.pending, this.lockEvents, this.alarmEvents, this.accessActivity] =
+    [this.pending, this.alarmEvents, this.accessActivity] =
       await Promise.all([
         this.api.getPendingApproval().transfer(),
-        this.api.getActionEvents("front-door-lock").transfer(),
         this.api.getActionEvents("alarm").transfer(),
         this.api.getAccessActivity().transfer(),
       ]);
