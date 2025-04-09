@@ -36,6 +36,7 @@
         ${activity.checkInEvent.createdAt | localDateTime}
         (${activity.checkInEvent.method})
       </dd>
+      <dd class="col-8" else>-</dd>
       <dt class="col-4">Check-ud</dt>
       <dd class="col-8" if.bind="activity.checkOutEvent">
         ${activity.checkOutEvent.createdAt | localDateTime}
@@ -43,6 +44,7 @@
         <let duration.bind="getDuration(activity)"></let>
         <small class="text-muted" if.bind="duration">+ ${duration}</small>
       </dd>
+      <dd class="col-8" else>-</dd>
     </dl>
   </div>
 </div>
