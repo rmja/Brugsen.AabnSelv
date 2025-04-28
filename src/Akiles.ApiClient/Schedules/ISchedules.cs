@@ -8,11 +8,11 @@ public interface ISchedules
     Task<PagedList<Schedule>> ListSchedulesAsync(
         string? cursor,
         int? limit,
-        string? sort,
+        Sort<Schedule>? sort,
         CancellationToken cancellationToken = default
     );
 
-    IAsyncEnumerable<Schedule> ListSchedulesAsync(string? sort = null) =>
+    IAsyncEnumerable<Schedule> ListSchedulesAsync(Sort<Schedule>? sort = null) =>
         new PaginationEnumerable<Schedule>(
             (cursor, cancellationToken) =>
                 ListSchedulesAsync(

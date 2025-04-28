@@ -8,11 +8,11 @@ public interface IWebhooks
     Task<PagedList<Webhook>> ListWebhooksAsync(
         string? cursor,
         int? limit,
-        string? sort,
+        Sort<Webhook>? sort,
         CancellationToken cancellationToken = default
     );
 
-    IAsyncEnumerable<Webhook> ListWebhooksAsync(string? sort = null) =>
+    IAsyncEnumerable<Webhook> ListWebhooksAsync(Sort<Webhook>? sort = null) =>
         new PaginationEnumerable<Webhook>(
             (cursor, cancellationToken) =>
                 ListWebhooksAsync(cursor, Constants.DefaultPaginationLimit, sort, cancellationToken)

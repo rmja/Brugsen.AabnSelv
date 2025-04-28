@@ -8,11 +8,11 @@ public interface IDevices
     Task<PagedList<Device>> ListDevicesAsync(
         string? cursor,
         int? limit,
-        string? sort,
+        Sort<Device>? sort,
         CancellationToken cancellationToken = default
     );
 
-    IAsyncEnumerable<Device> ListDevicesAsync(string? sort = null) =>
+    IAsyncEnumerable<Device> ListDevicesAsync(Sort<Device>? sort = null) =>
         new PaginationEnumerable<Device>(
             (cursor, cancellationToken) =>
                 ListDevicesAsync(cursor, Constants.DefaultPaginationLimit, sort, cancellationToken)

@@ -8,14 +8,14 @@ public interface IEvents
     Task<PagedList<Event>> ListEventsAsync(
         string? cursor,
         int? limit,
-        string? sort,
+        Sort<Event>? sort,
         ListEventsFilter? filter = null,
         EventsExpand expand = EventsExpand.None,
         CancellationToken cancellationToken = default
     );
 
     IAsyncEnumerable<Event> ListEventsAsync(
-        string? sort = null,
+        Sort<Event>? sort = null,
         ListEventsFilter? filter = null,
         EventsExpand expand = EventsExpand.None
     ) =>

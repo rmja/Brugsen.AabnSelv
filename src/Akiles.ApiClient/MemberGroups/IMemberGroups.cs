@@ -8,11 +8,11 @@ public interface IMemberGroups
     Task<PagedList<MemberGroup>> ListMemberGroupsAsync(
         string? cursor,
         int? limit,
-        string? sort,
+        Sort<MemberGroup>? sort,
         CancellationToken cancellationToken = default
     );
 
-    IAsyncEnumerable<MemberGroup> ListMemberGroupsAsync(string? sort = null) =>
+    IAsyncEnumerable<MemberGroup> ListMemberGroupsAsync(Sort<MemberGroup>? sort = null) =>
         new PaginationEnumerable<MemberGroup>(
             (cursor, cancellationToken) =>
                 ListMemberGroupsAsync(

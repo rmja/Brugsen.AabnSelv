@@ -8,14 +8,14 @@ public interface IMembers
     Task<PagedList<Member>> ListMembersAsync(
         string? cursor,
         int? limit,
-        string? sort,
+        Sort<Member>? sort,
         ListMembersFilter? filter = null,
         MembersExpand expand = MembersExpand.None,
         CancellationToken cancellationToken = default
     );
 
     IAsyncEnumerable<Member> ListMembersAsync(
-        string? sort = null,
+        Sort<Member>? sort = null,
         ListMembersFilter? filter = null,
         MembersExpand expand = MembersExpand.None
     ) =>
@@ -59,14 +59,14 @@ public interface IMembers
         string memberId,
         string? cursor,
         int? limit,
-        string? sort,
+        Sort<MemberEmail>? sort,
         string? q = null,
         CancellationToken cancellationToken = default
     );
 
     IAsyncEnumerable<MemberEmail> ListEmailsAsync(
         string memberId,
-        string? sort = null,
+        Sort<MemberEmail>? sort = null,
         string? q = null
     ) =>
         new PaginationEnumerable<MemberEmail>(
@@ -107,13 +107,13 @@ public interface IMembers
         string memberId,
         string? cursor,
         int? limit,
-        string? sort,
+        Sort<MemberGroupAssociation>? sort,
         CancellationToken cancellationToken = default
     );
 
     IAsyncEnumerable<MemberGroupAssociation> ListGroupAssociationsAsync(
         string memberId,
-        string? sort = null
+        Sort<MemberGroupAssociation>? sort = null
     ) =>
         new PaginationEnumerable<MemberGroupAssociation>(
             (cursor, cancellationToken) =>
