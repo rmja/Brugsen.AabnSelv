@@ -1,5 +1,5 @@
-﻿using Akiles.Api;
-using Akiles.Api.Members;
+﻿using Akiles.ApiClient;
+using Akiles.ApiClient.Members;
 using Brugsen.AabnSelv.Models;
 using Microsoft.Extensions.Options;
 

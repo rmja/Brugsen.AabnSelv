@@ -1,4 +1,4 @@
-﻿using Akiles.Api;
+﻿using Akiles.ApiClient;
 using Brugsen.AabnSelv.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;

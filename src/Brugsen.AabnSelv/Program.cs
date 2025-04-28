@@ -1,6 +1,6 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using Akiles.Api;
+using Akiles.ApiClient;
 using Brugsen.AabnSelv;
 using Brugsen.AabnSelv.Controllers;
 using Brugsen.AabnSelv.Endpoints;

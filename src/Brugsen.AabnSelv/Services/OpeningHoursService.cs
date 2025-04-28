@@ -1,5 +1,5 @@
-﻿using Akiles.Api;
-using Akiles.Api.Schedules;
+﻿using Akiles.ApiClient;
+using Akiles.ApiClient.Schedules;
 using Microsoft.Extensions.Options;
 
 namespace Brugsen.AabnSelv.Services;

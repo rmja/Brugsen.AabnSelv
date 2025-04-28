@@ -15,8 +15,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Akiles.Api\Akiles.Api.csproj" />
-    <ProjectReference Include="..\GatewayApi.Api\GatewayApi.Api.csproj" />
+    <ProjectReference Include="..\Akiles.ApiClient\Akiles.ApiClient.csproj" />
+    <ProjectReference Include="..\GatewayApi.ApiClient\GatewayApi.ApiClient.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,8 +1,8 @@
 ﻿using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
-using Akiles.Api;
-using Akiles.Api.Events;
+using Akiles.ApiClient;
+using Akiles.ApiClient.Events;
 using Microsoft.Extensions.Options;
 
 namespace Brugsen.AabnSelv;

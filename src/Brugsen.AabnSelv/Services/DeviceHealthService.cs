@@ -1,7 +1,7 @@
 ﻿using System.Collections.Concurrent;
-using Akiles.Api;
-using GatewayApi.Api;
-using GatewayApi.Api.Sms;
+using Akiles.ApiClient;
+using GatewayApi.ApiClient;
+using GatewayApi.ApiClient.Sms;
 using Microsoft.Extensions.Options;
 
 namespace Brugsen.AabnSelv.Services;

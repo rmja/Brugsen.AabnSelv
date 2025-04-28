@@ -1,4 +1,4 @@
-﻿using Akiles.Api.Members;
+﻿using Akiles.ApiClient.Members;
 
 namespace Brugsen.AabnSelv;
 

@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Runtime.CompilerServices;
-using Akiles.Api.Events;
+using Akiles.ApiClient.Events;
 
 namespace Brugsen.AabnSelv;
 

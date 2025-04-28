@@ -1,5 +1,5 @@
-﻿using Akiles.Api.Events;
-using Akiles.Api.Members;
+﻿using Akiles.ApiClient.Events;
+using Akiles.ApiClient.Members;
 using Brugsen.AabnSelv.Endpoints;
 using Brugsen.AabnSelv.Gadgets;
 using Brugsen.AabnSelv.Models;

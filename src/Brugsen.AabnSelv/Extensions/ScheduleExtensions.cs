@@ -1,4 +1,4 @@
-﻿using Akiles.Api.Schedules;
+﻿using Akiles.ApiClient.Schedules;
 
 namespace Brugsen.AabnSelv;
 
