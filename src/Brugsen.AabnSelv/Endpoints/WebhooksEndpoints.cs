@@ -1,5 +1,6 @@
 ﻿using Akiles.ApiClient;
 using Akiles.ApiClient.Events;
+using Akiles.ApiClient.Webhooks;
 using Brugsen.AabnSelv.Controllers;
 using Brugsen.AabnSelv.Devices;
 using Brugsen.AabnSelv.Gadgets;
@@ -18,7 +19,7 @@ public static class WebhooksEndpoints
     }
 
     // E.g. curl -X POST http://localhost:60900/api/webhooks/register?url=https://example.com/aabn-selv/api/webhooks/gadget-action/use --verbose
-    // The id and secret is then returned the response
+    // The id and secret is then returned in the response
     private static async Task<IResult> RegisterWebhooksAsync(
         string url,
         [FromKeyedServices(ServiceKeys.ApiKeyClient)] IAkilesApiClient client,
@@ -44,7 +45,7 @@ public static class WebhooksEndpoints
 
     private static async Task<IResult> ProcessGadgetActionEventAsync(
         HttpRequest request,
-        WebhookEventValidator validator,
+        IWebhookBinder webhookBinder,
         IAppAccessGadget appAccessGadget,
         ICheckInPinpadGadget checkInPinpadGadget,
         ICheckOutPinpadDevice checkOutPinpadDevice,
@@ -53,7 +54,18 @@ public static class WebhooksEndpoints
         CancellationToken cancellationToken
     )
     {
-        var evnt = await validator.ReadSignedEventOrNullAsync(request, cancellationToken);
+        var expectedSignatureHex = request
+            .Headers[WebhookConstants.SignatureHeaderName]
+            .FirstOrDefault();
+        if (expectedSignatureHex is null)
+        {
+            return Results.BadRequest();
+        }
+        var evnt = await webhookBinder.BindEventAsync(
+            request.Body,
+            expectedSignatureHex,
+            cancellationToken
+        );
         if (evnt is null)
         {
             return Results.BadRequest();

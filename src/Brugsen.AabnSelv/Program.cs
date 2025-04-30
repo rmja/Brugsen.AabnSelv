@@ -1,6 +1,7 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Akiles.ApiClient;
+using Akiles.ApiClient.Webhooks;
 using Brugsen.AabnSelv;
 using Brugsen.AabnSelv.Controllers;
 using Brugsen.AabnSelv.Endpoints;
@@ -51,10 +52,23 @@ builder.Services.AddHostedService<LockdownController>();
 
 builder.Services.AddHostedService<DeviceHealthService>();
 
-builder.Services.AddSingleton<WebhookEventValidator>();
+if (builder.Environment.IsDevelopment())
+{
+    builder.Services.AddSingleton<IWebhookBinder, NoValidationWebhookEventBinder>();
+}
+else
+{
+    builder.Services.AddSingleton<IWebhookBinder>(provider =>
+    {
+        var webhookSecret =
+            provider.GetRequiredService<BrugsenAabnSelvOptions>().WebhookSecret
+            ?? throw new Exception("No webhook secret configured");
+        return ActivatorUtilities.CreateInstance<WebhookEventBinder>(provider, webhookSecret);
+    });
+}
 
-builder.Services.AddAkilesApi();
-builder.Services.AddGatewayApi(options =>
+builder.Services.AddAkilesApiClient();
+builder.Services.AddGatewayApiClient(options =>
     options.Token = builder.Configuration["GatewayApiToken"]!
 );
 builder.Services.AddGadgets().AddDevices();

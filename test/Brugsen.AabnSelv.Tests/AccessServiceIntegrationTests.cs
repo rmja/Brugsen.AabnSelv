@@ -16,7 +16,7 @@ public class AccessServiceIntegrationTests
         var services = new ServiceCollection()
             .AddLogging()
             .AddSingleton<IAccessService, AccessService>()
-            .AddAkilesApi()
+            .AddAkilesApiClient()
             .AddGadgets()
             .AddDevices()
             .AddKeyedSingleton(
