@@ -7,6 +7,7 @@
       class="form-control ${nameIsValid ? 'is-valid' : ''}"
       value.bind="name"
       name="name"
+      autocomplete="name"
     />
     <label>Navn</label>
   </div>
@@ -28,6 +29,7 @@
       class="form-control ${emailIsValid ? 'is-valid' : ''} ${emailIsUsed ? 'is-invalid' : ''}"
       value.bind="email"
       name="email"
+      autocomplete="email"
     />
     <label>Email</label>
     <div class="invalid-feedback">
@@ -41,6 +43,7 @@
       class="form-control ${phoneIsValid ? 'is-valid' : ''} ${phoneIsUsed ? 'is-invalid' : ''}"
       intl-tel-input.bind="phone"
       name="phone"
+      autocomplete="tel"
     />
     <label>Telefon</label>
     <div class="invalid-feedback">
