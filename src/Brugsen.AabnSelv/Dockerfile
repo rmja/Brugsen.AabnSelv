@@ -12,7 +12,6 @@ FROM mcr.microsoft.com/dotnet/sdk:9.0-alpine AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["src/Brugsen.AabnSelv/Brugsen.AabnSelv.csproj", "src/Brugsen.AabnSelv/"]
-COPY ["src/Akiles.Api/Akiles.Api.csproj", "src/Akiles.Api/"]
 RUN dotnet restore "./src/Brugsen.AabnSelv/Brugsen.AabnSelv.csproj"
 COPY . .
 WORKDIR "/src/src/Brugsen.AabnSelv"
