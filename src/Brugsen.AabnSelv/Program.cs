@@ -61,7 +61,7 @@ else
     builder.Services.AddSingleton<IWebhookBinder>(provider =>
     {
         var webhookSecret =
-            provider.GetRequiredService<BrugsenAabnSelvOptions>().WebhookSecret
+            provider.GetRequiredService<IOptions<BrugsenAabnSelvOptions>>().Value.WebhookSecret
             ?? throw new Exception("No webhook secret configured");
         return ActivatorUtilities.CreateInstance<WebhookEventBinder>(provider, webhookSecret);
     });
