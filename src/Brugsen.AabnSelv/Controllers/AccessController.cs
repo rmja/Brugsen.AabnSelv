@@ -179,7 +179,7 @@ public sealed class AccessController(
             try
             {
                 logger.LogInformation(
-                    "Opening door during check-out for member member {MemberId}",
+                    "Opening door during check-out for member {MemberId}",
                     memberId
                 );
                 await doorGadget.OpenOnceAsync(client);
