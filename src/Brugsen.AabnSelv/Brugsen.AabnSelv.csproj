@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
@@ -10,13 +10,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Akiles.ApiClient" Version="0.0.1" />
+    <PackageReference Include="GatewayApi.ApiClient" Version="0.0.1" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.21.2" />
     <PackageReference Include="TimeZoneConverter" Version="7.0.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\Akiles.ApiClient\Akiles.ApiClient.csproj" />
-    <ProjectReference Include="..\GatewayApi.ApiClient\GatewayApi.ApiClient.csproj" />
   </ItemGroup>
 
 </Project>
