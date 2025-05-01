@@ -13,16 +13,15 @@ export class DashboardPage implements IRouteableComponent {
 
   constructor(
     private readonly api = resolve(ApiClient),
-    private router = resolve(IRouter),
+    private router = resolve(IRouter)
   ) {}
 
   async loading() {
-    [this.pending, this.alarmEvents, this.accessActivity] =
-      await Promise.all([
-        this.api.getPendingApproval().transfer(),
-        this.api.getActionEvents("alarm").transfer(),
-        this.api.getAccessActivity().transfer(),
-      ]);
+    [this.pending, this.alarmEvents, this.accessActivity] = await Promise.all([
+      this.api.getPendingApproval().transfer(),
+      this.api.getActionEvents("alarm").transfer(),
+      this.api.getAccessActivity().transfer(),
+    ]);
   }
 
   approve(memberId: string) {
@@ -38,6 +37,36 @@ export class DashboardPage implements IRouteableComponent {
         .toDuration()
         .toFormat("mm:ss");
     }
+  }
+
+  async exportMembers() {
+    const members = await this.api.getApproved().transfer();
+
+    const rows = [
+      [
+        "Navn",
+        "Adresse",
+        "Coop medlemsnummer",
+        "Ø-kort nummer",
+        "Ø-kort farve",
+        "Email",
+      ],
+      ...members.map((x) => [
+        x.name,
+        x.address,
+        x.coopMembershipNumber,
+        x.laesoeCardNumber,
+        x.laesoeCardColor,
+        x.email,
+      ]),
+    ];
+    const BOM = "\uFEFF"; // BOM for UTF-8
+    const csvContent =
+      "data:text/csv;charset=utf-8," +
+      BOM +
+      rows.map((e) => e.join(";")).join("\n");
+
+    window.open(encodeURI(csvContent));
   }
 }
 
