@@ -23,7 +23,7 @@ public sealed class AccessController(
 
     public TimeSpan CheckoutTimeout { get; } = TimeSpan.FromHours(1);
     public TimeSpan BlackoutDelay { get; } = TimeSpan.FromSeconds(10);
-    public TimeSpan LockdownDelay { get; } = TimeSpan.FromSeconds(30);
+    public TimeSpan LockdownDelay { get; } = TimeSpan.FromSeconds(60);
 
     public override async Task StartAsync(CancellationToken cancellationToken)
     {
