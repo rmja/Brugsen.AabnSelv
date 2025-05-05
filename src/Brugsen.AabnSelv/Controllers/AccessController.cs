@@ -102,7 +102,7 @@ public sealed class AccessController(
         }
     }
 
-    public async Task ProcessCheckInAsync(string eventId, string memberId)
+    public async Task ProcessCheckInAsync(string eventId, string memberId, bool openDoor)
     {
         logger.LogInformation(
             "Processing check-in event {EventId} for member {MemberId}",
@@ -118,6 +118,9 @@ public sealed class AccessController(
 
         try
         {
+            // The alarm and light might already be disarmed and on (performed by the controller),
+            // but we do the actions here anyway to ensure that any internal gadget states and also logging remains correct
+
             if (alarmGadget.State != AlarmState.Disarmed)
             {
                 await alarmGadget.DisarmAsync(client);
@@ -128,7 +131,10 @@ public sealed class AccessController(
                 await lightGadget.TurnOnAsync(client);
             }
 
-            await doorGadget.OpenOnceAsync(client);
+            if (openDoor)
+            {
+                await doorGadget.OpenOnceAsync(client);
+            }
         }
         catch (AkilesApiException ex) when (ex.ErrorType == AkilesErrorTypes.HardwareOffline)
         {

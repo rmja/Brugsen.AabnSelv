@@ -36,18 +36,23 @@ public class AccessControllerTests
         _controller = ActivatorUtilities.CreateInstance<AccessController>(services);
     }
 
-    [Fact]
-    public async Task CanProcessCheckIn()
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task CanProcessCheckIn(bool openDoor)
     {
         // Given
-        _doorGadgetMock
-            .Setup(m => m.OpenOnceAsync(_clientMock.Object, CancellationToken.None))
-            .Verifiable();
+        if (openDoor)
+        {
+            _doorGadgetMock
+                .Setup(m => m.OpenOnceAsync(_clientMock.Object, CancellationToken.None))
+                .Verifiable();
+        }
 
         // When
         await _controller.StartAsync(CancellationToken.None);
 
-        await _controller.ProcessCheckInAsync("check_in", "member1");
+        await _controller.ProcessCheckInAsync("check_in", "member1", openDoor);
         Assert.Equal(AlarmState.Disarmed, _alarmGadget.State);
         Assert.Equal(LightState.On, _lightGadget.State);
 
@@ -144,10 +149,6 @@ public class AccessControllerTests
     public async Task CheckInRightAfterCheckOut_DisarmsBlackoutAndLockdown()
     {
         // Given
-        _doorGadgetMock
-            .Setup(m => m.OpenOnceAsync(_clientMock.Object, CancellationToken.None))
-            .Verifiable();
-
         _accessServiceMock
             .Setup(m =>
                 m.IsMemberCheckedInAsync(
@@ -173,7 +174,7 @@ public class AccessControllerTests
         Assert.Equal(LightState.Off, _lightGadget.State);
 
         _fakeTime.Advance(_controller.BlackoutDelay / 2);
-        await _controller.ProcessCheckInAsync("check_in", "member2");
+        await _controller.ProcessCheckInAsync("check_in", "member2", openDoor: false);
         Assert.Equal(AlarmState.Disarmed, _alarmGadget.State);
         Assert.Equal(LightState.On, _lightGadget.State);
 
@@ -185,17 +186,12 @@ public class AccessControllerTests
         await _controller.StopAsync(CancellationToken.None);
 
         // Then
-        _doorGadgetMock.Verify();
     }
 
     [Fact]
     public async Task CheckInWithoutCheckOut_BlackoutAndLockdownIsRunAfterTimeout()
     {
         // Given
-        _doorGadgetMock
-            .Setup(m => m.OpenOnceAsync(_clientMock.Object, CancellationToken.None))
-            .Verifiable();
-
         var checkedIn = new DateTime(2025, 02, 17, 13, 00, 00);
         _fakeTime.SetLocalNow(checkedIn);
 
@@ -204,7 +200,7 @@ public class AccessControllerTests
         Assert.Equal(AlarmState.Armed, _alarmGadget.State);
         Assert.Equal(LightState.Off, _lightGadget.State);
 
-        await _controller.ProcessCheckInAsync("check_in", "member1");
+        await _controller.ProcessCheckInAsync("check_in", "member1", openDoor: false);
         Assert.Equal(AlarmState.Disarmed, _alarmGadget.State);
         Assert.Equal(LightState.On, _lightGadget.State);
 
@@ -225,7 +221,6 @@ public class AccessControllerTests
         await _controller.StopAsync(CancellationToken.None);
 
         // Then
-        _doorGadgetMock.Verify();
     }
 
     private static async Task WaitForAsync(Func<bool> condition)

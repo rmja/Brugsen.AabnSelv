@@ -91,7 +91,7 @@ public static class WebhooksEndpoints
             switch (evnt.Object.GadgetActionId)
             {
                 case AppAccessGadget.Actions.CheckIn:
-                    await accessProcessor.ProcessCheckInAsync(evnt.Id, memberId);
+                    await accessProcessor.ProcessCheckInAsync(evnt.Id, memberId, openDoor: true);
                     break;
                 case AppAccessGadget.Actions.CheckOut:
                     await accessProcessor.ProcessCheckOutAsync(evnt.Id, memberId, openDoor: true);
@@ -104,7 +104,7 @@ public static class WebhooksEndpoints
             {
                 case CheckInPinpadGadget.Actions.CheckIn:
                 {
-                    await accessProcessor.ProcessCheckInAsync(evnt.Id, memberId);
+                    await accessProcessor.ProcessCheckInAsync(evnt.Id, memberId, openDoor: false);
                     break;
                 }
             }
