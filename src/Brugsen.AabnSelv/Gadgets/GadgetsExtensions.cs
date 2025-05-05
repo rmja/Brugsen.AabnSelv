@@ -1,6 +1,4 @@
-﻿using Brugsen.AabnSelv;
-using Brugsen.AabnSelv.Gadgets;
-using Microsoft.Extensions.Options;
+﻿using Brugsen.AabnSelv.Gadgets;
 
 namespace Microsoft.Extensions.DependencyInjection;
 
@@ -15,12 +13,6 @@ public static class GadgetsExtensions
             .AddAkilesEntity<IGadget, IFrontDoorGadget, FrontDoorGadget>(options =>
                 options.FrontDoorGadgetId
             )
-            .AddAkilesEntity<
-                IGadget,
-                IFrontDoorLockGadget,
-                FrontDoorLockGadget,
-                NoopFrontDoorLockGadget
-            >(options => options.FrontDoorLockGadgetId)
             .AddAkilesEntity<IGadget, IAlarmGadget, AlarmGadget, NoopAlarmGadget>(options =>
                 options.AlarmGadgetId
             )

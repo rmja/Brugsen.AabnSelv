@@ -16,7 +16,6 @@ public class AccessServiceTests
     private readonly Mock<ICheckOutPinpadDevice> _checkOutPinpadDeviceMock = new();
     private readonly Mock<IAlarmGadget> _alarmGadgetMock = new();
     private readonly Mock<ILightGadget> _lightGadgetMock = new();
-    private readonly Mock<IFrontDoorLockGadget> _lockGadgetMock = new();
     private readonly Mock<IFrontDoorGadget> _doorGadgetMock = new();
     private readonly Mock<IAkilesApiClient> _clientMock = new();
     private readonly FakeTimeProvider _fakeTime = new();
@@ -31,7 +30,6 @@ public class AccessServiceTests
             .AddSingleton(_checkOutPinpadDeviceMock.Object)
             .AddSingleton(_alarmGadgetMock.Object)
             .AddSingleton(_lightGadgetMock.Object)
-            .AddSingleton(_lockGadgetMock.Object)
             .AddSingleton(_doorGadgetMock.Object)
             .AddSingleton<TimeProvider>(_fakeTime)
             .BuildServiceProvider();

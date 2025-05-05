@@ -6,7 +6,6 @@ public class BrugsenAabnSelvOptions
     public required string ApprovedMemberGroupId { get; set; }
     public required string AppAccessGadgetId { get; set; }
     public required string FrontDoorGadgetId { get; set; }
-    public string? FrontDoorLockGadgetId { get; set; }
     public string? LightGadgetId { get; set; }
     public string? AlarmGadgetId { get; set; }
     public string? CheckInPinpadGadgetId { get; set; }

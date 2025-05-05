@@ -6,7 +6,6 @@ namespace Brugsen.AabnSelv.Controllers;
 
 public sealed class LockdownController(
     ILightGadget light,
-    IFrontDoorLockGadget doorLock,
     IAlarmGadget alarm,
     [FromKeyedServices(ServiceKeys.ApiKeyClient)] IAkilesApiClient client,
     IOpeningHoursService openingHours,
@@ -202,7 +201,6 @@ public sealed class LockdownController(
 
         try
         {
-            await doorLock.LockAsync(client);
             await alarm.ArmAsync(client);
         }
         catch (AkilesApiException ex) when (ex.ErrorType == AkilesErrorTypes.HardwareOffline)

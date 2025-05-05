@@ -5,7 +5,6 @@ public enum GadgetEntity
     Access,
     Alarm,
     FrontDoor,
-    FrontDoorLock,
     Light,
     CheckInPinpad,
 }

@@ -8,7 +8,6 @@ public sealed class AccessController(
     IAccessService accessService,
     IAlarmGadget alarmGadget,
     ILightGadget lightGadget,
-    IFrontDoorLockGadget doorLockGadget,
     IFrontDoorGadget doorGadget,
     [FromKeyedServices(ServiceKeys.ApiKeyClient)] IAkilesApiClient client,
     TimeProvider timeProvider,
@@ -127,14 +126,6 @@ public sealed class AccessController(
             if (lightGadget.State != LightState.On)
             {
                 await lightGadget.TurnOnAsync(client);
-            }
-
-            if (doorLockGadget.State != LockState.Unlocked)
-            {
-                await doorLockGadget.UnlockAsync(client);
-
-                // Wait for the lock to perform the unlock operation before we try and open the door
-                await Task.Delay(doorLockGadget.UnlockOperationDuration, timeProvider);
             }
 
             await doorGadget.OpenOnceAsync(client);

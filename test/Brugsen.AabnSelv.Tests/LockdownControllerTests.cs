@@ -11,7 +11,6 @@ namespace Brugsen.AabnSelv.Tests;
 public class LockdownControllerTests
 {
     private readonly NoopLightGadget _lightGadget = new();
-    private readonly NoopFrontDoorLockGadget _lockGadget = new();
     private readonly NoopAlarmGadget _alarmGadget = new();
     private readonly Mock<IAkilesApiClient> _clientMock = new();
     private readonly Mock<IOpeningHoursService> _openingHoursMock = new();
@@ -23,7 +22,6 @@ public class LockdownControllerTests
         var services = new ServiceCollection()
             .AddLogging()
             .AddSingleton<ILightGadget>(_lightGadget)
-            .AddSingleton<IFrontDoorLockGadget>(_lockGadget)
             .AddSingleton<IAlarmGadget>(_alarmGadget)
             .AddKeyedSingleton(ServiceKeys.ApiKeyClient, _clientMock.Object)
             .AddSingleton(_openingHoursMock.Object)
@@ -52,7 +50,6 @@ public class LockdownControllerTests
 
         await ArmedAsync();
         Assert.Equal(LightState.Off, _lightGadget.State);
-        Assert.Equal(LockState.Locked, _lockGadget.State);
         Assert.Equal(AlarmState.Armed, _alarmGadget.State);
         Assert.Equal(end.Add(_controller.BlackoutDelay), _controller.BlackoutAt);
         Assert.Equal(end.Add(_controller.LockdownDelay), _controller.LockdownAt);
@@ -76,7 +73,6 @@ public class LockdownControllerTests
 
         await ArmedAsync();
         Assert.Equal(LightState.Unknown, _lightGadget.State);
-        Assert.Equal(LockState.Unknown, _lockGadget.State);
         Assert.Equal(AlarmState.Unknown, _alarmGadget.State);
         Assert.Equal(end.Add(_controller.BlackoutDelay), _controller.BlackoutAt);
         Assert.Equal(end.Add(_controller.LockdownDelay), _controller.LockdownAt);
@@ -84,7 +80,6 @@ public class LockdownControllerTests
         _fakeTime.AdvanceToLocal(end.Add(_controller.BlackoutDelay));
         await ArmedAsync();
         Assert.Equal(LightState.Off, _lightGadget.State);
-        Assert.Equal(LockState.Unknown, _lockGadget.State);
         Assert.Equal(AlarmState.Unknown, _alarmGadget.State);
         Assert.Equal(end.Add(_controller.BlackoutDelay).AddDays(1), _controller.BlackoutAt);
         Assert.Equal(end.Add(_controller.LockdownDelay), _controller.LockdownAt);
@@ -92,7 +87,6 @@ public class LockdownControllerTests
         _fakeTime.AdvanceToLocal(end.Add(_controller.LockdownDelay));
         await ArmedAsync();
         Assert.Equal(LightState.Off, _lightGadget.State);
-        Assert.Equal(LockState.Locked, _lockGadget.State);
         Assert.Equal(AlarmState.Armed, _alarmGadget.State);
         Assert.Equal(end.Add(_controller.BlackoutDelay).AddDays(1), _controller.BlackoutAt);
         Assert.Equal(end.Add(_controller.LockdownDelay).AddDays(1), _controller.LockdownAt);
@@ -114,7 +108,6 @@ public class LockdownControllerTests
 
         await ArmedAsync();
         Assert.Equal(LightState.Unknown, _lightGadget.State);
-        Assert.Equal(LockState.Unknown, _lockGadget.State);
         Assert.Equal(AlarmState.Unknown, _alarmGadget.State);
         Assert.Equal(end.Add(_controller.BlackoutDelay), _controller.BlackoutAt);
         Assert.Equal(end.Add(_controller.LockdownDelay), _controller.LockdownAt);
@@ -122,7 +115,6 @@ public class LockdownControllerTests
         _fakeTime.AdvanceToLocal(end.Add(_controller.BlackoutDelay));
         await ArmedAsync();
         Assert.Equal(LightState.Off, _lightGadget.State);
-        Assert.Equal(LockState.Unknown, _lockGadget.State);
         Assert.Equal(AlarmState.Unknown, _alarmGadget.State);
         Assert.Equal(end.Add(_controller.BlackoutDelay).AddDays(1), _controller.BlackoutAt);
         Assert.Equal(end.Add(_controller.LockdownDelay), _controller.LockdownAt);
@@ -130,7 +122,6 @@ public class LockdownControllerTests
         _fakeTime.AdvanceToLocal(end.Add(_controller.LockdownDelay));
         await ArmedAsync();
         Assert.Equal(LightState.Off, _lightGadget.State);
-        Assert.Equal(LockState.Locked, _lockGadget.State);
         Assert.Equal(AlarmState.Armed, _alarmGadget.State);
         Assert.Equal(end.Add(_controller.BlackoutDelay).AddDays(1), _controller.BlackoutAt);
         Assert.Equal(end.Add(_controller.LockdownDelay).AddDays(1), _controller.LockdownAt);
@@ -138,14 +129,12 @@ public class LockdownControllerTests
         // Next day
         end = end.AddDays(1);
         _lightGadget.State = LightState.Unknown;
-        _lockGadget.State = LockState.Unknown;
         _alarmGadget.State = AlarmState.Unknown;
 
         _fakeTime.AdvanceToLocal(end.Add(_controller.BlackoutDelay));
         Assert.Null(_controller.BlackoutAt);
         await ArmedAsync();
         Assert.Equal(LightState.Off, _lightGadget.State);
-        Assert.Equal(LockState.Unknown, _lockGadget.State);
         Assert.Equal(AlarmState.Unknown, _alarmGadget.State);
         Assert.Equal(end.Add(_controller.BlackoutDelay).AddDays(1), _controller.BlackoutAt);
         Assert.Equal(end.Add(_controller.LockdownDelay), _controller.LockdownAt);
@@ -154,7 +143,6 @@ public class LockdownControllerTests
         Assert.Null(_controller.LockdownAt);
         await ArmedAsync();
         Assert.Equal(LightState.Off, _lightGadget.State);
-        Assert.Equal(LockState.Locked, _lockGadget.State);
         Assert.Equal(AlarmState.Armed, _alarmGadget.State);
         Assert.Equal(end.Add(_controller.BlackoutDelay).AddDays(1), _controller.BlackoutAt);
         Assert.Equal(end.Add(_controller.LockdownDelay).AddDays(1), _controller.LockdownAt);
