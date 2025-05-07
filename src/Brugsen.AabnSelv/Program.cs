@@ -1,5 +1,4 @@
-using System.Text.Json;
-using System.Text.Json.Serialization;
+using System.Text.Json.Serialization.Metadata;
 using Akiles.ApiClient;
 using Akiles.ApiClient.Webhooks;
 using Brugsen.AabnSelv;
@@ -24,8 +23,9 @@ builder.Logging.AddSimpleConsole(options =>
 
 builder.Services.Configure<BrugsenAabnSelvOptions>(builder.Configuration);
 builder.Services.Configure<JsonOptions>(options =>
-    options.SerializerOptions.Converters.Add(
-        new JsonStringEnumConverter(JsonNamingPolicy.CamelCase)
+    options.SerializerOptions.TypeInfoResolver = JsonTypeInfoResolver.Combine(
+        BrugsenAabnSelvJsonSerializerContext.Default,
+        AkilesApiJsonSerializerOptions.Value.TypeInfoResolver
     )
 );
 

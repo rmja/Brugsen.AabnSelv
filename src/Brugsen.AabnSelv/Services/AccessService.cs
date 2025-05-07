@@ -1,6 +1,5 @@
 ﻿using Akiles.ApiClient;
 using Akiles.ApiClient.Events;
-using Brugsen.AabnSelv.Devices;
 using Brugsen.AabnSelv.Gadgets;
 
 namespace Brugsen.AabnSelv.Services;
@@ -8,7 +7,6 @@ namespace Brugsen.AabnSelv.Services;
 public class AccessService(
     IAppAccessGadget appAccessGadget,
     ICheckInPinpadGadget checkInPinpadGadget,
-    ICheckOutPinpadDevice checkOutPinpadDevice,
     IFrontDoorGadget frontDoorGadget
 ) : IAccessService
 {

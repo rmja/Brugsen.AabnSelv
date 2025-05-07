@@ -4,15 +4,13 @@
     <TargetFramework>net9.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
-    <DockerfileContext>..\..</DockerfileContext>
     <UserSecretsId>51e31536-84f3-44a2-80dc-d701e6c17e10</UserSecretsId>
+    <PublishAot>true</PublishAot>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Akiles.ApiClient" Version="0.0.1" />
-    <PackageReference Include="GatewayApi.ApiClient" Version="0.0.1" />
-    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.21.2" />
+    <PackageReference Include="Akiles.ApiClient" Version="0.0.5" />
+    <PackageReference Include="GatewayApi.ApiClient" Version="0.0.2" />
     <PackageReference Include="TimeZoneConverter" Version="7.0.0" />
   </ItemGroup>
 

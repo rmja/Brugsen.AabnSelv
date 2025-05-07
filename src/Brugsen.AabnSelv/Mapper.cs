@@ -46,42 +46,42 @@ public static class Mapper
             CreatedAt = evnt.CreatedAt
         };
 
-    private static AccessMethodDto? GetAccessMethod(Event evnt)
+    private static AccessMethod? GetAccessMethod(Event evnt)
     {
         if (
             evnt.Object.GadgetActionId == AppAccessGadget.Actions.CheckIn
             && evnt.Object.HardwareId is null
         )
         {
-            return AccessMethodDto.App;
+            return AccessMethod.App;
         }
         else if (
             evnt.Object.GadgetActionId == AppAccessGadget.Actions.CheckIn
             && evnt.Object.HardwareId is not null
         )
         {
-            return AccessMethodDto.Nfc;
+            return AccessMethod.Nfc;
         }
         else if (
             evnt.Object.GadgetActionId == AppAccessGadget.Actions.CheckOut
             && evnt.Object.HardwareId is null
         )
         {
-            return AccessMethodDto.App;
+            return AccessMethod.App;
         }
         else if (
             evnt.Object.GadgetActionId == FrontDoorGadget.Actions.OpenOnce
             && evnt.Subject.MemberPinId is not null
         )
         {
-            return AccessMethodDto.Pin;
+            return AccessMethod.Pin;
         }
         else if (
             evnt.Object.GadgetActionId == FrontDoorGadget.Actions.OpenOnce
             && evnt.Subject.MemberPinId is null
         )
         {
-            return AccessMethodDto.Nfc;
+            return AccessMethod.Nfc;
         }
         else
         {

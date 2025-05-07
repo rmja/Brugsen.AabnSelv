@@ -139,7 +139,9 @@ public static class MembersEndpoints
             )
             .WhereAsync(x => !x.IsApproved(options.Value) && x.Emails?.Count > 0, cancellationToken)
             .ToListAsync(cancellationToken);
-        return Results.Ok(members.Select(x => x.ToDto(x.Emails!.First(), isApproved: true)));
+        return Results.Ok(
+            members.Select(x => x.ToDto(x.Emails!.First(), isApproved: true)).ToList()
+        );
     }
 
     private static async Task<IResult> GetAllApprovedAsync(
@@ -155,7 +157,9 @@ public static class MembersEndpoints
             )
             .WhereAsync(x => x.IsApproved(options.Value) && x.Emails?.Count > 0, cancellationToken)
             .ToListAsync(cancellationToken);
-        return Results.Ok(members.Select(x => x.ToDto(x.Emails!.First(), isApproved: true)));
+        return Results.Ok(
+            members.Select(x => x.ToDto(x.Emails!.First(), isApproved: true)).ToList()
+        );
     }
 
     private static async Task<IResult> GetMemberAsync(

@@ -1,7 +1,7 @@
 # See https://aka.ms/customizecontainer to learn how to customize your debug container and how Visual Studio uses this Dockerfile to build your images for faster debugging.
 
 # This stage is used when running from VS in fast mode (Default for Debug configuration)
-FROM mcr.microsoft.com/dotnet/aspnet:9.0-alpine AS base
+FROM mcr.microsoft.com/dotnet/runtime-deps:9.0-alpine AS base
 RUN apk add --no-cache tzdata
 USER $APP_UID
 WORKDIR /app
@@ -20,7 +20,8 @@ RUN dotnet build "./Brugsen.AabnSelv.csproj" -c $BUILD_CONFIGURATION -o /app/bui
 # This stage is used to publish the service project to be copied to the final stage
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "./Brugsen.AabnSelv.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+RUN apk add --no-cache clang
+RUN dotnet publish "./Brugsen.AabnSelv.csproj" -c $BUILD_CONFIGURATION -o /app/publish
 
 # This stage is used to build the frontend
 FROM node:22-alpine AS webpack
@@ -41,4 +42,4 @@ FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
 COPY --from=webpack /src/wwwroot/. wwwroot
-ENTRYPOINT ["dotnet", "Brugsen.AabnSelv.dll"]
+ENTRYPOINT ["/app/Brugsen.AabnSelv"]

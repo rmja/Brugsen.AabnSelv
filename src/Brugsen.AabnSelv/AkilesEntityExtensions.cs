@@ -1,15 +1,17 @@
-﻿using Brugsen.AabnSelv;
-using Brugsen.AabnSelv.Gadgets;
+﻿using System.Diagnostics.CodeAnalysis;
+using Brugsen.AabnSelv;
 using Microsoft.Extensions.Options;
 
 namespace Microsoft.Extensions.DependencyInjection;
 
 internal static class AkilesEntityExtensions
 {
-    public static IServiceCollection AddAkilesEntity<TEntity, TService, TImplementation>(
-        this IServiceCollection services,
-        Func<BrugsenAabnSelvOptions, string> getGadgetId
-    )
+    public static IServiceCollection AddAkilesEntity<
+        TEntity,
+        TService,
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)]
+            TImplementation
+    >(this IServiceCollection services, Func<BrugsenAabnSelvOptions, string> getGadgetId)
         where TEntity : class, IAkilesEntity
         where TService : class, TEntity
         where TImplementation : class, TService
@@ -27,8 +29,10 @@ internal static class AkilesEntityExtensions
     public static IServiceCollection AddAkilesEntity<
         TEntity,
         TService,
-        TImplementation,
-        TNoopImplementation
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)]
+            TImplementation,
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)]
+            TNoopImplementation
     >(this IServiceCollection services, Func<BrugsenAabnSelvOptions, string?> getGadgetId)
         where TEntity : class, IAkilesEntity
         where TService : class, TEntity

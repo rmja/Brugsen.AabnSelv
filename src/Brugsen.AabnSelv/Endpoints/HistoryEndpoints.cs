@@ -41,7 +41,7 @@ public static class HistoryEndpoints
             cancellationToken
         );
 
-        return Results.Ok(activity.Select(x => x.ToDto()));
+        return Results.Ok(activity.Select(x => x.ToDto()).ToList());
     }
 
     private static async Task<IResult> GetGadgetActionEventsAsync(
@@ -83,7 +83,7 @@ public static class HistoryEndpoints
             .ToListAsync(cancellationToken);
 
         return Results.Ok(
-            events.Where(x => x.Object.GadgetActionId is not null).Select(x => x.ToDto())
+            events.Where(x => x.Object.GadgetActionId is not null).Select(x => x.ToDto()).ToList()
         );
     }
 }
