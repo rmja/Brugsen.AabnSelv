@@ -66,11 +66,11 @@ public sealed class DeviceHealthService(
                         await SendSmsAsync($"Ingen forbindelse til {device.Name}.", stoppingToken);
                     }
                 }
-                else if (_offlineRegistered.TryGetValue(device.Id, out var offlineRegistered))
+                else if (_offlineRegistered.Remove(device.Id, out var offlineRegistered))
                 {
                     var offlineDuration = timeProvider.GetUtcNow() - offlineRegistered;
                     await SendSmsAsync(
-                        $"Forbindelse genetableret til {device.Name}. Forbindelsen var afbrudt {offlineDuration}.",
+                        $"Forbindelse genetableret til {device.Name}. Forbindelsen var afbrudt {offlineDuration.ToString("c")}.",
                         stoppingToken
                     );
                 }
