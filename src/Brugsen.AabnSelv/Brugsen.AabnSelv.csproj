@@ -9,7 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Akiles.ApiClient" Version="0.0.5" />
+    <PackageReference Include="Akiles.ApiClient" Version="0.0.6" />
     <PackageReference Include="GatewayApi.ApiClient" Version="0.0.2" />
     <PackageReference Include="TimeZoneConverter" Version="7.0.0" />
   </ItemGroup>

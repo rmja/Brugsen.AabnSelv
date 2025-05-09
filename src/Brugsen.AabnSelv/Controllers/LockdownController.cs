@@ -1,4 +1,5 @@
 ﻿using Akiles.ApiClient;
+using Akiles.ApiClient.Schedules;
 using Brugsen.AabnSelv.Gadgets;
 using Brugsen.AabnSelv.Services;
 
@@ -139,7 +140,7 @@ public sealed class LockdownController(
         var now = timeProvider.GetLocalNow().DateTime;
         var schedule = openingHours.ExtendedSchedule;
 
-        var currentPeriod = schedule.GetCurrentPeriod(now);
+        var currentPeriod = schedule.GetPeriod(now);
         if (currentPeriod is null && allowPastFireTimes)
         {
             var pastEnd = schedule.GetEarlierPeriods(now).FirstOrDefault()?.End;
