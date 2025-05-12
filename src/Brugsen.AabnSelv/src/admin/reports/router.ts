@@ -8,7 +8,10 @@ import { customElement } from "aurelia";
     path: "sale",
     component: import("./sale"),
     title: "Salgsrapport",
-  }
+  },
 ])
-@customElement({ name: "admin-router", template: "<au-viewport></au-viewport>" })
+@customElement({
+  name: "admin-router",
+  template: "<au-viewport></au-viewport>",
+})
 export class AdminRouter implements IRouteableComponent {}

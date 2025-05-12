@@ -43,7 +43,7 @@ export class SalePage {
             accessCount: 0,
             members: new Set<string>(),
             slipCount: 0,
-            amount: 0
+            amount: 0,
           };
         }
         acc[key].accessCount++;
@@ -52,12 +52,18 @@ export class SalePage {
         acc[key].amount += line.totalAmount;
         return acc;
       },
-      {} as Record<string, DayViewModel>
+      {} as Record<string, DayViewModel>,
     );
 
     this.days = Object.values(grouped).sort((a, b) => +a.date.diff(b.date));
-    this.totalAccessCount = this.days.reduce((acc, x) => acc + x.accessCount, 0);
-    this.totalMemberCount = this.days.reduce((acc, x) => acc + x.members.size, 0);
+    this.totalAccessCount = this.days.reduce(
+      (acc, x) => acc + x.accessCount,
+      0,
+    );
+    this.totalMemberCount = this.days.reduce(
+      (acc, x) => acc + x.members.size,
+      0,
+    );
     this.totalSlipCount = this.days.reduce((acc, x) => acc + x.slipCount, 0);
     this.totalAmount = this.days.reduce((acc, x) => acc + x.amount, 0);
     this.isBusy = false;

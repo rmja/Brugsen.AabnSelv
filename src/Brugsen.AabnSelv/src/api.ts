@@ -83,7 +83,7 @@ export type AlarmAction = "arm" | "disarm";
 export type MemberInit = Omit<Member, "id" | "isApproved">;
 
 export const IApiClient = DI.createInterface<IApiClient>("IApiClient", (x) =>
-  x.singleton(ApiClient)
+  x.singleton(ApiClient),
 );
 export type IApiClient = Required<ApiClient>;
 

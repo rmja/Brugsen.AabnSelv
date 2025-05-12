@@ -1,13 +1,22 @@
 <h2>Salgsrapport</h2>
 
-<form submit.trigger="getReport()">
+<form submit.trigger="getReport()" class="d-print-none">
   <div class="form-floating mb-3">
-    <input type="file" class="form-control" ref="fileInput" value.bind="fileName" />
+    <input
+      type="file"
+      class="form-control"
+      ref="fileInput"
+      value.bind="fileName"
+    />
     <label>BON rapport</label>
   </div>
   <div>
-<div>
-    <button type="submit" class="btn btn-primary" disabled.bind="!canSubmit || isBusy">Generér salgsrapport
+    <button
+      type="submit"
+      class="btn btn-primary"
+      disabled.bind="!canSubmit || isBusy"
+    >
+      Generér salgsrapport
     </button>
   </div>
 </form>
@@ -16,10 +25,10 @@
   <thead>
     <tr>
       <th>Dato</th>
-      <th>Antal adgange</th>
-      <th>Antal forskellige brugere</th>
-      <th>Antal køb</th>
-      <th>Omsætning</th>
+      <th>Adgange</th>
+      <th>Brugere</th>
+      <th>Køb</th>
+      <th class="text-end">Omsætning</th>
     </tr>
   </thead>
   <tbody>

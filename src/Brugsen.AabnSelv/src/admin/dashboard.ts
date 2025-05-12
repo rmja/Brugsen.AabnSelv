@@ -13,7 +13,7 @@ export class DashboardPage implements IRouteableComponent {
 
   constructor(
     private readonly api = resolve(IApiClient),
-    private router = resolve(IRouter)
+    private router = resolve(IRouter),
   ) {}
 
   async loading() {
