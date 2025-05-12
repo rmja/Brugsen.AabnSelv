@@ -12,6 +12,7 @@ namespace Brugsen.AabnSelv;
 [JsonSerializable(typeof(List<ActionEventDto>))]
 [JsonSerializable(typeof(List<MemberDto>))]
 [JsonSerializable(typeof(MemberDto))]
+[JsonSerializable(typeof(SalesReportDto))]
 [JsonSourceGenerationOptions(PropertyNamingPolicy = JsonKnownNamingPolicy.CamelCase)]
 internal sealed partial class BrugsenAabnSelvJsonSerializerContext : JsonSerializerContext;
 

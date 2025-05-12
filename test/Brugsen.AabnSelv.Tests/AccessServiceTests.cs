@@ -330,7 +330,7 @@ public class AccessServiceTests
         var activities = await _accessService.GetActivityAsync(
             _clientMock.Object,
             memberId: null,
-            notBefore
+            new() { GreaterThanOrEqual = notBefore }
         );
 
         // Then
@@ -386,7 +386,7 @@ public class AccessServiceTests
         var activities = await _accessService.GetActivityAsync(
             _clientMock.Object,
             memberId: null,
-            notBefore
+            new() { GreaterThanOrEqual = notBefore }
         );
 
         // Then

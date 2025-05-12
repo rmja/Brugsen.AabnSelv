@@ -4,6 +4,7 @@ using Brugsen.AabnSelv.Endpoints;
 using Brugsen.AabnSelv.Gadgets;
 using Brugsen.AabnSelv.Models;
 using Brugsen.AabnSelv.Services;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Brugsen.AabnSelv;
 
@@ -28,11 +29,14 @@ public static class Mapper
 
     public static AccessActivityDto ToDto(this AccessActivity activity)
     {
-        var memberName = (activity.CheckInEvent ?? activity.CheckOutEvent)?.SubjectMember?.Name;
+        var member = (activity.CheckInEvent ?? activity.CheckOutEvent)?.SubjectMember;
         return new()
         {
             MemberId = activity.MemberId,
-            MemberName = memberName ?? "",
+            MemberName = member?.Name ?? "",
+            CoopMembershipNumber = member?.Metadata.GetValueOrDefault(
+                MetadataKeys.Member.CoopMembershipNumber
+            ),
             CheckInEvent = activity.CheckInEvent?.ToDto(),
             CheckOutEvent = activity.CheckOutEvent?.ToDto(),
         };

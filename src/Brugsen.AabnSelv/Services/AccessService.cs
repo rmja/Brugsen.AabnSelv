@@ -21,7 +21,7 @@ public class AccessService(
         var activity = await GetActivityAsync(
             client,
             memberId,
-            notBefore,
+            new() { GreaterThanOrEqual = notBefore },
             EventsExpand.None,
             cancellationToken
         );
@@ -45,7 +45,7 @@ public class AccessService(
         var activities = await GetActivityAsync(
             client,
             memberId: null,
-            notBefore,
+            new() { GreaterThanOrEqual = notBefore },
             EventsExpand.None,
             cancellationToken
         );
@@ -73,19 +73,19 @@ public class AccessService(
     public async Task<List<AccessActivity>> GetActivityAsync(
         IAkilesApiClient client,
         string? memberId,
-        DateTimeOffset notBefore,
+        RangeFilter<DateTimeOffset> timeRange,
         EventsExpand expand,
         CancellationToken cancellationToken
     )
     {
-        var filter = new ListEventsFilter() { };
+        var filter = new ListEventsFilter() { CreatedAt = timeRange };
         if (memberId is not null)
         {
             filter.Subject = new() { MemberId = memberId };
         }
 
         var recentEvents = await client
-            .Events.ListRecentEventsAsync(notBefore, filter, expand, cancellationToken)
+            .Events.ListEventsAsync("created_at:desc", filter, expand)
             .ToListAsync(cancellationToken);
 
         // Change event order to ascending, that is, the oldest event is the first

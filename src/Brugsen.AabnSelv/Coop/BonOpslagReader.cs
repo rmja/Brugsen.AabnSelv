@@ -5,14 +5,19 @@ using UglyToad.PdfPig.Content;
 
 namespace Brugsen.AabnSelv.Coop;
 
-public class BonOpslagReader : IDisposable
+public sealed class BonOpslagReader : IDisposable
 {
     private readonly PdfDocument _document;
     private State _state = State.None;
+
+    private DateOnly _headerDate;
+    private TimeOnly _headerTime;
+    private int _headerNumber = -1;
+
     private DateOnly _date;
     private TimeOnly _time;
     private int _number = -1;
-    private List<Line> _lines = [];
+    private List<BonLine> _lines = [];
     private string? _lineCategory;
     private readonly StringBuilder _lineText = new();
     private decimal? _lineAmount;
@@ -60,24 +65,24 @@ public class BonOpslagReader : IDisposable
         {
             _state = State.ReadingPageFooter;
         }
+        else if (_state == State.ReadingBonHeader + 25 && word.Text != "Gemt:")
+        {
+            // "Gemt" in header only exists in some headers
+            _state = State.ReadingBonLines;
+        }
 
         switch (_state)
         {
             case State.ReadingBonHeader + 1:
-                var date = DateOnly.ParseExact(
+                _headerDate = DateOnly.ParseExact(
                     word.Text,
                     "dd/MM/yyyy",
                     CultureInfo.InvariantCulture
                 );
-                if (date != _date)
-                {
-                    _number = -1;
-                    _date = date;
-                }
                 _state++;
                 break;
             case State.ReadingBonHeader + 2:
-                _time = TimeOnly.ParseExact(word.Text, "HH:mm", CultureInfo.InvariantCulture);
+                _headerTime = TimeOnly.ParseExact(word.Text, "HH:mm", CultureInfo.InvariantCulture);
                 _state++;
                 break;
             case State.ReadingBonHeader + 12:
@@ -88,31 +93,29 @@ public class BonOpslagReader : IDisposable
                 _state++;
                 break;
             case State.ReadingBonHeader + 13:
-                var number = int.Parse(word.Text);
-                if (_lineCategory is not null && number != _number)
-                {
-                    EmitBon();
-                }
-                else if (number == _number) { }
-                _number = number;
+                _headerNumber = int.Parse(word.Text);
                 _state++;
                 break;
+
             case State.ReadingPageFooter:
                 break;
             case State.ReadingBonLines:
+                if (_date == default)
+                {
+                    _date = _headerDate;
+                    _time = _headerTime;
+                    _number = _headerNumber;
+                }
+                else if (_date != _headerDate || _number != _headerNumber)
+                {
+                    EmitBon();
+                }
 
                 if (word.BoundingBox.Left < 70)
                 {
                     if (_lineCategory is not null)
                     {
-                        _lines.Add(
-                            new()
-                            {
-                                Category = _lineCategory!,
-                                Text = _lineText.ToString(),
-                                Amount = _lineAmount
-                            }
-                        );
+                        _lines.Add(new(_lineCategory!, _lineText.ToString(), _lineAmount));
                         _lineCategory = null;
                         _lineText.Clear();
                         _lineAmount = null;
@@ -144,14 +147,7 @@ public class BonOpslagReader : IDisposable
 
     private void EmitBon()
     {
-        _lines.Add(
-            new()
-            {
-                Category = _lineCategory!,
-                Text = _lineText.ToString(),
-                Amount = _lineAmount
-            }
-        );
+        _lines.Add(new(_lineCategory!, _lineText.ToString(), _lineAmount));
         _bons.Add(
             new()
             {
@@ -161,6 +157,8 @@ public class BonOpslagReader : IDisposable
             }
         );
 
+        _date = default;
+        _time = default;
         _number = -1;
         _lines = [];
         _lineCategory = null;
@@ -178,21 +176,7 @@ public class BonOpslagReader : IDisposable
         None,
         ReadingPageHeader,
         ReadingBonHeader = ReadingPageHeader + 9,
-        ReadingBonLines = ReadingBonHeader + 25,
+        ReadingBonLines = ReadingBonHeader + 27,
         ReadingPageFooter,
     }
-}
-
-public record Bon
-{
-    public required DateTime Purchased { get; init; }
-    public int Number { get; init; }
-    public required List<Line> Lines { get; init; }
-}
-
-public record Line
-{
-    public required string Category { get; init; }
-    public required string Text { get; init; }
-    public decimal? Amount { get; init; }
 }

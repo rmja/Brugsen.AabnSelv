@@ -20,7 +20,7 @@ public interface IAccessService
     Task<List<AccessActivity>> GetActivityAsync(
         IAkilesApiClient client,
         string? memberId,
-        DateTimeOffset notBefore,
+        RangeFilter<DateTimeOffset> timeRange,
         EventsExpand expand = EventsExpand.None,
         CancellationToken cancellationToken = default
     );

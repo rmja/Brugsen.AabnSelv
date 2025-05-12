@@ -20,6 +20,12 @@ import template from "./router.html";
     component: import("./members/router"),
     title: "Medlemmer",
   },
+  {
+    id: "reports",
+    path: "reports",
+    component: import("./reports/router"),
+    title: "Rapporter",
+  },
 ])
 @customElement({ name: "admin-router", template })
 export class AdminRouter implements IRouteableComponent {}

@@ -121,6 +121,7 @@ app.UseRouting(); // Must be called explicitly for PathBase to have effect, see 
 HistoryEndpoints.AddRoutes(app);
 MembersEndpoints.AddRoutes(app);
 OAuthEndpoints.AddRoutes(app);
+ReportsEndpoints.AddRoutes(app);
 WebhooksEndpoints.AddRoutes(app);
 app.MapWhen(
     x => !x.Request.Path.StartsWithSegments("/api"),

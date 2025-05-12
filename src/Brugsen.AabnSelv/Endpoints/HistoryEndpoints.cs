@@ -1,6 +1,7 @@
 ﻿using System.Text.Json;
 using Akiles.ApiClient;
 using Akiles.ApiClient.Events;
+using Akiles.ApiClient.Gadgets;
 using Brugsen.AabnSelv.Gadgets;
 using Brugsen.AabnSelv.Models;
 using Brugsen.AabnSelv.Services;
@@ -34,9 +35,12 @@ public static class HistoryEndpoints
         var activity = await accessService.GetActivityAsync(
             client,
             memberId: null,
-            notBefore: timeProvider.GetLocalDateTimeOffset(
-                notBefore ?? timeProvider.GetLocalNow().Date.AddDays(-1)
-            ),
+            new()
+            {
+                GreaterThanOrEqual = timeProvider.GetLocalDateTimeOffset(
+                    notBefore ?? timeProvider.GetLocalNow().Date.AddDays(-1)
+                )
+            },
             EventsExpand.SubjectMember,
             cancellationToken
         );
@@ -72,13 +76,19 @@ public static class HistoryEndpoints
         }
 
         var events = await client
-            .Events.ListRecentGadgetEventsAsync(
-                gadget.GadgetId,
-                notBefore: timeProvider.GetLocalDateTimeOffset(
-                    notBefore ?? timeProvider.GetLocalNow().Date.AddDays(-1)
-                ),
-                EventsExpand.None,
-                cancellationToken
+            .Events.ListEventsAsync(
+                "created_at:desc",
+                new ListEventsFilter()
+                {
+                    Object = new() { GadgetId = gadget.GadgetId },
+                    CreatedAt = new()
+                    {
+                        GreaterThanOrEqual = timeProvider.GetLocalDateTimeOffset(
+                            notBefore ?? timeProvider.GetLocalNow().Date.AddDays(-1)
+                        )
+                    }
+                },
+                EventsExpand.None
             )
             .ToListAsync(cancellationToken);
 

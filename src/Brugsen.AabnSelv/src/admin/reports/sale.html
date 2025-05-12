@@ -1,0 +1,46 @@
+<h2>Salgsrapport</h2>
+
+<form submit.trigger="getReport()">
+  <div class="form-floating mb-3">
+    <input type="file" class="form-control" ref="fileInput" value.bind="fileName" />
+    <label>BON rapport</label>
+  </div>
+  <div>
+<div>
+    <button type="submit" class="btn btn-primary" disabled.bind="!canSubmit || isBusy">Generér salgsrapport
+    </button>
+  </div>
+</form>
+
+<table class="table table-sm">
+  <thead>
+    <tr>
+      <th>Dato</th>
+      <th>Antal adgange</th>
+      <th>Antal forskellige brugere</th>
+      <th>Antal køb</th>
+      <th>Omsætning</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr
+      repeat.for="day of days"
+      class="${day.date.weekday === 6 || day.date.weekday === 7 ? 'table-secondary' : ''}"
+    >
+      <td>${day.date | localDate}</td>
+      <td>${day.accessCount}</td>
+      <td>${day.members.size}</td>
+      <td>${day.slipCount}</td>
+      <td class="text-end">${day.amount.toFixed(2)}</td>
+    </tr>
+  </tbody>
+  <tfoot>
+    <tr>
+      <td>Total</td>
+      <td>${totalAccessCount}</td>
+      <td>${totalMemberCount}</td>
+      <td>${totalSlipCount}</td>
+      <td class="text-end">${totalAmount.toFixed(2)}</td>
+    </tr>
+  </tfoot>
+</table>

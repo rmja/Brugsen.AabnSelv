@@ -37,10 +37,45 @@ export class AccessActivity {
   memberId!: string;
   @jsonProperty()
   memberName!: string;
+  @jsonProperty()
+  coopMembershipNumber!: string;
   @jsonProperty({ type: ActionEvent })
   checkInEvent!: ActionEvent<"check_in"> | null;
   @jsonProperty({ type: ActionEvent })
   checkOutEvent!: ActionEvent<"check_out" | "open_once"> | null;
+}
+
+export class Slip {
+  @jsonProperty({ converter: dateTimeConverter })
+  purchased!: DateTime;
+  @jsonProperty()
+  number!: number;
+  @jsonProperty()
+  lines!: { category: string; text: string; amount: number }[];
+}
+
+export class SalesReportLine {
+  @jsonProperty()
+  memberId!: string;
+  @jsonProperty()
+  memberName!: string;
+  @jsonProperty()
+  coopMembershipNumber!: string;
+  @jsonProperty({ converter: dateTimeConverter })
+  checkedInAt!: DateTime;
+  @jsonProperty({ converter: dateTimeConverter })
+  checkedOutAt!: DateTime;
+  @jsonProperty({ type: Slip })
+  slips!: Slip[];
+  @jsonProperty()
+  totalAmount!: number;
+}
+
+export class SalesReport {
+  @jsonProperty() firstDate!: DateTime;
+  @jsonProperty() lastDate!: DateTime;
+  @jsonProperty({ type: SalesReportLine })
+  lines!: SalesReportLine[];
 }
 
 export type AlarmAction = "arm" | "disarm";
@@ -115,5 +150,11 @@ export class ApiClient {
     return http
       .get(`/history/${gadget}-action-events`)
       .expectJsonArray(ActionEvent<TAction>);
+  }
+
+  getSalesReport(model: { coopBonOpslag: Blob }) {
+    const form = new FormData();
+    form.set("coopBonOpslag", model.coopBonOpslag);
+    return http.post("/reports/sales").withForm(form).expectJson(SalesReport);
   }
 }
