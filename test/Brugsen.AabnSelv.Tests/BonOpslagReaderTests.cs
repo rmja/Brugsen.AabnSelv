@@ -9,6 +9,7 @@ public class BonOpslagReaderTests
     public BonOpslagReaderTests()
     {
         // Given
+        // https://mail.google.com/mail/u/0/#inbox/FMfcgzQbfBzPWMcdWTGRBhJccHnLTDfl
         using var file = File.OpenRead("Resources/bon_opslag.2025-april.pdf");
         var reader = new BonOpslagReader(file);
 
