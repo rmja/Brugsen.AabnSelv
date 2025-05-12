@@ -6,7 +6,7 @@ import { dateTimeConverter, jsonProperty } from "@utiliread/json";
 import { DateTime } from "luxon";
 import { IUserManager } from "./oauth";
 import { LoginRedirectKey } from "./oauth";
-import { resolve } from "aurelia";
+import { DI, resolve } from "aurelia";
 
 const anonymousHttp = new Http({ baseUrl: "api" });
 const http = new Http({ baseUrl: "api" });
@@ -44,9 +44,13 @@ export class AccessActivity {
 }
 
 export type AlarmAction = "arm" | "disarm";
-export type LockAction = "lock" | "unlock";
 
 export type MemberInit = Omit<Member, "id" | "isApproved">;
+
+export const IApiClient = DI.createInterface<IApiClient>("IApiClient", (x) =>
+  x.singleton(ApiClient)
+);
+export type IApiClient = Required<ApiClient>;
 
 export class ApiClient {
   constructor(private readonly userManager = resolve(IUserManager)) {
@@ -100,14 +104,13 @@ export class ApiClient {
     return http.delete(`/members/${memberId}`);
   }
 
-  getAccessActivity() {
-    return http.get(`/history/access-activity`).expectJsonArray(AccessActivity);
+  getAccessActivity(params?: { notBefore?: DateTime }) {
+    return http
+      .get(`/history/access-activity`, params)
+      .expectJsonArray(AccessActivity);
   }
 
   getActionEvents(gadget: "alarm"): HttpBuilderOfT<ActionEvent<AlarmAction>[]>;
-  getActionEvents(
-    gadget: "front-door-lock",
-  ): HttpBuilderOfT<ActionEvent<LockAction>[]>;
   getActionEvents<TAction>(gadget: string) {
     return http
       .get(`/history/${gadget}-action-events`)

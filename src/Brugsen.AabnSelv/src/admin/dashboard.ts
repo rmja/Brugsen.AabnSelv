@@ -1,8 +1,8 @@
 import { IRouteableComponent, IRouter } from "@aurelia/router";
 import { customElement, resolve } from "aurelia";
 
-import { ApiClient } from "../api";
 import { DateTime } from "luxon";
+import { IApiClient } from "../api";
 import template from "./dashboard.html";
 
 @customElement({ name: "dashboard-page", template })
@@ -12,7 +12,7 @@ export class DashboardPage implements IRouteableComponent {
   accessActivity!: AccessActivityViewModel[];
 
   constructor(
-    private readonly api = resolve(ApiClient),
+    private readonly api = resolve(IApiClient),
     private router = resolve(IRouter)
   ) {}
 

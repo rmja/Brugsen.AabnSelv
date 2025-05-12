@@ -2,7 +2,7 @@ import { HttpError, statusCodes } from "@utiliread/http";
 import { IRouteableComponent, IRouter } from "@aurelia/router";
 import { customElement, resolve } from "aurelia";
 
-import { ApiClient } from "../api";
+import { IApiClient } from "../api";
 import template from "./store-confirmation.html";
 
 @customElement({ name: "store-confirmation-page", template })
@@ -13,7 +13,7 @@ export class StoreConfirmationPage implements IRouteableComponent {
   approveAbsoluteUrl!: string;
 
   constructor(
-    private api: ApiClient = resolve(ApiClient),
+    private api: IApiClient = resolve(IApiClient),
     private router: IRouter = resolve(IRouter),
   ) {}
 

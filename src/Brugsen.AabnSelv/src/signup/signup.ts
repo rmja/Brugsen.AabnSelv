@@ -3,8 +3,8 @@ import * as colors from "../laesoe-cards";
 import { IRouteableComponent, IRouter } from "@aurelia/router";
 import { customElement, observable, resolve } from "aurelia";
 
-import { ApiClient } from "../api";
 import { HttpError } from "@utiliread/http";
+import { IApiClient } from "../api";
 import template from "./signup.html";
 
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -73,7 +73,7 @@ export class SignupPage implements IRouteableComponent {
   }
 
   constructor(
-    private api = resolve(ApiClient),
+    private api = resolve(IApiClient),
     private router: IRouter = resolve(IRouter),
   ) {}
 

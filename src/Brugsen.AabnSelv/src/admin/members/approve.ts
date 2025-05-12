@@ -3,7 +3,7 @@ import * as colors from "../../laesoe-cards";
 import { IRouteableComponent, IRouter } from "@aurelia/router";
 import { customElement, resolve } from "aurelia";
 
-import { ApiClient } from "../../api";
+import { IApiClient } from "../../api";
 import template from "./approve.html";
 
 @customElement({ name: "approve-page", template })
@@ -19,7 +19,7 @@ export class ApprovePage implements IRouteableComponent {
   laesoeCardColorClass!: string;
 
   constructor(
-    private readonly api: ApiClient = resolve(ApiClient),
+    private readonly api: IApiClient = resolve(IApiClient),
     private readonly router = resolve(IRouter),
   ) {}
 
