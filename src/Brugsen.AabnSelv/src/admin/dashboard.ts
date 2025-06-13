@@ -55,8 +55,8 @@ export class DashboardPage implements IRouteableComponent {
         x.name,
         x.address,
         x.coopMembershipNumber,
-        x.laesoeCardNumber,
-        x.laesoeCardColor,
+        x.laesoeCardNumber ?? "",
+        x.laesoeCardColor ?? "",
         x.email,
       ]),
     ];

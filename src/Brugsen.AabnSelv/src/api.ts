@@ -18,8 +18,8 @@ export interface Member {
   address: string;
   phone: string;
   coopMembershipNumber: string;
-  laesoeCardNumber: string;
-  laesoeCardColor: "red" | "blue" | "green";
+  laesoeCardNumber?: string;
+  laesoeCardColor?: "red" | "blue" | "green";
   isApproved: boolean;
 }
 

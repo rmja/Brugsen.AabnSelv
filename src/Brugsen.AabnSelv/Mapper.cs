@@ -4,7 +4,6 @@ using Brugsen.AabnSelv.Endpoints;
 using Brugsen.AabnSelv.Gadgets;
 using Brugsen.AabnSelv.Models;
 using Brugsen.AabnSelv.Services;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Brugsen.AabnSelv;
 
@@ -16,15 +15,22 @@ public static class Mapper
             Id = member.Id,
             Email = email.Email,
             Name = member.Name,
-            Address = member.Metadata[MetadataKeys.Member.Address],
-            Phone = member.Metadata[MetadataKeys.Member.Phone],
-            CoopMembershipNumber = member.Metadata[MetadataKeys.Member.CoopMembershipNumber],
-            LaesoeCardNumber = member.Metadata[MetadataKeys.Member.LaesoeCardNumber],
-            LaesoeCardColor = Enum.Parse<LaesoeCardColor>(
-                member.Metadata[MetadataKeys.Member.LaesoeCardColor],
-                true
+            Address = member.Metadata.GetValueOrDefault(MetadataKeys.Member.Address, string.Empty),
+            Phone = member.Metadata.GetValueOrDefault(MetadataKeys.Member.Phone, string.Empty),
+            CoopMembershipNumber = member.Metadata.GetValueOrDefault(
+                MetadataKeys.Member.CoopMembershipNumber,
+                string.Empty
             ),
-            IsApproved = isApproved
+            LaesoeCardNumber = member.Metadata.GetValueOrDefault(
+                MetadataKeys.Member.LaesoeCardNumber
+            ),
+            LaesoeCardColor = member.Metadata.TryGetValue(
+                MetadataKeys.Member.LaesoeCardColor,
+                out var color
+            )
+                ? Enum.Parse<LaesoeCardColor>(color, true)
+                : null,
+            IsApproved = isApproved,
         };
 
     public static AccessActivityDto ToDto(this AccessActivity activity)
@@ -47,7 +53,7 @@ public static class Mapper
         {
             Action = evnt.Object.GadgetActionId!,
             Method = GetAccessMethod(evnt),
-            CreatedAt = evnt.CreatedAt
+            CreatedAt = evnt.CreatedAt,
         };
 
     private static AccessMethod? GetAccessMethod(Event evnt)

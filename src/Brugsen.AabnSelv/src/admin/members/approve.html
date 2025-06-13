@@ -9,8 +9,8 @@
   <dd>${phone}</dd>
   <dt>COOP medlemsnummer</dt>
   <dd>${coopMembershipNumber}</dd>
-  <dt>Ø-kort</dt>
-  <dd>
+  <dt if.bind="laesoeCardNumber">Ø-kort</dt>
+  <dd if.bind="laesoeCardNumber">
     <span class="badge text-bg-${laesoeCardColorClass}">${laesoeCardName}</span>
     ${laesoeCardNumber}
   </dd>

@@ -14,9 +14,9 @@ export class ApprovePage implements IRouteableComponent {
   address!: string;
   phone!: string;
   coopMembershipNumber!: string;
-  laesoeCardNumber!: string;
-  laesoeCardName!: string;
-  laesoeCardColorClass!: string;
+  laesoeCardNumber?: string;
+  laesoeCardName?: string;
+  laesoeCardColorClass?: string;
 
   constructor(
     private readonly api: IApiClient = resolve(IApiClient),
@@ -33,8 +33,10 @@ export class ApprovePage implements IRouteableComponent {
     this.coopMembershipNumber = member.coopMembershipNumber;
     this.laesoeCardNumber = member.laesoeCardNumber;
     const cardColor = member.laesoeCardColor;
-    this.laesoeCardName = colors[cardColor].name;
-    this.laesoeCardColorClass = colors[cardColor].colorClass;
+    if (cardColor) {
+      this.laesoeCardName = colors[cardColor].name;
+      this.laesoeCardColorClass = colors[cardColor].colorClass;
+    }
   }
 
   async delete() {
