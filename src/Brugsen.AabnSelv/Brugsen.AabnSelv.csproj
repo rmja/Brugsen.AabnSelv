@@ -11,6 +11,6 @@
     <PackageReference Include="GatewayApi.ApiClient" Version="0.0.4" />
     <PackageReference Include="InterpolatedParser" Version="1.1.5" />
     <PackageReference Include="PdfPig" Version="0.1.11" />
-    <PackageReference Include="TimeZoneConverter" Version="7.0.0" />
+    <PackageReference Include="TimeZoneConverter" Version="7.2.0" />
   </ItemGroup>
 </Project>
