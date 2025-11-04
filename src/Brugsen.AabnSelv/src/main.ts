@@ -19,7 +19,6 @@ Settings.throwOnInvalid = true;
 const aurelia = new Aurelia()
   .register(
     RouterConfiguration.customize({
-      title: "${componentTitles}${appTitleSeparator}Brugsen Vesterø Havn",
       useUrlFragmentHash: false,
     }),
   )

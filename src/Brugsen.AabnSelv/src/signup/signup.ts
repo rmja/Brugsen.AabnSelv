@@ -1,6 +1,6 @@
 import * as colors from "../laesoe-cards";
 
-import { IRouteableComponent, IRouter } from "@aurelia/router";
+import { IRouteViewModel, IRouter, RouteNode } from "@aurelia/router";
 import { customElement, observable, resolve } from "aurelia";
 
 import { HttpError } from "@utiliread/http";
@@ -14,7 +14,7 @@ const cardNumberRegex = /^[0-9]{7,10}$/;
 type CardColor = "red" | "blue" | "green";
 
 @customElement({ name: "signup-page", template })
-export class SignupPage implements IRouteableComponent {
+export class SignupPage implements IRouteViewModel {
   busy = false;
   name = "";
   address = "";
@@ -108,7 +108,7 @@ export class SignupPage implements IRouteableComponent {
         })
         .transfer();
       await this.router.load("../store-confirmation", {
-        parameters: { memberId: member.id },
+        queryParams: { memberId: member.id },
         context: this,
       });
     } catch (error) {

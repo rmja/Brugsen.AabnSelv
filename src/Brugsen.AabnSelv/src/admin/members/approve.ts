@@ -1,13 +1,13 @@
 import * as colors from "../../laesoe-cards";
 
-import { IRouteableComponent, IRouter } from "@aurelia/router";
+import { IRouteViewModel, IRouter } from "@aurelia/router";
 import { customElement, resolve } from "aurelia";
 
 import { IApiClient } from "../../api";
 import template from "./approve.html";
 
 @customElement({ name: "approve-page", template })
-export class ApprovePage implements IRouteableComponent {
+export class ApprovePage implements IRouteViewModel {
   private memberId!: string;
   email!: string;
   name!: string;

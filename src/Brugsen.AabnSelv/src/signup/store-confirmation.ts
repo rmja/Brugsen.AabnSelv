@@ -1,12 +1,12 @@
 import { HttpError, statusCodes } from "@utiliread/http";
-import { IRouteableComponent, IRouter } from "@aurelia/router";
+import { IRouteViewModel, IRouter, Params, RouteNode } from "@aurelia/router";
 import { customElement, resolve } from "aurelia";
 
 import { IApiClient } from "../api";
 import template from "./store-confirmation.html";
 
 @customElement({ name: "store-confirmation-page", template })
-export class StoreConfirmationPage implements IRouteableComponent {
+export class StoreConfirmationPage implements IRouteViewModel {
   private memberId!: string;
   mode = __MODE__;
   approveRelativeUrl!: string;
@@ -17,15 +17,15 @@ export class StoreConfirmationPage implements IRouteableComponent {
     private router: IRouter = resolve(IRouter),
   ) {}
 
-  loading(params: { memberId: string }) {
-    this.memberId = params.memberId;
+  loading(params: Params, next: RouteNode) {
+    this.memberId = next.queryParams.get("memberId")!;
 
     let baseUrl = document.baseURI;
     if (baseUrl.endsWith("/")) {
       baseUrl = baseUrl.substring(0, baseUrl.length - 1);
     }
 
-    this.approveRelativeUrl = `/admin/members/${params.memberId}/approve`;
+    this.approveRelativeUrl = `/admin/members/${this.memberId}/approve`;
     this.approveAbsoluteUrl = `${baseUrl}${this.approveRelativeUrl}`;
   }
 

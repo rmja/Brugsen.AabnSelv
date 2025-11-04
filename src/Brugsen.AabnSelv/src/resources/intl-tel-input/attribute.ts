@@ -11,9 +11,10 @@ import {
   optional,
   resolve,
 } from "aurelia";
-import { Iti, SomeOptions } from "intl-tel-input";
+import { Iti } from "intl-tel-input";
 
 import intlTelInput from "intl-tel-input";
+import { Options } from "./options";
 
 export const DefaultOptions = Symbol("DefaultOptions123");
 
@@ -22,6 +23,18 @@ export const DefaultOptions = Symbol("DefaultOptions123");
 export class IntlTelInputCustomAttribute implements ICustomAttributeViewModel {
   private element = resolve(INode) as HTMLInputElement;
   private instance!: Iti;
+  private mutationObserver = new MutationObserver(() => {
+    const parent = this.element.parentElement;
+    if (!parent) {
+      return;
+    }
+    const isInvalid = this.element.classList.contains("is-invalid");
+    if (isInvalid) {
+      parent.classList.add("is-invalid");
+    } else {
+      parent.classList.remove("is-invalid");
+    }
+  });
 
   @bindable({ primary: true, mode: BindingMode.twoWay })
   value?: string;
@@ -29,7 +42,7 @@ export class IntlTelInputCustomAttribute implements ICustomAttributeViewModel {
   @bindable()
   options?: intlTelInput.Options;
 
-  constructor(private defaultOptions: SomeOptions) {
+  constructor(private defaultOptions: Partial<Options>) {
     this.handleChange = this.handleChange.bind(this);
   }
 
@@ -58,9 +71,15 @@ export class IntlTelInputCustomAttribute implements ICustomAttributeViewModel {
 
     this.element.addEventListener("countrychange", this.handleChange);
     this.element.addEventListener("keyup", this.handleChange);
+
+    this.mutationObserver.observe(this.element, {
+      attributes: true,
+      attributeFilter: ["class"],
+    });
   }
 
   unbinding() {
+    this.mutationObserver.disconnect();
     this.element.removeEventListener("countrychange", this.handleChange);
     this.element.removeEventListener("keyup", this.handleChange);
     this.instance.destroy();

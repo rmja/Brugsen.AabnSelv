@@ -1,4 +1,4 @@
-import { IRouteableComponent, IRouter } from "@aurelia/router";
+import { IRouteViewModel, IRouter } from "@aurelia/router";
 import { customElement, resolve } from "aurelia";
 
 import { DateTime } from "luxon";
@@ -6,7 +6,7 @@ import { IApiClient } from "../api";
 import template from "./dashboard.html";
 
 @customElement({ name: "dashboard-page", template })
-export class DashboardPage implements IRouteableComponent {
+export class DashboardPage implements IRouteViewModel {
   pending!: MemberViewModel[];
   alarmEvents!: ActionEventViewModel[];
   accessActivity!: AccessActivityViewModel[];

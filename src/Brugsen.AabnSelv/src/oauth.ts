@@ -1,6 +1,6 @@
 import { DI, customElement, resolve } from "aurelia";
 
-import { IRouteableComponent } from "@aurelia/router";
+import { IRouteViewModel } from "@aurelia/router";
 import { UserManager } from "oidc-client-ts";
 import config from "./config";
 
@@ -26,7 +26,7 @@ export const IUserManager = DI.createInterface<IUserManager>(
 export type IUserManager = Required<UserManager>;
 
 @customElement("auth-handler")
-export class AuthHandler implements IRouteableComponent {
+export class AuthHandler implements IRouteViewModel {
   constructor(private readonly userManager = resolve(IUserManager)) {}
 
   async canLoad() {

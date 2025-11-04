@@ -1,14 +1,13 @@
 import { DefaultOptions, IntlTelInputCustomAttribute } from "./attribute";
 import { IContainer, Registration } from "aurelia";
-
-import { SomeOptions } from "intl-tel-input";
+import { Options } from "./options";
 
 export class IntlTelInputConfiguration {
   public static register(container: IContainer) {
     container.register(IntlTelInputCustomAttribute);
   }
 
-  public static customize(defaultOptions: SomeOptions) {
+  public static customize(defaultOptions: Partial<Options>) {
     if (!defaultOptions.loadUtils) {
       defaultOptions.loadUtils = () => import("intl-tel-input/utils");
     }
