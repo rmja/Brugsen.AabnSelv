@@ -32,18 +32,16 @@ public sealed class AccessController(
             CancellationToken.None
         );
 
-        var due = anyCheckedIn ? Timeout.InfiniteTimeSpan : TimeSpan.Zero;
-
         _blackoutTimer = timeProvider.CreateTimer(
             SignalBlackout,
             null,
-            due,
+            anyCheckedIn ? CheckoutTimeout + BlackoutDelay : TimeSpan.Zero,
             Timeout.InfiniteTimeSpan
         );
         _lockdownTimer = timeProvider.CreateTimer(
             SignalLockdown,
             null,
-            due,
+            anyCheckedIn ? CheckoutTimeout + LockdownDelay : TimeSpan.Zero,
             Timeout.InfiniteTimeSpan
         );
 
@@ -111,6 +109,7 @@ public sealed class AccessController(
         );
 
         // Disarm timers by setting them to after checkout timeout
+        // This effectively ensures that we always blackout and lockdown automatically for members that do not explicitly check-out
         _blackoutTimer!.Change(CheckoutTimeout + BlackoutDelay, Timeout.InfiniteTimeSpan);
         _lockdownTimer!.Change(CheckoutTimeout + LockdownDelay, Timeout.InfiniteTimeSpan);
         _blackoutSignalled = false;
