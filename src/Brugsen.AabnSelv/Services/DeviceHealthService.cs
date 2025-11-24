@@ -70,7 +70,7 @@ public sealed class DeviceHealthService(
                 {
                     var offlineDuration = timeProvider.GetUtcNow() - offlineRegistered;
                     await SendSmsAsync(
-                        $"Forbindelse genetableret til {device.Name}. Forbindelsen var afbrudt {offlineDuration.ToString("c")}.",
+                        $"Forbindelse genetableret til {device.Name}. Forbindelsen var afbrudt {offlineDuration:c}.",
                         stoppingToken
                     );
                 }
