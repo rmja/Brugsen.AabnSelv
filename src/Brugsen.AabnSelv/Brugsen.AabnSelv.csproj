@@ -7,10 +7,10 @@
     <PublishAot>true</PublishAot>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Akiles.ApiClient" Version="0.0.10" />
+    <PackageReference Include="Akiles.ApiClient" Version="0.0.11" />
     <PackageReference Include="GatewayApi.ApiClient" Version="0.0.5" />
     <PackageReference Include="InterpolatedParser" Version="1.1.5" />
-    <PackageReference Include="PdfPig" Version="0.1.12" />
+    <PackageReference Include="PdfPig" Version="0.1.13" />
     <PackageReference Include="TimeZoneConverter" Version="7.2.0" />
   </ItemGroup>
 </Project>

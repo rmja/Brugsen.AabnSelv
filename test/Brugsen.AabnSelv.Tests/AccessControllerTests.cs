@@ -19,6 +19,8 @@ public class AccessControllerTests
     private readonly FakeTimeProvider _fakeTime = new();
     private readonly AccessController _controller;
 
+    private static CancellationToken TestCancellationToken => TestContext.Current.CancellationToken;
+
     public AccessControllerTests()
     {
         var services = new ServiceCollection()
@@ -50,13 +52,13 @@ public class AccessControllerTests
         }
 
         // When
-        await _controller.StartAsync(CancellationToken.None);
+        await _controller.StartAsync(TestCancellationToken);
 
         await _controller.ProcessCheckInAsync("check_in", "member1", openDoor);
         Assert.Equal(AlarmState.Disarmed, _alarmGadget.State);
         Assert.Equal(LightState.On, _lightGadget.State);
 
-        await _controller.StopAsync(CancellationToken.None);
+        await _controller.StopAsync(TestCancellationToken);
 
         // Then
         _doorGadgetMock.Verify();
@@ -92,7 +94,8 @@ public class AccessControllerTests
         _fakeTime.SetLocalNow(checkedOut);
 
         // When
-        await _controller.StartAsync(CancellationToken.None);
+        await _controller.StartAsync(TestCancellationToken);
+        await Task.Delay(100, TestCancellationToken);
         Assert.Equal(AlarmState.Armed, _alarmGadget.State);
         Assert.Equal(LightState.Off, _lightGadget.State);
 
@@ -110,7 +113,7 @@ public class AccessControllerTests
         Assert.Equal(AlarmState.Armed, _alarmGadget.State);
         Assert.Equal(LightState.Off, _lightGadget.State);
 
-        await _controller.StopAsync(CancellationToken.None);
+        await _controller.StopAsync(TestCancellationToken);
 
         // Then
         _doorGadgetMock.Verify();
@@ -127,7 +130,7 @@ public class AccessControllerTests
                     "member1",
                     It.IsAny<DateTimeOffset>(),
                     "check_out",
-                    CancellationToken.None
+                    TestCancellationToken
                 )
             )
             .ReturnsAsync(false);
@@ -136,11 +139,12 @@ public class AccessControllerTests
         _fakeTime.SetLocalNow(checkedOut);
 
         // When
-        await _controller.StartAsync(CancellationToken.None);
+        await _controller.StartAsync(TestCancellationToken);
+        await Task.Delay(100, TestContext.Current.CancellationToken);
 
         await _controller.ProcessCheckOutAsync("check_out", "member1", openDoor: true);
 
-        await _controller.StopAsync(CancellationToken.None);
+        await _controller.StopAsync(TestCancellationToken);
 
         // Then
     }
@@ -156,7 +160,7 @@ public class AccessControllerTests
                     "member1",
                     It.IsAny<DateTimeOffset>(),
                     "check_out",
-                    CancellationToken.None
+                    TestCancellationToken
                 )
             )
             .ReturnsAsync(false);
@@ -165,7 +169,8 @@ public class AccessControllerTests
         _fakeTime.SetLocalNow(checkedOut);
 
         // When
-        await _controller.StartAsync(CancellationToken.None);
+        await _controller.StartAsync(TestCancellationToken);
+        await Task.Delay(100, TestContext.Current.CancellationToken);
         Assert.Equal(AlarmState.Armed, _alarmGadget.State);
         Assert.Equal(LightState.Off, _lightGadget.State);
 
@@ -179,11 +184,11 @@ public class AccessControllerTests
         Assert.Equal(LightState.On, _lightGadget.State);
 
         _fakeTime.Advance(_controller.BlackoutDelay); // Way past original configured blackout
-        await Task.Delay(100);
+        await Task.Delay(100, TestCancellationToken);
         Assert.Equal(AlarmState.Disarmed, _alarmGadget.State);
         Assert.Equal(LightState.On, _lightGadget.State);
 
-        await _controller.StopAsync(CancellationToken.None);
+        await _controller.StopAsync(TestCancellationToken);
 
         // Then
     }
@@ -196,7 +201,8 @@ public class AccessControllerTests
         _fakeTime.SetLocalNow(checkedIn);
 
         // When
-        await _controller.StartAsync(CancellationToken.None);
+        await _controller.StartAsync(TestCancellationToken);
+        await Task.Delay(100, TestContext.Current.CancellationToken);
         Assert.Equal(AlarmState.Armed, _alarmGadget.State);
         Assert.Equal(LightState.Off, _lightGadget.State);
 
@@ -218,7 +224,7 @@ public class AccessControllerTests
         Assert.Equal(AlarmState.Armed, _alarmGadget.State);
         Assert.Equal(LightState.Off, _lightGadget.State);
 
-        await _controller.StopAsync(CancellationToken.None);
+        await _controller.StopAsync(TestCancellationToken);
 
         // Then
     }

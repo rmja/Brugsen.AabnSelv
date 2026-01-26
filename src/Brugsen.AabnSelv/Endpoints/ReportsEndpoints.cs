@@ -4,7 +4,6 @@ using Brugsen.AabnSelv.Coop;
 using Brugsen.AabnSelv.Models;
 using Brugsen.AabnSelv.Services;
 using InterpolatedParsing;
-using LanguageExt.Pretty;
 
 namespace Brugsen.AabnSelv.Endpoints;
 
@@ -43,7 +42,7 @@ public static class ReportsEndpoints
             new()
             {
                 GreaterThanOrEqual = timeProvider.GetLocalDateTimeOffset(firstDate),
-                LessThan = timeProvider.GetLocalDateTimeOffset(lastDate.AddDays(1))
+                LessThan = timeProvider.GetLocalDateTimeOffset(lastDate.AddDays(1)),
             },
             EventsExpand.SubjectMember,
             cancellationToken
@@ -91,7 +90,7 @@ public static class ReportsEndpoints
                         CheckedInAt = checkedIn,
                         CheckedOutAt = checkedOut,
                         Slips = slips,
-                        TotalAmount = total
+                        TotalAmount = total,
                     }
                 );
             }
@@ -113,7 +112,7 @@ public static class ReportsEndpoints
         {
             FirstDate = DateOnly.FromDateTime(firstDate),
             LastDate = DateOnly.FromDateTime(lastDate),
-            Lines = lines
+            Lines = lines,
         };
         return Results.Ok(report);
     }
