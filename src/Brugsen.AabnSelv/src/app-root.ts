@@ -32,5 +32,4 @@ import template from "./app-root.html";
   name: "app-root",
   template,
 })
-export class AppRootCustomElement implements ICustomElementViewModel {
-}
+export class AppRootCustomElement implements ICustomElementViewModel {}

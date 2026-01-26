@@ -10,9 +10,7 @@ import {
 } from "aurelia";
 
 @customAttribute("dawa-autocomplete")
-export class DawaAutocompleteCustomAttribute
-  implements ICustomAttributeViewModel
-{
+export class DawaAutocompleteCustomAttribute implements ICustomAttributeViewModel {
   @bindable({ mode: "twoWay" }) id: string | null = null;
   private element = resolve(INode) as HTMLInputElement;
   private instance?: DawaAutocomplete;
