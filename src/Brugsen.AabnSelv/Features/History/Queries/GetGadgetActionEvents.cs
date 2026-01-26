@@ -1,54 +1,23 @@
 ﻿using System.Text.Json;
 using Akiles.ApiClient;
 using Akiles.ApiClient.Events;
-using Akiles.ApiClient.Gadgets;
 using Brugsen.AabnSelv.Gadgets;
 using Brugsen.AabnSelv.Models;
-using Brugsen.AabnSelv.Services;
 using Microsoft.Extensions.Options;
+using StaticEndpoints;
 
-namespace Brugsen.AabnSelv.Endpoints;
+namespace Brugsen.AabnSelv.Features.History.Queries;
 
-public static class HistoryEndpoints
+public class GetGadgetActionEvents : IEndpoint
 {
     private static readonly Dictionary<string, GadgetEntity> _gadgetEntities =
         Enum.GetValues<GadgetEntity>()
             .ToDictionary(x => JsonNamingPolicy.KebabCaseLower.ConvertName(x.ToString()), x => x);
 
-    public static void AddRoutes(IEndpointRouteBuilder builder)
-    {
-        var history = builder.MapGroup("/api/history");
+    public static void AddRoute(IEndpointRouteBuilder builder) =>
+        builder.MapGet("/api/history/{gadgetEntity}-action-events", HandleAsync);
 
-        history.MapGet("/access-activity", GetAccessActivityAsync);
-        history.MapGet("/{gadgetEntity}-action-events", GetGadgetActionEventsAsync);
-    }
-
-    private static async Task<IResult> GetAccessActivityAsync(
-        DateTime? notBefore,
-        IAccessService accessService,
-        IAkilesApiClient client,
-        IOptions<BrugsenAabnSelvOptions> options,
-        TimeProvider timeProvider,
-        CancellationToken cancellationToken
-    )
-    {
-        var activity = await accessService.GetActivityAsync(
-            client,
-            memberId: null,
-            new()
-            {
-                GreaterThanOrEqual = timeProvider.GetLocalDateTimeOffset(
-                    notBefore ?? timeProvider.GetLocalNow().Date.AddDays(-1)
-                )
-            },
-            EventsExpand.SubjectMember,
-            cancellationToken
-        );
-
-        return Results.Ok(activity.Select(x => x.ToDto()).ToList());
-    }
-
-    private static async Task<IResult> GetGadgetActionEventsAsync(
+    private static async Task<IResult> HandleAsync(
         string gadgetEntity,
         DateTime? notBefore,
         IEnumerable<IGadget> gadgets,
@@ -85,8 +54,8 @@ public static class HistoryEndpoints
                     {
                         GreaterThanOrEqual = timeProvider.GetLocalDateTimeOffset(
                             notBefore ?? timeProvider.GetLocalNow().Date.AddDays(-1)
-                        )
-                    }
+                        ),
+                    },
                 },
                 EventsExpand.None
             )

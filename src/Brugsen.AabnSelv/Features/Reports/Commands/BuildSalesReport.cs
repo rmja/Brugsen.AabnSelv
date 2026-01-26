@@ -4,19 +4,16 @@ using Brugsen.AabnSelv.Coop;
 using Brugsen.AabnSelv.Models;
 using Brugsen.AabnSelv.Services;
 using InterpolatedParsing;
+using StaticEndpoints;
 
-namespace Brugsen.AabnSelv.Endpoints;
+namespace Brugsen.AabnSelv.Features.Reports.Commands;
 
-public static class ReportsEndpoints
+public class BuildSalesReport : IEndpoint
 {
-    public static void AddRoutes(IEndpointRouteBuilder builder)
-    {
-        var history = builder.MapGroup("/api/reports");
+    public static void AddRoute(IEndpointRouteBuilder builder) =>
+        builder.MapPost("/api/reports/sales", HandleAsync).DisableAntiforgery();
 
-        history.MapPost("/sales", BuildSalesReportAsync).DisableAntiforgery();
-    }
-
-    private static async Task<IResult> BuildSalesReportAsync(
+    private static async Task<IResult> HandleAsync(
         IFormFile coopBonOpslag,
         IAccessService accessService,
         IAkilesApiClient akilesClient,

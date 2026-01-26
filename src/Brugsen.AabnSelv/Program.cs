@@ -3,7 +3,6 @@ using Akiles.ApiClient;
 using Akiles.ApiClient.Webhooks;
 using Brugsen.AabnSelv;
 using Brugsen.AabnSelv.Controllers;
-using Brugsen.AabnSelv.Endpoints;
 using Brugsen.AabnSelv.Services;
 using Microsoft.AspNetCore.Http.Json;
 using Microsoft.Extensions.Logging.Console;
@@ -118,11 +117,7 @@ if (options.CheckInPinpadGadgetId is not null)
 
 app.UsePathBase(app.Configuration["PathBase"]);
 app.UseRouting(); // Must be called explicitly for PathBase to have effect, see https://andrewlock.net/using-pathbase-with-dotnet-6-webapplicationbuilder/#option-1-controlling-the-location-of-userouting-
-HistoryEndpoints.AddRoutes(app);
-MembersEndpoints.AddRoutes(app);
-OAuthEndpoints.AddRoutes(app);
-ReportsEndpoints.AddRoutes(app);
-WebhooksEndpoints.AddRoutes(app);
+app.MapStaticEndpoints();
 app.MapWhen(
     x => !x.Request.Path.StartsWithSegments("/api"),
     notApi =>
@@ -133,5 +128,3 @@ app.MapWhen(
             .UseEndpoints(endpoints => endpoints.MapFallbackToFile("index.html"))
 );
 app.Run();
-
-public partial class Program { }
