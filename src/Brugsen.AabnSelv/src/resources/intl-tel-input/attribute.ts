@@ -19,7 +19,7 @@ import { Options } from "./options";
 export const DefaultOptions = Symbol("DefaultOptions123");
 
 @inject(optional(DefaultOptions))
-@customAttribute("intl-tel-input")
+@customAttribute({ name: "intl-tel-input", defaultProperty: "value"})
 export class IntlTelInputCustomAttribute implements ICustomAttributeViewModel {
   private element = resolve(INode) as HTMLInputElement;
   private instance!: Iti;
@@ -36,7 +36,7 @@ export class IntlTelInputCustomAttribute implements ICustomAttributeViewModel {
     }
   });
 
-  @bindable({ primary: true, mode: BindingMode.twoWay })
+  @bindable({ mode: BindingMode.twoWay })
   value?: string;
 
   @bindable()
