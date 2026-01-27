@@ -85,7 +85,7 @@ public class AccessService(
         }
 
         var recentEvents = await client
-            .Events.ListEventsAsync("created_at:desc", filter, expand)
+            .Events.EnumerateEventsAsync("created_at:desc", filter, expand)
             .ToListAsync(cancellationToken);
 
         // Change event order to ascending, that is, the oldest event is the first

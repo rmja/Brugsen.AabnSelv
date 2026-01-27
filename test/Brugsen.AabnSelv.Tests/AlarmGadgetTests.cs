@@ -10,6 +10,8 @@ public class AlarmGadgetTests
     private readonly Mock<IAkilesApiClient> clientMock = new();
     private readonly IAlarmGadget _alarmGadget = new AlarmGadget("alarm");
 
+    private static CancellationToken TestCancellationToken => TestContext.Current.CancellationToken;
+
     [Fact]
     public async Task CanGetLastArmed_WhenNotPreviouslyArmed()
     {
@@ -17,18 +19,21 @@ public class AlarmGadgetTests
         clientMock
             .Setup(m =>
                 m.Events.ListEventsAsync(
-                    null,
-                    1,
                     "created_at:desc",
                     It.IsAny<ListEventsFilter>(),
                     EventsExpand.None,
-                    CancellationToken.None
+                    null,
+                    1,
+                    TestCancellationToken
                 )
             )
             .ReturnsAsync([]);
 
         // When
-        var lastArmed = await _alarmGadget.GetLastArmedAsync(clientMock.Object);
+        var lastArmed = await _alarmGadget.GetLastArmedAsync(
+            clientMock.Object,
+            TestCancellationToken
+        );
 
         // Then
         Assert.Null(lastArmed);
@@ -39,35 +44,38 @@ public class AlarmGadgetTests
     {
         // Given
         var armEventCreated = DateTime.UtcNow;
-        var events = new PagedList<Event>()
-        {
-            new()
-            {
-                Subject = new() { },
-                Verb = EventVerb.Use,
-                Object = new()
-                {
-                    GadgetId = "alarm",
-                    GadgetActionId = AlarmGadget.Actions.AlarmArm
-                },
-                CreatedAt = armEventCreated
-            },
-        };
         clientMock
             .Setup(m =>
                 m.Events.ListEventsAsync(
-                    null,
-                    1,
                     "created_at:desc",
                     It.IsAny<ListEventsFilter>(),
                     EventsExpand.None,
-                    CancellationToken.None
+                    null,
+                    1,
+                    TestCancellationToken
                 )
             )
-            .ReturnsAsync(events);
+            .ReturnsAsync(
+                [
+                    new()
+                    {
+                        Subject = new() { },
+                        Verb = EventVerb.Use,
+                        Object = new()
+                        {
+                            GadgetId = "alarm",
+                            GadgetActionId = AlarmGadget.Actions.AlarmArm,
+                        },
+                        CreatedAt = armEventCreated,
+                    },
+                ]
+            );
 
         // When
-        var lastArmed = await _alarmGadget.GetLastArmedAsync(clientMock.Object);
+        var lastArmed = await _alarmGadget.GetLastArmedAsync(
+            clientMock.Object,
+            TestCancellationToken
+        );
 
         // Then
         Assert.Equal(armEventCreated, lastArmed);

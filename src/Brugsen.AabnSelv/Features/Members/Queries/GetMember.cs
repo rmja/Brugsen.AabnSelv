@@ -28,9 +28,11 @@ public class GetMember : IEndpoint
 
         //return Results.Ok(member.ToDto(member.Emails!.First(), member.GroupAssociations));
 
-        var email = await apiClient.Members.ListEmailsAsync(memberId).FirstAsync(cancellationToken);
+        var email = await apiClient
+            .Members.EnumerateEmailsAsync(memberId)
+            .FirstAsync(cancellationToken);
         var groupAssociations = await apiClient
-            .Members.ListGroupAssociationsAsync(memberId)
+            .Members.EnumerateGroupAssociationsAsync(memberId)
             .ToListAsync(cancellationToken);
         return Results.Ok(
             member.ToDto(email, isApproved: member.IsApproved(groupAssociations, options.Value))

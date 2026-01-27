@@ -21,6 +21,8 @@ public class AccessServiceTests
     private readonly FakeTimeProvider _fakeTime = new();
     private readonly IAccessService _accessService;
 
+    private static CancellationToken TestCancellationToken => TestContext.Current.CancellationToken;
+
     public AccessServiceTests()
     {
         var services = new ServiceCollection()
@@ -56,16 +58,21 @@ public class AccessServiceTests
                 m.Events.ListEventsAsync(
                     "created_at:desc",
                     It.IsAny<ListEventsFilter>(),
-                    EventsExpand.None
+                    EventsExpand.None,
+                    null,
+                    null,
+                    TestCancellationToken
                 )
             )
-            .Returns(events.AsEnumerable().Reverse().AsAsyncEnumerable());
+            .ReturnsAsync([.. events.AsEnumerable().Reverse()]);
 
         // When
         var isCheckedId = await _accessService.IsMemberCheckedInAsync(
             _clientMock.Object,
             "member",
-            notBefore
+            notBefore,
+            ignoreEventId: null,
+            TestCancellationToken
         );
 
         // Then
@@ -82,14 +89,14 @@ public class AccessServiceTests
             new()
             {
                 Id = "check_in",
-                Subject = new() { MemberId = "member", },
+                Subject = new() { MemberId = "member" },
                 Verb = EventVerb.Use,
                 Object = new()
                 {
                     GadgetId = "app_access_gadget",
-                    GadgetActionId = AppAccessGadget.Actions.CheckIn
+                    GadgetActionId = AppAccessGadget.Actions.CheckIn,
                 },
-                CreatedAt = _fakeTime.GetUtcNow().UtcDateTime
+                CreatedAt = _fakeTime.GetUtcNow().UtcDateTime,
             },
         };
 
@@ -98,16 +105,21 @@ public class AccessServiceTests
                 m.Events.ListEventsAsync(
                     "created_at:desc",
                     It.IsAny<ListEventsFilter>(),
-                    EventsExpand.None
+                    EventsExpand.None,
+                    null,
+                    null,
+                    TestCancellationToken
                 )
             )
-            .Returns(events.AsEnumerable().Reverse().AsAsyncEnumerable());
+            .ReturnsAsync([.. events.AsEnumerable().Reverse()]);
 
         // When
         var isCheckedId = await _accessService.IsMemberCheckedInAsync(
             _clientMock.Object,
             "member",
-            notBefore
+            notBefore,
+            ignoreEventId: null,
+            TestCancellationToken
         );
 
         // Then
@@ -124,26 +136,26 @@ public class AccessServiceTests
             new()
             {
                 Id = "check_in",
-                Subject = new() { MemberId = "member", },
+                Subject = new() { MemberId = "member" },
                 Verb = EventVerb.Use,
                 Object = new()
                 {
                     GadgetId = "app_access_gadget",
-                    GadgetActionId = AppAccessGadget.Actions.CheckIn
+                    GadgetActionId = AppAccessGadget.Actions.CheckIn,
                 },
-                CreatedAt = _fakeTime.GetUtcNow().UtcDateTime
+                CreatedAt = _fakeTime.GetUtcNow().UtcDateTime,
             },
             new()
             {
                 Id = "check_out",
-                Subject = new() { MemberId = "member", },
+                Subject = new() { MemberId = "member" },
                 Verb = EventVerb.Use,
                 Object = new()
                 {
                     GadgetId = "app_access_gadget",
-                    GadgetActionId = AppAccessGadget.Actions.CheckOut
+                    GadgetActionId = AppAccessGadget.Actions.CheckOut,
                 },
-                CreatedAt = _fakeTime.GetUtcNow().UtcDateTime
+                CreatedAt = _fakeTime.GetUtcNow().UtcDateTime,
             },
         };
 
@@ -152,17 +164,21 @@ public class AccessServiceTests
                 m.Events.ListEventsAsync(
                     "created_at:desc",
                     It.IsAny<ListEventsFilter>(),
-                    EventsExpand.None
+                    EventsExpand.None,
+                    null,
+                    null,
+                    TestCancellationToken
                 )
             )
-            .Returns(events.AsEnumerable().Reverse().AsAsyncEnumerable());
+            .ReturnsAsync([.. events.AsEnumerable().Reverse()]);
 
         // When
         var isCheckedId = await _accessService.IsMemberCheckedInAsync(
             _clientMock.Object,
             "member",
             notBefore,
-            ignoreEventId: "check_out"
+            ignoreEventId: "check_out",
+            TestCancellationToken
         );
 
         // Then
@@ -179,26 +195,26 @@ public class AccessServiceTests
             new()
             {
                 Id = "check_in",
-                Subject = new() { MemberId = "member", },
+                Subject = new() { MemberId = "member" },
                 Verb = EventVerb.Use,
                 Object = new()
                 {
                     GadgetId = "app_access_gadget",
-                    GadgetActionId = AppAccessGadget.Actions.CheckIn
+                    GadgetActionId = AppAccessGadget.Actions.CheckIn,
                 },
-                CreatedAt = _fakeTime.GetUtcNow().UtcDateTime
+                CreatedAt = _fakeTime.GetUtcNow().UtcDateTime,
             },
             new()
             {
                 Id = "check_out",
-                Subject = new() { MemberId = "member", },
+                Subject = new() { MemberId = "member" },
                 Verb = EventVerb.Use,
                 Object = new()
                 {
                     GadgetId = "app_access_gadget",
-                    GadgetActionId = AppAccessGadget.Actions.CheckOut
+                    GadgetActionId = AppAccessGadget.Actions.CheckOut,
                 },
-                CreatedAt = _fakeTime.GetUtcNow().UtcDateTime
+                CreatedAt = _fakeTime.GetUtcNow().UtcDateTime,
             },
         };
 
@@ -207,16 +223,21 @@ public class AccessServiceTests
                 m.Events.ListEventsAsync(
                     "created_at:desc",
                     It.IsAny<ListEventsFilter>(),
-                    EventsExpand.None
+                    EventsExpand.None,
+                    null,
+                    null,
+                    TestCancellationToken
                 )
             )
-            .Returns(events.AsEnumerable().Reverse().AsAsyncEnumerable());
+            .ReturnsAsync([.. events.AsEnumerable().Reverse()]);
 
         // When
         var isCheckedId = await _accessService.IsMemberCheckedInAsync(
             _clientMock.Object,
             "member",
-            notBefore
+            notBefore,
+            ignoreEventId: null,
+            TestCancellationToken
         );
 
         // Then
@@ -233,52 +254,59 @@ public class AccessServiceTests
             new()
             {
                 Id = "check_in",
-                Subject = new() { MemberId = "member1", },
+                Subject = new() { MemberId = "member1" },
                 Verb = EventVerb.Use,
                 Object = new()
                 {
                     GadgetId = "app_access_gadget",
-                    GadgetActionId = AppAccessGadget.Actions.CheckIn
+                    GadgetActionId = AppAccessGadget.Actions.CheckIn,
                 },
-                CreatedAt = _fakeTime.GetUtcNow().UtcDateTime
+                CreatedAt = _fakeTime.GetUtcNow().UtcDateTime,
             },
             new()
             {
                 Id = "check_in_again",
-                Subject = new() { MemberId = "member1", },
+                Subject = new() { MemberId = "member1" },
                 Verb = EventVerb.Use,
                 Object = new()
                 {
                     GadgetId = "app_access_gadget",
-                    GadgetActionId = AppAccessGadget.Actions.CheckIn
+                    GadgetActionId = AppAccessGadget.Actions.CheckIn,
                 },
-                CreatedAt = _fakeTime.GetUtcNow().UtcDateTime
+                CreatedAt = _fakeTime.GetUtcNow().UtcDateTime,
             },
             new()
             {
                 Id = "check_out",
-                Subject = new() { MemberId = "member1", },
+                Subject = new() { MemberId = "member1" },
                 Verb = EventVerb.Use,
                 Object = new()
                 {
                     GadgetId = "app_access_gadget",
-                    GadgetActionId = AppAccessGadget.Actions.CheckOut
+                    GadgetActionId = AppAccessGadget.Actions.CheckOut,
                 },
-                CreatedAt = _fakeTime.GetUtcNow().UtcDateTime
-            }
+                CreatedAt = _fakeTime.GetUtcNow().UtcDateTime,
+            },
         };
         _clientMock
             .Setup(m =>
                 m.Events.ListEventsAsync(
                     "created_at:desc",
                     It.IsAny<ListEventsFilter>(),
-                    EventsExpand.None
+                    EventsExpand.None,
+                    null,
+                    null,
+                    TestCancellationToken
                 )
             )
-            .Returns(events.AsEnumerable().Reverse().AsAsyncEnumerable());
+            .ReturnsAsync([.. events.AsEnumerable().Reverse()]);
 
         // When
-        var anyCheckedIn = await _accessService.IsAnyCheckedInAsync(_clientMock.Object, notBefore);
+        var anyCheckedIn = await _accessService.IsAnyCheckedInAsync(
+            _clientMock.Object,
+            notBefore,
+            TestCancellationToken
+        );
 
         // Then
         Assert.False(anyCheckedIn);
@@ -294,43 +322,47 @@ public class AccessServiceTests
             new()
             {
                 Id = "check_in",
-                Subject = new() { MemberId = "member1", },
+                Subject = new() { MemberId = "member1" },
                 Verb = EventVerb.Use,
                 Object = new()
                 {
                     GadgetId = "app_access_gadget",
-                    GadgetActionId = AppAccessGadget.Actions.CheckIn
+                    GadgetActionId = AppAccessGadget.Actions.CheckIn,
                 },
-                CreatedAt = _fakeTime.GetUtcNow().UtcDateTime
+                CreatedAt = _fakeTime.GetUtcNow().UtcDateTime,
             },
             new()
             {
                 Id = "check_out",
-                Subject = new() { MemberId = "member1", },
+                Subject = new() { MemberId = "member1" },
                 Verb = EventVerb.Use,
                 Object = new()
                 {
                     GadgetId = "app_access_gadget",
-                    GadgetActionId = AppAccessGadget.Actions.CheckOut
+                    GadgetActionId = AppAccessGadget.Actions.CheckOut,
                 },
-                CreatedAt = _fakeTime.GetUtcNow().UtcDateTime
-            }
+                CreatedAt = _fakeTime.GetUtcNow().UtcDateTime,
+            },
         };
         _clientMock
             .Setup(m =>
                 m.Events.ListEventsAsync(
                     "created_at:desc",
                     It.IsAny<ListEventsFilter>(),
-                    EventsExpand.None
+                    EventsExpand.None,
+                    null,
+                    null,
+                    TestCancellationToken
                 )
             )
-            .Returns(events.AsEnumerable().Reverse().AsAsyncEnumerable());
+            .ReturnsAsync([.. events.AsEnumerable().Reverse()]);
 
         // When
         var activities = await _accessService.GetActivityAsync(
             _clientMock.Object,
             memberId: null,
-            new() { GreaterThanOrEqual = notBefore }
+            new() { GreaterThanOrEqual = notBefore },
+            cancellationToken: TestCancellationToken
         );
 
         // Then
@@ -349,44 +381,48 @@ public class AccessServiceTests
             new()
             {
                 Id = "check_in",
-                Subject = new() { MemberId = "member1", },
+                Subject = new() { MemberId = "member1" },
                 Verb = EventVerb.Use,
                 Object = new()
                 {
                     GadgetId = "check_in_pinpad_gadget",
-                    GadgetActionId = CheckInPinpadGadget.Actions.CheckIn
+                    GadgetActionId = CheckInPinpadGadget.Actions.CheckIn,
                 },
-                CreatedAt = _fakeTime.GetUtcNow().UtcDateTime
+                CreatedAt = _fakeTime.GetUtcNow().UtcDateTime,
             },
             new()
             {
                 Id = "open_door",
-                Subject = new() { MemberId = "member1", },
+                Subject = new() { MemberId = "member1" },
                 Verb = EventVerb.Use,
                 Object = new()
                 {
                     DeviceId = "check_out_pinpad_device",
                     GadgetId = "front_door_gadget",
-                    GadgetActionId = FrontDoorGadget.Actions.OpenOnce
+                    GadgetActionId = FrontDoorGadget.Actions.OpenOnce,
                 },
-                CreatedAt = _fakeTime.GetUtcNow().UtcDateTime
-            }
+                CreatedAt = _fakeTime.GetUtcNow().UtcDateTime,
+            },
         };
         _clientMock
             .Setup(m =>
                 m.Events.ListEventsAsync(
                     "created_at:desc",
                     It.IsAny<ListEventsFilter>(),
-                    EventsExpand.None
+                    EventsExpand.None,
+                    null,
+                    null,
+                    TestCancellationToken
                 )
             )
-            .Returns(events.AsEnumerable().Reverse().AsAsyncEnumerable());
+            .ReturnsAsync([.. events.AsEnumerable().Reverse()]);
 
         // When
         var activities = await _accessService.GetActivityAsync(
             _clientMock.Object,
             memberId: null,
-            new() { GreaterThanOrEqual = notBefore }
+            new() { GreaterThanOrEqual = notBefore },
+            cancellationToken: TestCancellationToken
         );
 
         // Then

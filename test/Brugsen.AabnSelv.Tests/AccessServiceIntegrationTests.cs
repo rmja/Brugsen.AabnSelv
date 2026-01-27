@@ -10,6 +10,8 @@ public class AccessServiceIntegrationTests
     private readonly IAkilesApiClient _client;
     private readonly IAccessService _accessService;
 
+    private static CancellationToken TestCancellationToken => TestContext.Current.CancellationToken;
+
     public AccessServiceIntegrationTests()
     {
         var config = new ConfigurationBuilder().AddUserSecrets<Program>().Build();
@@ -46,7 +48,8 @@ public class AccessServiceIntegrationTests
         var result = await _accessService.IsMemberCheckedInAsync(
             _client,
             MemberId,
-            notBefore: DateTimeOffset.Now.AddHours(-1)
+            notBefore: DateTimeOffset.Now.AddHours(-1),
+            cancellationToken: TestCancellationToken
         );
 
         // Then

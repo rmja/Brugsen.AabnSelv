@@ -16,14 +16,14 @@ public class AlarmGadget(string gadgetId, ILogger<AlarmGadget>? logger = null) :
     )
     {
         var events = await client.Events.ListEventsAsync(
-            cursor: null,
-            limit: 1,
             sort: "created_at:desc",
             new ListEventsFilter()
             {
-                Object = new() { GadgetId = GadgetId, GadgetActionId = Actions.AlarmArm }
+                Object = new() { GadgetId = GadgetId, GadgetActionId = Actions.AlarmArm },
             },
             EventsExpand.None,
+            cursor: null,
+            limit: 1,
             cancellationToken
         );
 

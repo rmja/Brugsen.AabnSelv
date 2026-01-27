@@ -22,7 +22,7 @@ public class GetMemberApprovedIndication : IEndpoint
             return Results.NotFound();
         }
         var groupAssociations = await apiClient
-            .Members.ListGroupAssociationsAsync(memberId)
+            .Members.EnumerateGroupAssociationsAsync(memberId)
             .ToListAsync(cancellationToken);
 
         return Results.Ok(member.IsApproved(groupAssociations, options.Value));

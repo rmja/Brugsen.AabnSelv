@@ -51,7 +51,7 @@ public sealed class DeviceHealthService(
         while (await timer.WaitForNextTickAsync(stoppingToken))
         {
             var devices = await akilesClient
-                .Devices.ListDevicesAsync()
+                .Devices.EnumerateDevicesAsync()
                 .WhereAsync(x => x.HardwareId is not null, stoppingToken)
                 .ToListAsync(stoppingToken);
 

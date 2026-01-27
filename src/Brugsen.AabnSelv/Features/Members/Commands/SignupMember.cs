@@ -19,10 +19,13 @@ public class SignupMember : IEndpoint
         var existing = await Task.WhenAll(
             [
                 apiClient
-                    .Members.ListMembersAsync(null, new ListMembersFilter() { Email = init.Email })
+                    .Members.EnumerateMembersAsync(
+                        null,
+                        new ListMembersFilter() { Email = init.Email }
+                    )
                     .FirstOrDefaultAsync(cancellationToken),
                 apiClient
-                    .Members.ListMembersAsync(
+                    .Members.EnumerateMembersAsync(
                         null,
                         new ListMembersFilter()
                         {
@@ -32,7 +35,7 @@ public class SignupMember : IEndpoint
                     .FirstOrDefaultAsync(cancellationToken),
                 init.LaesoeCardNumber is not null
                     ? apiClient
-                        .Members.ListMembersAsync(
+                        .Members.EnumerateMembersAsync(
                             null,
                             new ListMembersFilter()
                             {

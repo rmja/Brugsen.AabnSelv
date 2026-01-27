@@ -45,7 +45,7 @@ public class GetGadgetActionEvents : IEndpoint
         }
 
         var events = await client
-            .Events.ListEventsAsync(
+            .Events.EnumerateEventsAsync(
                 "created_at:desc",
                 new ListEventsFilter()
                 {

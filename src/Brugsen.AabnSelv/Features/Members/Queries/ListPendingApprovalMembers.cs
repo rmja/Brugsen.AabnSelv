@@ -17,7 +17,7 @@ public class ListPendingApprovalMembers : IEndpoint
     )
     {
         var members = await apiClient
-            .Members.ListMembersAsync(
+            .Members.EnumerateMembersAsync(
                 filter: new() { IsDeleted = IsDeleted.False },
                 expand: MembersExpand.GroupAssociations | MembersExpand.Emails
             )
