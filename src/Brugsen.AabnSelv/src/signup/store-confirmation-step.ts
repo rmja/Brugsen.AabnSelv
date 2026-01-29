@@ -1,14 +1,11 @@
 import { HttpError, statusCodes } from "@utiliread/http";
 import { IRouteViewModel, IRouter, Params, RouteNode } from "@aurelia/router";
-import { customElement, resolve } from "aurelia";
+import { resolve } from "aurelia";
 
 import { IApiClient } from "../api";
-import template from "./store-confirmation-step.html";
-
-@customElement({ name: "store-confirmation-step", template })
 export class StoreConfirmationStep implements IRouteViewModel {
   private memberId!: string;
-  mode = __MODE__;
+  mode = import.meta.env.MODE;
   approveRelativeUrl!: string;
   approveAbsoluteUrl!: string;
 

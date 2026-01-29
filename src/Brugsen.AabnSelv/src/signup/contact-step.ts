@@ -1,11 +1,10 @@
 import * as colors from "../laesoe-cards";
 
-import { IRouteViewModel, IRouter, RouteNode } from "@aurelia/router";
-import { customElement, observable, resolve } from "aurelia";
+import { IRouteViewModel, IRouter } from "@aurelia/router";
+import { observable, resolve } from "aurelia";
 
 import { HttpError } from "@utiliread/http";
 import { IApiClient } from "../api";
-import template from "./contact-step.html";
 
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const membershipNumberRegex = /^[0-9]{6,8}$/;
@@ -13,7 +12,6 @@ const cardNumberRegex = /^[0-9]{7,10}$/;
 
 type CardColor = "red" | "blue" | "green";
 
-@customElement({ name: "contact-step", template })
 export class ContactStep implements IRouteViewModel {
   busy = false;
   name = "";

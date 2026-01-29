@@ -1,29 +1,10 @@
-import { DI, customElement, resolve } from "aurelia";
+import { customElement, resolve } from "aurelia";
 
 import { IRouteViewModel } from "@aurelia/router";
-import { UserManager } from "oidc-client-ts";
-import config from "./config";
+import config from "../config";
+import { IUserManager } from "./user-manager";
 
 export const LoginRedirectKey = "loginRedirect";
-
-export const IUserManager = DI.createInterface<IUserManager>(
-  "IAuthService",
-  (x) =>
-    x.instance(
-      new UserManager({
-        authority: "_",
-        client_id: config.client_id,
-        redirect_uri: config.redirect_uri,
-        response_type: "code",
-        scope: "full_read_write offline",
-        metadata: {
-          authorization_endpoint: config.authorization_endpoint,
-          token_endpoint: config.token_endpoint,
-        },
-      }),
-    ),
-);
-export type IUserManager = Required<UserManager>;
 
 @customElement("auth-handler")
 export class AuthHandler implements IRouteViewModel {

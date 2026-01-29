@@ -4,9 +4,9 @@ import { Http, HttpBuilderOfT, Message } from "@utiliread/http";
 import { dateTimeConverter, jsonProperty } from "@utiliread/json";
 
 import { DateTime } from "luxon";
-import { IUserManager } from "./oauth";
-import { LoginRedirectKey } from "./oauth";
+import { LoginRedirectKey } from "./auth/auth-handler";
 import { DI, resolve } from "aurelia";
+import { IUserManager } from "./auth/user-manager";
 
 const anonymousHttp = new Http({ baseUrl: "api" });
 const http = new Http({ baseUrl: "api" });

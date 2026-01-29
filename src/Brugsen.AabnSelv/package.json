@@ -1,39 +1,37 @@
 {
     "name": "brugsen-aabnselv",
     "scripts": {
-        "start": "webpack --mode development --watch",
-        "build": "webpack --mode production",
-        "prettier": "prettier --plugin=prettier-plugin-ejs --write *.ejs *.mjs tsconfig*.json src/**/*.{html,ts,css,json}",
-        "clean": "rimraf dist"
+        "start": "vite",
+        "build": "vite build",
+        "build:development": "cross-env VITE_CONFIG=development npm run build",
+        "watch": "cross-env VITE_CONFIG=development 'npm run build -- --watch'",
+        "prettier": "prettier --write tsconfig*.json vite.config.js src/**/*.{html,ts,css,json}",
+        "clean": "rimraf wwwroot"
     },
     "devDependencies": {
+        "@aurelia/vite-plugin": "^2.0.0-rc.0",
         "@types/intl-tel-input": "^18.1.4",
         "@types/luxon": "^3.4.2",
-        "css-loader": "^7.1.2",
-        "html-loader": "^5.1.0",
-        "html-webpack-plugin": "^5.6.3",
+        "@types/qrcode": "^1.5.6",
+        "cross-env": "^10.1.0",
         "prettier": "^3.4.2",
-        "prettier-plugin-ejs": "^1.0.3",
         "rimraf": "^6.0.1",
-        "style-loader": "^4.0.0",
-        "ts-loader": "^9.5.1",
         "tslib": "^2.8.1",
         "typescript": "^5.7.3",
-        "webpack": "^5.97.1",
-        "webpack-cli": "^6.0.1",
-        "webpack-dev-server": "^5.2.0"
+        "vite": "^7.2.2",
+        "vite-bundle-analyzer": "^1.3.2"
     },
     "dependencies": {
-        "@aurelia/i18n": "^2.0.0-beta.25",
-        "@aurelia/router": "^2.0.0-beta.25",
+        "@aurelia/i18n": "^2.0.0-rc.0",
+        "@aurelia/router": "^2.0.0-rc.0",
         "@utiliread/http": "^1.22.2",
         "@utiliread/json": "^1.3.2",
-        "aurelia": "^2.0.0-beta.25",
+        "aurelia": "^2.0.0-rc.0",
         "bootstrap": "^5.3.3",
         "dawa-autocomplete2": "^1.1.0",
-        "intl-tel-input": "^25.2.1",
+        "intl-tel-input": "^26.0.6",
         "luxon": "^3.5.0",
         "oidc-client-ts": "^3.1.0",
-        "qrcodejs2": "^0.0.2"
+        "qrcode": "^1.5.4"
     }
 }

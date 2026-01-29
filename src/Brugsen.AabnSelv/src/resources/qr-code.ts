@@ -2,39 +2,39 @@ import "./qr-code.css";
 
 import {
   ICustomElementViewModel,
-  INode,
   bindable,
   customElement,
-  inject,
 } from "aurelia";
 
-import QRCode from "qrcodejs2";
+import QRCode from "qrcode";
 
-@inject(INode)
 @customElement("qr-code")
 export class QrCodeCustomElement implements ICustomElementViewModel {
-  private instance?: QRCode;
+  private canvas!: HTMLCanvasElement;
+  
   @bindable({ callback: "handleChange" })
   value?: string;
 
   @bindable({ callback: "handleChange" })
   size: number = 200;
 
-  constructor(private element: HTMLElement) {}
-
   attached() {
-    this.instance = new QRCode(this.element, {
-      text: this.value ?? "",
-      width: this.size,
-      height: this.size,
-    });
-  }
-
-  detaching() {
-    this.instance?.clear();
+    this.render();
   }
 
   handleChange() {
-    this.instance?.makeCode(this.value ?? "");
+    this.render();
+  }
+
+  private async render() {
+    if (!this.canvas || !this.value) return;
+    
+    try {
+      await QRCode.toCanvas(this.canvas, this.value, {
+        width: this.size,
+      });
+    } catch (error) {
+      console.error("Failed to render QR code:", error);
+    }
   }
 }

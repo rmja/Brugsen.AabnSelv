@@ -19,7 +19,7 @@ import { Options } from "./options";
 export const DefaultOptions = Symbol("DefaultOptions123");
 
 @inject(optional(DefaultOptions))
-@customAttribute({ name: "intl-tel-input", defaultProperty: "value"})
+@customAttribute({ name: "intl-tel-input", defaultProperty: "value" })
 export class IntlTelInputCustomAttribute implements ICustomAttributeViewModel {
   private element = resolve(INode) as HTMLInputElement;
   private instance!: Iti;

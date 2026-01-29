@@ -118,6 +118,7 @@ if (options.CheckInPinpadGadgetId is not null)
 
 var fileProvider = app.Environment.WebRootFileProvider.WithBaseHrefRewrite(
     app.Configuration["PathBase"] + "/",
+    autoRefresh: app.Environment.IsDevelopment(),
     "index.html"
 );
 

@@ -8,7 +8,7 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Akiles.ApiClient" Version="1.0.0-alpha.1" />
-    <PackageReference Include="FileOverlay" Version="1.0.0-beta.0" />
+    <PackageReference Include="FileOverlay" Version="1.0.0-beta.1" />
     <PackageReference Include="GatewayApi.ApiClient" Version="0.0.5" />
     <PackageReference Include="InterpolatedParser" Version="1.1.5" />
     <PackageReference Include="PdfPig" Version="0.1.13" />

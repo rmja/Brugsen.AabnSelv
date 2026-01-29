@@ -24,22 +24,21 @@ RUN apk add --no-cache clang
 RUN dotnet publish "./Brugsen.AabnSelv.csproj" -c $BUILD_CONFIGURATION -o /app/publish
 
 # This stage is used to build the frontend
-FROM node:22-alpine AS webpack
-ARG WEBPACK_MODE=production
+FROM node:24-alpine AS vite
 WORKDIR /src
 COPY ["src/Brugsen.AabnSelv/package*.json", "./"]
 RUN npm install --no-audit
 WORKDIR /src
 COPY ["src/Brugsen.AabnSelv/src/", "./src/"]
 COPY ["src/Brugsen.AabnSelv/typings/", "./typings/"]
-COPY ["src/Brugsen.AabnSelv/*.ejs", "./"]
+COPY ["src/Brugsen.AabnSelv/*.html", "./"]
 COPY ["src/Brugsen.AabnSelv/tsconfig*.json", "./"]
-COPY ["src/Brugsen.AabnSelv/webpack.config*", "./"]
-RUN node_modules/.bin/webpack --mode ${WEBPACK_MODE}
+COPY ["src/Brugsen.AabnSelv/vite.config*", "./"]
+RUN npm run build
 
 # This stage is used in production or when running from VS in regular mode (Default when not using the Debug configuration)
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-COPY --from=webpack /src/wwwroot/. wwwroot
+COPY --from=vite /src/wwwroot/. wwwroot
 ENTRYPOINT ["/app/Brugsen.AabnSelv"]

@@ -1,10 +1,8 @@
-import { customElement, resolve } from "aurelia";
+import { resolve } from "aurelia";
 
 import { DateTime } from "luxon";
 import { IApiClient } from "../../api";
-import template from "./sales-report.html";
 
-@customElement({ name: "sales-report", template })
 export class SalesReport {
   fileName = "";
   fileInput!: HTMLInputElement;

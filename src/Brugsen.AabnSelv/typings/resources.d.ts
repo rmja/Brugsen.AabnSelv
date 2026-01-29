@@ -2,6 +2,10 @@ declare module "*.css" {
   const value: string;
   export default value;
 }
+declare module "*.png" {
+  const value: string;
+  export default value;
+}
 declare module "*.html" {
   import { IContainer } from "@aurelia/kernel";
   import { BindableDefinition } from "@aurelia/runtime-html";

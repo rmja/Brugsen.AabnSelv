@@ -5,9 +5,8 @@ import { customElement } from "aurelia";
 @route({
   routes: [
     {
-      id: "approve",
       path: ":memberId/approve",
-      component: import("./approve-member"),
+      component: () => import("./approve-member"),
       title: "Godkendelse",
     },
   ],

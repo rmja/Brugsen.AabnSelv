@@ -1,11 +1,9 @@
 import { IRouteViewModel, IRouter } from "@aurelia/router";
-import { customElement, resolve } from "aurelia";
+import { resolve } from "aurelia";
 
 import { DateTime } from "luxon";
 import { IApiClient } from "../api";
-import template from "./admin-dashboard.html";
 
-@customElement({ name: "admin-dashboard", template })
 export class AdminDashboard implements IRouteViewModel {
   pending!: MemberViewModel[];
   alarmEvents!: ActionEventViewModel[];

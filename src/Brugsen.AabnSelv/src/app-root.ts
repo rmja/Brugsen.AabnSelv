@@ -1,35 +1,29 @@
 import "bootstrap/dist/css/bootstrap.css";
 import "bootstrap/dist/js/bootstrap";
 
-import { ICustomElementViewModel, customElement } from "aurelia";
-
-import { AuthHandler } from "./oauth";
 import { route } from "@aurelia/router";
-import template from "./app-root.html";
+
+await import("./signup/contact-step");
+await import("./signup/store-confirmation-step");
+await import("./signup/receipt-step");
 
 @route({
   title: "Brugsen Vesterø Havn",
   routes: [
     { path: "", redirectTo: "signup" },
     {
-      id: "signup",
       path: "signup",
-      component: import("./signup/signup-router"),
+      component: () => import("./signup/signup-router"),
     },
     {
-      id: "admin",
       path: "admin",
-      component: import("./admin/admin-router"),
+      component: () => import("./admin/admin-router"),
       title: "Administration",
     },
     {
       path: "signin-oidc",
-      component: AuthHandler,
+      component: () => import("./auth/auth-handler"),
     },
   ],
 })
-@customElement({
-  name: "app-root",
-  template,
-})
-export class AppRootCustomElement implements ICustomElementViewModel {}
+export class AppRoot {}
