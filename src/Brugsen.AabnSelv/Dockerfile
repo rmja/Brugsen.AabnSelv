@@ -33,7 +33,7 @@ COPY ["src/Brugsen.AabnSelv/src/", "./src/"]
 COPY ["src/Brugsen.AabnSelv/typings/", "./typings/"]
 COPY ["src/Brugsen.AabnSelv/*.html", "./"]
 COPY ["src/Brugsen.AabnSelv/tsconfig*.json", "./"]
-COPY ["src/Brugsen.AabnSelv/vite.config*", "./"]
+COPY ["src/Brugsen.AabnSelv/vite.config.js", "./"]
 RUN npm run build
 
 # This stage is used in production or when running from VS in regular mode (Default when not using the Debug configuration)
