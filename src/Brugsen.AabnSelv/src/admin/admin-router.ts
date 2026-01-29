@@ -8,19 +8,16 @@ import logoPath from "../assets/brugsen-vesteroe-havn-logo.png";
       redirectTo: "dashboard",
     },
     {
-      
       path: "dashboard",
       component: () => import("./admin-dashboard"),
       title: "Admin Dashboard",
     },
     {
-      
       path: "members",
       component: () => import("./members/members-router"),
       title: "Medlemmer",
     },
     {
-      
       path: "reports",
       component: () => import("./reports/reports-router"),
       title: "Rapporter",

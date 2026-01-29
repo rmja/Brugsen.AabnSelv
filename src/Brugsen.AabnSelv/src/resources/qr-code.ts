@@ -1,17 +1,13 @@
 import "./qr-code.css";
 
-import {
-  ICustomElementViewModel,
-  bindable,
-  customElement,
-} from "aurelia";
+import { ICustomElementViewModel, bindable, customElement } from "aurelia";
 
 import QRCode from "qrcode";
 
 @customElement("qr-code")
 export class QrCodeCustomElement implements ICustomElementViewModel {
   private canvas!: HTMLCanvasElement;
-  
+
   @bindable({ callback: "handleChange" })
   value?: string;
 
@@ -28,7 +24,7 @@ export class QrCodeCustomElement implements ICustomElementViewModel {
 
   private async render() {
     if (!this.canvas || !this.value) return;
-    
+
     try {
       await QRCode.toCanvas(this.canvas, this.value, {
         width: this.size,
