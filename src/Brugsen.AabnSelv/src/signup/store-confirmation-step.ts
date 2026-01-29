@@ -3,10 +3,10 @@ import { IRouteViewModel, IRouter, Params, RouteNode } from "@aurelia/router";
 import { customElement, resolve } from "aurelia";
 
 import { IApiClient } from "../api";
-import template from "./store-confirmation.html";
+import template from "./store-confirmation-step.html";
 
-@customElement({ name: "store-confirmation-page", template })
-export class StoreConfirmationPage implements IRouteViewModel {
+@customElement({ name: "store-confirmation-step", template })
+export class StoreConfirmationStep implements IRouteViewModel {
   private memberId!: string;
   mode = __MODE__;
   approveRelativeUrl!: string;

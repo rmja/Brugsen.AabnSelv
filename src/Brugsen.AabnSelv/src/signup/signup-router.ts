@@ -1,26 +1,26 @@
 import { IRouteViewModel, route } from "@aurelia/router";
 
 import { customElement } from "aurelia";
-import template from "./router.html";
+import template from "./signup-router.html";
 
 @route({
   routes: [
     {
       id: "signup",
       path: "",
-      component: import("./signup"),
+      component: import("./contact-step"),
       title: "Brugeroprettelse",
     },
     {
       id: "store-confirmation",
       path: "store-confirmation",
-      component: import("./store-confirmation"),
+      component: import("./store-confirmation-step"),
       title: "Butiksbekræftelse",
     },
     {
       id: "receipt",
       path: "receipt",
-      component: import("./receipt"),
+      component: import("./receipt-step"),
       title: "Kvittering",
     },
   ],

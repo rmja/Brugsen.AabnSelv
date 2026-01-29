@@ -3,10 +3,10 @@ import { customElement, resolve } from "aurelia";
 
 import { DateTime } from "luxon";
 import { IApiClient } from "../api";
-import template from "./dashboard.html";
+import template from "./admin-dashboard.html";
 
-@customElement({ name: "dashboard-page", template })
-export class DashboardPage implements IRouteViewModel {
+@customElement({ name: "admin-dashboard", template })
+export class AdminDashboard implements IRouteViewModel {
   pending!: MemberViewModel[];
   alarmEvents!: ActionEventViewModel[];
   accessActivity!: AccessActivityViewModel[];

@@ -4,10 +4,10 @@ import { IRouteViewModel, IRouter } from "@aurelia/router";
 import { customElement, resolve } from "aurelia";
 
 import { IApiClient } from "../../api";
-import template from "./approve.html";
+import template from "./approve-member.html";
 
-@customElement({ name: "approve-page", template })
-export class ApprovePage implements IRouteViewModel {
+@customElement({ name: "approve-member", template })
+export class ApproveMember implements IRouteViewModel {
   private memberId!: string;
   email!: string;
   name!: string;

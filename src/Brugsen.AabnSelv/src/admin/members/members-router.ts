@@ -7,7 +7,7 @@ import { customElement } from "aurelia";
     {
       id: "approve",
       path: ":memberId/approve",
-      component: import("./approve"),
+      component: import("./approve-member"),
       title: "Godkendelse",
     },
   ],

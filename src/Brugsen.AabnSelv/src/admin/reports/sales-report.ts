@@ -2,10 +2,10 @@ import { customElement, resolve } from "aurelia";
 
 import { DateTime } from "luxon";
 import { IApiClient } from "../../api";
-import template from "./sale.html";
+import template from "./sales-report.html";
 
-@customElement({ name: "sale-page", template })
-export class SalePage {
+@customElement({ name: "sales-report", template })
+export class SalesReport {
   fileName = "";
   fileInput!: HTMLInputElement;
   days!: DayViewModel[];

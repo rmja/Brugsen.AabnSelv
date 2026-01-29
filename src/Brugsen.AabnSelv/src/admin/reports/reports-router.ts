@@ -5,15 +5,15 @@ import { customElement } from "aurelia";
 @route({
   routes: [
     {
-      id: "sale",
-      path: "sale",
-      component: import("./sale"),
+      id: "sales",
+      path: "sales",
+      component: import("./sales-report"),
       title: "Salgsrapport",
     },
   ],
 })
 @customElement({
-  name: "admin-router",
+  name: "reports-router",
   template: "<au-viewport></au-viewport>",
 })
-export class AdminRouter implements IRouteViewModel {}
+export class ReportsRouter implements IRouteViewModel {}

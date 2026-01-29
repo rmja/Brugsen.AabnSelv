@@ -14,12 +14,12 @@ import template from "./app-root.html";
     {
       id: "signup",
       path: "signup",
-      component: import("./signup/router"),
+      component: import("./signup/signup-router"),
     },
     {
       id: "admin",
       path: "admin",
-      component: import("./admin/router"),
+      component: import("./admin/admin-router"),
       title: "Administration",
     },
     {

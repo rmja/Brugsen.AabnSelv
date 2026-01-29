@@ -5,7 +5,7 @@ import { customElement, observable, resolve } from "aurelia";
 
 import { HttpError } from "@utiliread/http";
 import { IApiClient } from "../api";
-import template from "./signup.html";
+import template from "./contact-step.html";
 
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const membershipNumberRegex = /^[0-9]{6,8}$/;
@@ -13,8 +13,8 @@ const cardNumberRegex = /^[0-9]{7,10}$/;
 
 type CardColor = "red" | "blue" | "green";
 
-@customElement({ name: "signup-page", template })
-export class SignupPage implements IRouteViewModel {
+@customElement({ name: "contact-step", template })
+export class ContactStep implements IRouteViewModel {
   busy = false;
   name = "";
   address = "";
