@@ -4,6 +4,7 @@ using Akiles.ApiClient.Webhooks;
 using Brugsen.AabnSelv;
 using Brugsen.AabnSelv.Controllers;
 using Brugsen.AabnSelv.Services;
+using FileOverlay;
 using Microsoft.AspNetCore.Http.Json;
 using Microsoft.Extensions.Logging.Console;
 using Microsoft.Extensions.Options;
@@ -115,6 +116,11 @@ if (options.CheckInPinpadGadgetId is not null)
     }
 }
 
+var fileProvider = app.Environment.WebRootFileProvider.WithBaseHrefRewrite(
+    app.Configuration["PathBase"] + "/",
+    "index.html"
+);
+
 app.UsePathBase(app.Configuration["PathBase"]);
 app.UseRouting(); // Must be called explicitly for PathBase to have effect, see https://andrewlock.net/using-pathbase-with-dotnet-6-webapplicationbuilder/#option-1-controlling-the-location-of-userouting-
 app.MapStaticEndpoints();
@@ -123,8 +129,13 @@ app.MapWhen(
     notApi =>
         notApi
             .UseDefaultFiles()
-            .UseStaticFiles()
+            .UseStaticFiles(new StaticFileOptions() { FileProvider = fileProvider })
             .UseRouting()
-            .UseEndpoints(endpoints => endpoints.MapFallbackToFile("index.html"))
+            .UseEndpoints(endpoints =>
+                endpoints.MapFallbackToFile(
+                    "index.html",
+                    new StaticFileOptions() { FileProvider = fileProvider }
+                )
+            )
 );
 app.Run();
