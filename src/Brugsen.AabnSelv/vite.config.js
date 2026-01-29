@@ -7,6 +7,7 @@ export default defineConfig({
     aurelia(),
     analyzer({ analyzerMode: "static", openAnalyzer: false }),
   ],
+  base: "./",
   build: {
     target: "esnext",
     sourcemap: true,
