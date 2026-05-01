@@ -194,6 +194,52 @@ public class AccessControllerTests
     }
 
     [Fact]
+    public async Task CheckInRightAfterCheckOut_AfterBlackout_DisarmsLockdown()
+    {
+        // Given
+        _accessServiceMock
+            .Setup(m =>
+                m.IsMemberCheckedInAsync(
+                    _clientMock.Object,
+                    "member1",
+                    It.IsAny<DateTimeOffset>(),
+                    "check_out",
+                    TestCancellationToken
+                )
+            )
+            .ReturnsAsync(false);
+
+        var checkedOut = new DateTime(2025, 01, 23, 20, 00, 00);
+        _fakeTime.SetLocalNow(checkedOut);
+
+        // When
+        await _controller.StartAsync(TestCancellationToken);
+        await Task.Delay(100, TestContext.Current.CancellationToken);
+        Assert.Equal(AlarmState.Armed, _alarmGadget.State);
+        Assert.Equal(LightState.Off, _lightGadget.State);
+
+        await _controller.ProcessCheckOutAsync("check_out", "member1", openDoor: false);
+        Assert.Equal(AlarmState.Armed, _alarmGadget.State);
+        Assert.Equal(LightState.Off, _lightGadget.State);
+
+        _fakeTime.Advance(
+            _controller.BlackoutDelay + (_controller.LockdownDelay - _controller.BlackoutDelay) / 2
+        );
+        await _controller.ProcessCheckInAsync("check_in", "member2", openDoor: false);
+        Assert.Equal(AlarmState.Disarmed, _alarmGadget.State);
+        Assert.Equal(LightState.On, _lightGadget.State);
+
+        _fakeTime.Advance(_controller.LockdownDelay); // Way past original configured blackout
+        await Task.Delay(100, TestCancellationToken);
+        Assert.Equal(AlarmState.Disarmed, _alarmGadget.State);
+        Assert.Equal(LightState.On, _lightGadget.State);
+
+        await _controller.StopAsync(TestCancellationToken);
+
+        // Then
+    }
+
+    [Fact]
     public async Task CheckInWithoutCheckOut_BlackoutAndLockdownIsRunAfterTimeout()
     {
         // Given
