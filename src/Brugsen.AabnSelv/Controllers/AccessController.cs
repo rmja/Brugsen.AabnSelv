@@ -66,35 +66,28 @@ public sealed class AccessController(
             if (_blackoutSignalled)
             {
                 _blackoutSignalled = false;
-                if (lightGadget.State != LightState.Off)
+                try
                 {
-                    try
-                    {
-                        await lightGadget.TurnOffAsync(client, CancellationToken.None);
-                    }
-                    catch (AkilesApiException ex)
-                        when (ex.ErrorType == AkilesErrorTypes.HardwareOffline)
-                    {
-                        logger.LogError(ex, "Unable to perform blackout as hardware is offline");
-                    }
+                    await lightGadget.TurnOffIfNotAsync(client, CancellationToken.None);
+                }
+                catch (AkilesApiException ex)
+                    when (ex.ErrorType == AkilesErrorTypes.HardwareOffline)
+                {
+                    logger.LogError(ex, "Unable to perform blackout as hardware is offline");
                 }
             }
 
             if (_lockdownSignalled)
             {
                 _lockdownSignalled = false;
-
-                if (alarmGadget.State != AlarmState.Armed)
+                try
                 {
-                    try
-                    {
-                        await alarmGadget.ArmAsync(client, CancellationToken.None);
-                    }
-                    catch (AkilesApiException ex)
-                        when (ex.ErrorType == AkilesErrorTypes.HardwareOffline)
-                    {
-                        logger.LogError(ex, "Unable to perform lockdown as hardware is offline");
-                    }
+                    await alarmGadget.ArmIfNotAsync(client, CancellationToken.None);
+                }
+                catch (AkilesApiException ex)
+                    when (ex.ErrorType == AkilesErrorTypes.HardwareOffline)
+                {
+                    logger.LogError(ex, "Unable to perform lockdown as hardware is offline");
                 }
             }
         }
@@ -120,15 +113,8 @@ public sealed class AccessController(
             // The alarm and light might already be disarmed and on (performed by the controller),
             // but we do the actions here anyway to ensure that any internal gadget states and also logging remains correct
 
-            if (alarmGadget.State != AlarmState.Disarmed)
-            {
-                await alarmGadget.DisarmAsync(client);
-            }
-
-            if (lightGadget.State != LightState.On)
-            {
-                await lightGadget.TurnOnAsync(client);
-            }
+            await alarmGadget.DisarmIfNotAsync(client, CancellationToken.None);
+            await lightGadget.TurnOnIfNotAsync(client, CancellationToken.None);
 
             if (openDoor)
             {

@@ -179,6 +179,7 @@ public class AccessControllerTests
         Assert.Equal(LightState.Off, _lightGadget.State);
 
         _fakeTime.Advance(_controller.BlackoutDelay / 2);
+        await Task.Delay(100, TestCancellationToken);
         await _controller.ProcessCheckInAsync("check_in", "member2", openDoor: false);
         Assert.Equal(AlarmState.Disarmed, _alarmGadget.State);
         Assert.Equal(LightState.On, _lightGadget.State);
@@ -219,17 +220,21 @@ public class AccessControllerTests
         Assert.Equal(LightState.Off, _lightGadget.State);
 
         await _controller.ProcessCheckOutAsync("check_out", "member1", openDoor: false);
+        await Task.Delay(100, TestCancellationToken);
         Assert.Equal(AlarmState.Armed, _alarmGadget.State);
         Assert.Equal(LightState.Off, _lightGadget.State);
 
         _fakeTime.Advance(
             _controller.BlackoutDelay + (_controller.LockdownDelay - _controller.BlackoutDelay) / 2
         );
+        await Task.Delay(100, TestCancellationToken);
+
         await _controller.ProcessCheckInAsync("check_in", "member2", openDoor: false);
+        await Task.Delay(100, TestCancellationToken);
         Assert.Equal(AlarmState.Disarmed, _alarmGadget.State);
         Assert.Equal(LightState.On, _lightGadget.State);
 
-        _fakeTime.Advance(_controller.LockdownDelay); // Way past original configured blackout
+        _fakeTime.Advance(_controller.LockdownDelay); // Way past original configured lockdown
         await Task.Delay(100, TestCancellationToken);
         Assert.Equal(AlarmState.Disarmed, _alarmGadget.State);
         Assert.Equal(LightState.On, _lightGadget.State);

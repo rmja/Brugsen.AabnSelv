@@ -39,6 +39,32 @@ public class NoopAlarmGadget : IAlarmGadget
         return Task.CompletedTask;
     }
 
+    public async ValueTask<bool> ArmIfNotAsync(
+        IAkilesApiClient client,
+        CancellationToken cancellationToken = default
+    )
+    {
+        if (State == AlarmState.Armed)
+        {
+            return false;
+        }
+        await ArmAsync(client, cancellationToken);
+        return true;
+    }
+
+    public async ValueTask<bool> DisarmIfNotAsync(
+        IAkilesApiClient client,
+        CancellationToken cancellationToken = default
+    )
+    {
+        if (State == AlarmState.Disarmed)
+        {
+            return false;
+        }
+        await DisarmAsync(client, cancellationToken);
+        return true;
+    }
+
     public async IAsyncEnumerable<Event> GetRecentEventsAsync(
         IAkilesApiClient client,
         DateTimeOffset notBefore,

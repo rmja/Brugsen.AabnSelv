@@ -29,4 +29,30 @@ public class NoopLightGadget : ILightGadget
         State = LightState.Off;
         return Task.CompletedTask;
     }
+
+    public async ValueTask<bool> TurnOnIfNotAsync(
+        IAkilesApiClient client,
+        CancellationToken cancellationToken = default
+    )
+    {
+        if (State == LightState.On)
+        {
+            return false;
+        }
+        await TurnOnAsync(client, cancellationToken);
+        return true;
+    }
+
+    public async ValueTask<bool> TurnOffIfNotAsync(
+        IAkilesApiClient client,
+        CancellationToken cancellationToken = default
+    )
+    {
+        if (State == LightState.Off)
+        {
+            return false;
+        }
+        await TurnOffAsync(client, cancellationToken);
+        return true;
+    }
 }

@@ -11,4 +11,12 @@ public interface IAlarmGadget : IGadget
     );
     Task ArmAsync(IAkilesApiClient client, CancellationToken cancellationToken = default);
     Task DisarmAsync(IAkilesApiClient client, CancellationToken cancellationToken = default);
+    ValueTask<bool> ArmIfNotAsync(
+        IAkilesApiClient client,
+        CancellationToken cancellationToken = default
+    );
+    ValueTask<bool> DisarmIfNotAsync(
+        IAkilesApiClient client,
+        CancellationToken cancellationToken = default
+    );
 }
